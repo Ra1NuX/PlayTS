@@ -130,12 +130,12 @@ onmessage = async (event) => {
         text: !isText ? objectInspect(r.text) : JSON.stringify(r.text),
       };
     });
-  } catch (error) {
-    console.log({ error });
+  } catch (ex) {
+    const {message, stack} = ex as Error
     results = [
       {
         line: 0,
-        text: error.message,
+        text: message || stack,
         time: 0,
       },
     ];

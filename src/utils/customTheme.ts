@@ -12,11 +12,19 @@ const customTheme = {
       color: 'InfoText'
     },
     'hljs-number': {
-      color: '#B200B2', // Color morado para los números
+      color: '#bd93f9', // Color morado para los números
     },
     'hljs-string': {
-      color: '#007F00', // Color verde para las cadenas
+      color: '#f1fa8c', // Color verde para las cadenas
     },
   };
 
 export default customTheme;
+
+// { token: "comment", foreground: "6A9955", fontStyle: "italic" },
+// { token: "keyword", foreground: "ff79c6" },
+// { token: "string", foreground: "f1fa8c" },
+// { token: "number", foreground: "bd93f9" },
+// { token: "type", foreground: "4EC9B0" },
+// { token: "identifier", foreground: "50fa7b" },
+// { token: "delimiter", foreground: "D4D4D4" },

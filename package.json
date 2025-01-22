@@ -1,40 +1,47 @@
 {
   "name": "runts",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
+  "description": "A copy of runjs",
   "type": "module",
+  "author": {
+    "name": "Ra1NuX",
+    "email": "ra1nux.01@gmail.com"
+  },
+  "build": {
+    "appId": "com.arco.runts"
+  },
+  "main": "./app/index.js",
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "electron:dev": "concurrently \"cross-env BROWSER=none npm run dev\" \"wait-on http://localhost:5173 && tsc --project tsconfig.app.json --watch\"",
-    "start": "electronmon ./app"
+    "dev:electron": "concurrently \"cross-env BROWSER=none npm run dev\" \"wait-on http://localhost:5173 && tsc --project tsconfig.app.json --watch\"",
+    "start": "electronmon ./app",
+    "dist": "electron-builder -w",
+    "docker-build": "docker run --rm -ti --env-file <(env | grep -iE 'DEBUG|NODE_|ELECTRON_|YARN_|NPM_|CI|CIRCLE|TRAVIS_TAG|TRAVIS|TRAVIS_REPO_|TRAVIS_BUILD_|TRAVIS_BRANCH|TRAVIS_PULL_REQUEST_|APPVEYOR_|CSC_|GH_|GITHUB_|BT_|AWS_|STRIP|BUILD_') --env ELECTRON_CACHE='/root/.cache/electron' --env ELECTRON_BUILDER_CACHE='/root/.cache/electron-builder' -v ${PWD}:/project -v ${PWD##*/}-node-modules:/project/node_modules -v ~/.cache/electron:/root/.cache/electron "
   },
   "dependencies": {
     "@monaco-editor/react": "^4.6.0",
-    "@types/jsdom": "^21.1.7",
-    "@types/object-inspect": "^1.13.0",
-    "@types/react-syntax-highlighter": "^15.5.13",
     "acorn": "^8.14.0",
     "acorn-walk": "^8.3.4",
     "astring": "^1.9.0",
-    "concurrently": "^9.1.2",
     "cross-env": "^7.0.3",
-    "electron": "^33.3.1",
     "jsdom": "^26.0.0",
     "object-inspect": "^1.13.3",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "react-simple-code-editor": "^0.14.1",
     "react-syntax-highlighter": "^15.6.1",
-    "util": "^0.12.5",
-    "wait-on": "^8.0.2"
+    "util": "^0.12.5"
   },
   "devDependencies": {
     "@eslint/js": "^9.17.0",
     "@types/react": "^18.3.18",
     "@types/react-dom": "^18.3.5",
+    "@types/jsdom": "^21.1.7",
+    "@types/object-inspect": "^1.13.0",
+    "@types/react-syntax-highlighter": "^15.5.13",
     "@vitejs/plugin-react": "^4.3.4",
     "autoprefixer": "^10.4.20",
     "eslint": "^9.17.0",
@@ -45,6 +52,10 @@
     "tailwindcss": "^3.4.17",
     "typescript": "^5.7.2",
     "typescript-eslint": "^8.18.2",
-    "vite": "^6.0.5"
+    "wait-on": "^8.0.2",
+    "concurrently": "^9.1.2",
+    "vite": "^6.0.5",
+    "electron": "^33.3.1",
+    "electron-builder": "^25.1.8"
   }
 }
