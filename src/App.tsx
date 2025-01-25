@@ -5,6 +5,7 @@ import useCompiler from "./hooks/useCompiler";
 import fillMissingLines from "./utils/fillMissingLines";
 import SyntaxHighlighter from "react-syntax-highlighter";
 import customTheme from "./utils/customTheme";
+import Header from "./components/Header";
 
 const editorOptions: EditorProps["options"] = {
   minimap: { enabled: false }, // Elimina el minimapa
@@ -15,7 +16,8 @@ const editorOptions: EditorProps["options"] = {
   renderLineHighlight: 'none',
   "semanticHighlighting.enabled": 'configuredByTheme',
   cursorBlinking: 'expand',
-  lineHeight: 28
+  lineHeight: 28,
+  glyphMargin: false,
 };
 
 function App() {
@@ -54,54 +56,18 @@ function App() {
   const filledArray = fillMissingLines(result || []);
   console.log({ filledArray });
 
+
+
   return (
     <main className="h-screen flex flex-col">
-      <nav className="block w-full h-[30px] bg-main-dark z-10 drag">
-        <div className="w-4/12 h-full leading-[30px] text-[#f7f7f7] float-left pl-[1em]"></div>
-        <div className="float-right w-[150px] h-full leading-[30px] bg-main-dark no-drag">
-          <div className="tileStyleButton hover:bg-[#333333aa]">
-            <svg
-              stroke="currentColor"
-              fill="currentColor"
-              stroke-width="0"
-              viewBox="0 0 16 16"
-              height="1em"
-              width="1em"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path d="M15 8H1V7h14v1z"></path>
-            </svg>
-          </div>
-          <div className="tileStyleButton hover:bg-[#333333aa]">
-            <svg
-              stroke="currentColor"
-              fill="currentColor"
-              stroke-width="0"
-              viewBox="0 0 16 16"
-              height="1em"
-              width="1em"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                fill-rule="evenodd"
-                clip-rule="evenodd"
-                d="M3.5 4l.5-.5h8l.5.5v8l-.5.5H4l-.5-.5V4zm1 .5v7h7v-7h-7z"
-              ></path>
-            </svg>
-          </div>
-          <div className="tileStyleButton hover:bg-[#ff0000dd]">
-            <span>&times;</span>
-          </div>
-        </div>
-      </nav>
-      <div className="grid grid-cols-2 p-2 pt-0 bg-main-dark h-full shadow-inner">
+      <Header />
+      <div className="grid grid-cols-2 p-2 bg-main-dark h-full">
         <div className="rounded-md overflow-hidden bg-main-light p-2 pl-0 rounded-r-none border-r border-r-main-dark">
           <Editor
             loading={false}
             theme="custom-dark"
             defaultLanguage="typescript"
             language="typescript"
-            
             onChange={(e) => {
               writting(e || "");
             }}

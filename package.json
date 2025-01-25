@@ -3,7 +3,6 @@
   "private": true,
   "version": "1.0.0",
   "description": "A copy of runjs",
-  "type": "module",
   "author": {
     "name": "Ra1NuX",
     "email": "ra1nux.01@gmail.com"
@@ -14,10 +13,12 @@
   "main": "./app/index.js",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build",
+    "build:electron": "node ./esbuild.config.mjs",
+    "build:renderer": "vite build",
+    "build": "npm run build:renderer && npm run build:electron",
     "lint": "eslint .",
     "preview": "vite preview",
-    "dev:electron": "concurrently \"cross-env BROWSER=none npm run dev\" \"wait-on http://localhost:5173 && tsc --project tsconfig.app.json --watch\"",
+    "dev:electron": "concurrently \"cross-env BROWSER=none npm run dev\" \"wait-on http://localhost:5173 && npm run build:electron\"",
     "start": "electronmon ./app",
     "dist": "electron-builder -w",
     "docker-build": "docker run --rm -ti --env-file <(env | grep -iE 'DEBUG|NODE_|ELECTRON_|YARN_|NPM_|CI|CIRCLE|TRAVIS_TAG|TRAVIS|TRAVIS_REPO_|TRAVIS_BUILD_|TRAVIS_BRANCH|TRAVIS_PULL_REQUEST_|APPVEYOR_|CSC_|GH_|GITHUB_|BT_|AWS_|STRIP|BUILD_') --env ELECTRON_CACHE='/root/.cache/electron' --env ELECTRON_BUILDER_CACHE='/root/.cache/electron-builder' -v ${PWD}:/project -v ${PWD##*/}-node-modules:/project/node_modules -v ~/.cache/electron:/root/.cache/electron "
@@ -28,6 +29,7 @@
     "acorn-walk": "^8.3.4",
     "astring": "^1.9.0",
     "cross-env": "^7.0.3",
+    "electron-serve": "^2.1.1",
     "jsdom": "^26.0.0",
     "object-inspect": "^1.13.3",
     "react": "^18.3.1",
