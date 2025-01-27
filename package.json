@@ -1,14 +1,11 @@
 {
   "name": "runts",
   "private": true,
-  "version": "1.0.0",
-  "description": "A copy of runjs",
+  "version": "0.1.1",
+  "description": "RunTS",
   "author": {
     "name": "Ra1NuX",
     "email": "ra1nux.01@gmail.com"
-  },
-  "build": {
-    "appId": "com.arco.runts"
   },
   "main": "./app/index.js",
   "scripts": {
@@ -20,7 +17,7 @@
     "preview": "vite preview",
     "dev:electron": "concurrently \"cross-env BROWSER=none npm run dev\" \"wait-on http://localhost:5173 && npm run build:electron\"",
     "start": "electronmon ./app",
-    "dist": "electron-builder -w",
+    "dist": "npm run build && electron-builder --config electron-builder.config.js -w",
     "docker-build": "docker run --rm -ti --env-file <(env | grep -iE 'DEBUG|NODE_|ELECTRON_|YARN_|NPM_|CI|CIRCLE|TRAVIS_TAG|TRAVIS|TRAVIS_REPO_|TRAVIS_BUILD_|TRAVIS_BRANCH|TRAVIS_PULL_REQUEST_|APPVEYOR_|CSC_|GH_|GITHUB_|BT_|AWS_|STRIP|BUILD_') --env ELECTRON_CACHE='/root/.cache/electron' --env ELECTRON_BUILDER_CACHE='/root/.cache/electron-builder' -v ${PWD}:/project -v ${PWD##*/}-node-modules:/project/node_modules -v ~/.cache/electron:/root/.cache/electron "
   },
   "dependencies": {

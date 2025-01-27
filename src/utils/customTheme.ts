@@ -1,22 +1,25 @@
-import { docco } from "react-syntax-highlighter/dist/esm/styles/hljs";
 
-const customTheme = {
-    ...docco,
+const customTheme: {[key: string]: React.CSSProperties }= {
+    // ...docco,
     // "hljs" suele ser la clase global. La usaremos para que de base el background sea transparente
     'hljs': {
-      ...docco['hljs'],
+      // ...docco['hljs'],
       background: 'transparent',
-      // Si quieres un color base para el texto, puedes usar lo que gustes, 
-      // aunque 'InfoText' no es un color estándar en la web (es una variable de sistema en Windows). 
-      // Aun así, lo dejamos aquí como ejemplo.
       color: 'InfoText'
     },
     'hljs-number': {
-      color: '#bd93f9', // Color morado para los números
+      color: '#bd93f9',
     },
     'hljs-string': {
-      color: '#f1fa8c', // Color verde para las cadenas
+      color: '#f1fa8c',
     },
+    'hljs-boolean': {
+      color: '#bd93f9'
+    },
+    "hljs-literal": {
+      color: "#bd93f9",
+    },
+
   };
 
 export default customTheme;

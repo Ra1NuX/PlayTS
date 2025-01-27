@@ -1,12 +1,19 @@
-module.exports = {
+const config = {
+  appId: "com.arco.runts",
+  productName: 'RunTS',
+  directories: {
+    buildResources: "public",
+    output: "dist",
+  },
+  
   win: {
+    icon: 'public/icon.ico',
     target: [
       {
         target: "nsis",
         arch: ["x64"],
       },
     ],
-    signtAndEdit
   },
 //   mac: {
 //     target: [
@@ -28,4 +35,6 @@ module.exports = {
       },
     ],
   },
-};
+}
+
+module.exports = config;

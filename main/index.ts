@@ -1,12 +1,8 @@
 import { BrowserWindow, app, ipcMain } from "electron";
 import path, { join } from "path";
-// import { fileURLToPath } from "url";
 import serve from "electron-serve";
 import isDev from "./tools/isDev";
 import { getURL } from "./tools/getUrl";
-
-// const __filename = fileURLToPath(import.meta.url);
-// const __dirname = dirname(__filename);
 
 if (!isDev) {
   serve({ directory: join(__dirname, "renderer"), hostname: "runts.com" });
