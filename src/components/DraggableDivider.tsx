@@ -140,15 +140,15 @@ const DraggableDivider: React.FC<{
   const rightPanelWidthPercent = (1 - dividerRatio) * 100;
 
   return (
-    <div className="flex p-2 bg-main-dark h-full" ref={containerRef}>
+    <div className="flex dark:bg-main-dark bg-[#f7f7f7] h-full overflow-hidden p-2 pl-0 flex-1" ref={containerRef}>
       <div
-        className="rounded-md overflow-hidden bg-main-light p-2 pl-0 rounded-r-none border-r border-r-main-dark"
+        className="rounded-md overflow-hidden dark:bg-main-light bg-[#eaeaea] p-2 pl-0 rounded-r-none border-r dark:border-r-main-dark border-r-[#f7f7f7]"
         style={{ width: `${leftPanelWidthPercent}%` }}
       >
         {leftComponent}
       </div>
       <div
-        className="relative h-full w-2 bg-main-dark cursor-ew-resize select-none touch-none"
+        className="relative h-full w-2 dark:bg-main-dark bg-[#f7f7f7] cursor-ew-resize select-none touch-none"
         onMouseDown={handleMouseDown}
         onTouchStart={handleTouchStart}
         onKeyDown={handleKeyDown}
@@ -157,8 +157,7 @@ const DraggableDivider: React.FC<{
         aria-orientation="vertical"
         aria-label="Divider"
       />
-      <div
-        className="text-blue-300 break-words overflow-y-auto font-semibold font-mono leading-none bg-main-light rounded-md rounded-l-none border-l border-l-main-dark w-full flex flex-col flex-1 p-2 px-4"
+      <div className="flex flex-col flex-1"
         style={{ width: `${rightPanelWidthPercent}%` }}
       >
         {rightComponent}

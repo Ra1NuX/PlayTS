@@ -1,24 +1,44 @@
 import { BrowserWindow, app, ipcMain } from "electron";
-import path, { join } from "path";
-import serve from "electron-serve";
-import isDev from "./tools/isDev";
+import path from "path";
+// import serve from "electron-serve";
+// import isDev from "./tools/isDev";
 import { getURL } from "./tools/getUrl";
 
-if (!isDev) {
-  serve({ directory: join(__dirname, "renderer"), hostname: "runts.com" });
-}
+import express from 'express'
+
+const server = express();
+const port = 19293;
+
+server.use(express.static(path.join(__dirname, 'renderer')));
+
+server.get('/', (_req, res) => {
+  res.sendFile(path.join(__dirname, 'renderer', 'index.html'));
+});
+
+server.listen(port, () => {
+  console.log(`Servidor HTTP ejecutándose en https://localhost:${port}`);
+})
+
 
 let win: BrowserWindow;
 
 function createWindow() {
+  
   win = new BrowserWindow({
     width: 800,
     height: 600,
+    // minWidth: 800,
+    // minHeight: 600,
     titleBarStyle: "hidden",
     webPreferences: {
       preload: path.join(__dirname, "preload.js"),
+      nodeIntegration: true,
+      contextIsolation: true,
+      webSecurity: false,
+      allowRunningInsecureContent: true,
     },
   });
+
 
   win.on('enter-full-screen', () => {
     win.webContents.send('toggle-titlebar', false);
@@ -32,6 +52,8 @@ function createWindow() {
 
   win.loadURL(url);
 }
+
+app.commandLine.appendSwitch('enable-features','SharedArrayBuffer')
 
 app.whenReady().then(() => {
   createWindow();
@@ -59,7 +81,6 @@ ipcMain.on("app/maximize", () => {
     win.unmaximize();
   }
 });
-
 
 ipcMain.on("app/close", () => {
   app.quit();

@@ -1,6 +1,7 @@
 /** @type {import('tailwindcss').Config} */
 export default {
   content: ["./src/**/*.{html,ts,tsx}"],
+  darkMode: 'class',
   theme: {
     extend: {
       colors: {
@@ -11,6 +12,6 @@ export default {
       }
     },
   },
-  plugins: [],
+  plugins: [require('tailwindcss-aria-attributes')],
 }
 

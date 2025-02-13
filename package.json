@@ -1,7 +1,7 @@
 {
   "name": "runts",
   "private": true,
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "RunTS",
   "author": {
     "name": "Ra1NuX",
@@ -11,7 +11,7 @@
   "scripts": {
     "dev": "vite",
     "build:electron": "node ./esbuild.config.mjs",
-    "build:renderer": "vite build",
+    "build:renderer": "vite build --watch",
     "build": "npm run build:renderer && npm run build:electron",
     "lint": "eslint .",
     "preview": "vite preview",
@@ -21,17 +21,29 @@
     "docker-build": "docker run --rm -ti --env-file <(env | grep -iE 'DEBUG|NODE_|ELECTRON_|YARN_|NPM_|CI|CIRCLE|TRAVIS_TAG|TRAVIS|TRAVIS_REPO_|TRAVIS_BUILD_|TRAVIS_BRANCH|TRAVIS_PULL_REQUEST_|APPVEYOR_|CSC_|GH_|GITHUB_|BT_|AWS_|STRIP|BUILD_') --env ELECTRON_CACHE='/root/.cache/electron' --env ELECTRON_BUILDER_CACHE='/root/.cache/electron-builder' -v ${PWD}:/project -v ${PWD##*/}-node-modules:/project/node_modules -v ~/.cache/electron:/root/.cache/electron "
   },
   "dependencies": {
+    "@headlessui/react": "^2.2.0",
     "@monaco-editor/react": "^4.6.0",
+    "@types/express": "^5.0.0",
+    "@webcontainer/api": "^1.5.1",
     "acorn": "^8.14.0",
     "acorn-walk": "^8.3.4",
     "astring": "^1.9.0",
     "cross-env": "^7.0.3",
     "electron-serve": "^2.1.1",
+    "express": "^4.21.2",
+    "fs": "^0.0.1-security",
+    "https": "^1.0.0",
+    "i18next": "^24.2.2",
+    "i18next-browser-languagedetector": "^8.0.2",
+    "i18next-http-backend": "^3.0.2",
     "jsdom": "^26.0.0",
     "object-inspect": "^1.13.3",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
+    "react-i18next": "^15.4.0",
+    "react-icons": "^5.4.0",
     "react-syntax-highlighter": "^15.6.1",
+    "tailwindcss-aria-attributes": "^2.0.1",
     "util": "^0.12.5"
   },
   "devDependencies": {

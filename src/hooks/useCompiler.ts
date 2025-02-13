@@ -1,7 +1,7 @@
 import { useState } from "react";
 import debounce from "../tools/debounce";
 import transpileTypeScript from "../tools/convertToJS";
-import runLine from "../utils/runLine";
+import runCode from "../utils/runCode";
 
 interface ResultType {
   line: number;
@@ -15,9 +15,10 @@ const useCompiler = () => {
   >();
 
   const writting = (text: string) => {
+    console.log('writting')
     try {
       const js = transpileTypeScript(text);
-      runLine(js).then((result) => {
+      runCode(js).then((result) => {
         setResult(result as ResultType[]);
       });
     } catch (ex) {

@@ -1,12 +1,12 @@
-import isDev from './isDev'
+// import isDev from './isDev'
 
-export const domain =
-    isDev
-    ? `http://localhost:5173/`
-    : `app://runts.com/`;
+export const domain = `http://localhost:19293`;
+    // isDev
+    // ? `http://localhost:5173/`
+    // : 
 
 
 export const initialLocale = 'es-ES';
 
 export const getURL = (pathname: string) =>
-  `${domain}${initialLocale}${pathname}`;
+  `${domain}${pathname}`;

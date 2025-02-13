@@ -27,6 +27,8 @@ function fillMissingLines(arr: LineItem[]): LineItem[] {
 
     filled.push({ ...item, line: currentLine });
 
+    console.log({item})
+
     const newlines = (item.text.match(/\n/g) || []).length;
 
     console.log({ newlines });

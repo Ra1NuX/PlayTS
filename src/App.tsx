@@ -1,13 +1,15 @@
-import { useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Editor, EditorProps, useMonaco } from "@monaco-editor/react";
 
 import useCompiler from "./hooks/useCompiler";
 import fillMissingLines from "./utils/fillMissingLines";
 import SyntaxHighlighter from "react-syntax-highlighter";
-import customTheme from "./utils/customTheme";
+import { darkTheme, lightTheme, monacoDarkTheme, monacoLightTheme } from "./utils/customTheme";
 import Header from "./components/Header";
 import DraggableDivider from "./components/DraggableDivider";
-import defaultText from "./utils/defaultText";
+import Sidebar from "./components/Sidebar";
+import { useTheme } from "./hooks/useTheme";
+import { useTranslation } from "react-i18next";
 
 const editorOptions: EditorProps["options"] = {
   minimap: { enabled: false }, // Elimina el minimapa
@@ -24,59 +26,77 @@ const editorOptions: EditorProps["options"] = {
   scrollBeyondLastLine: false,
   scrollbar: {
     vertical: 'auto',
-    useShadows: false
+    useShadows: false,
   }
 };
 
 function App() {
   const { result, writting } = useCompiler();
+  const { t } = useTranslation();
   const monaco = useMonaco();
+
+  const rightContainerRef = useRef<HTMLDivElement>(null);
+  const editorRef = useRef<any>(null);
+
+  const { theme } = useTheme();
+
+  const [defaultCode, setDefaultCode] = useState(t('DEFAULT_CODE'));
 
   useEffect(() => {
     if (!monaco) return;
 
-    monaco.editor.defineTheme("custom-dark", {
-      base: "vs-dark",
-      inherit: true,
-      rules: [
-        { token: "comment", foreground: "6272A4", fontStyle: "italic" },
-        { token: "keyword", foreground: "ff79c6"},
-        { token: "string", foreground: "f1fa8c", fontStyle: 'semi-bold' },
-        { token: "number", foreground: "bd93f9" },
-        { token: "type", foreground: "4EC9B0" },
-        { token: "identifier", foreground: "50fa7b" },
-        { token: "delimiter", foreground: "D4D4D4" },
-        { token: 'function', foreground: 'BD93F9'},
-      ],
-      colors: {
-        "editor.background": "#00000000",
-        "editorCursor.foreground": "#FFFFFF",
-        "editor.foreground": "#ABB2BF",
-        "editorLineNumber.foreground": "#858585", 
-        "editorLineNumber.activeForeground": "#FFFFFF", 
-      },
-    });
-    monaco.editor.setTheme("custom-dark");
+    monaco.editor.defineTheme("custom-dark", monacoDarkTheme as any);
+    monaco.editor.defineTheme("custom-light", monacoLightTheme as any);
+
+    monaco.editor.setTheme(theme === "dark" ? "custom-dark" : "custom-light");
+    
     monaco.languages.typescript.typescriptDefaults.setCompilerOptions({
       target: monaco.languages.typescript.ScriptTarget.Latest,
       module: monaco.languages.typescript.ModuleKind.ESNext,
       allowJs: true,
     })
-  }, [monaco]);
+  }, [monaco, theme]);
+
+  useEffect(() => {
+    const code = atob(localStorage.getItem('code')||'');
+    if(code) {
+      setDefaultCode(code);
+      writting(code);
+    }
+  }, [])
 
   const filledArray = fillMissingLines(result || []);
 
   return (
     <main className="h-screen flex flex-col">
       <Header />
-      <DraggableDivider
+      <section className="flex flex-row flex-1 w-full overflow-hidden">
+        <Sidebar />
+        <DraggableDivider
         leftComponent={
           <Editor
+            onMount={(editor) => {
+              editorRef.current = editor;
+              editor.onDidScrollChange(() => {
+                const scrollTop = editor.getScrollTop();
+                const scrollHeight = editor.getScrollHeight();
+                const editorHeight = editor.getLayoutInfo().height;
+          
+                if (rightContainerRef.current) {
+                  const rightScrollHeight = rightContainerRef.current.scrollHeight;
+                  const rightHeight = rightContainerRef.current.clientHeight;
+                  const ratio = scrollTop / (scrollHeight - editorHeight);
+                  const rightScrollTop = ratio * (rightScrollHeight - rightHeight);
+                  
+                  rightContainerRef.current.scrollTop = rightScrollTop;
+                }
+              });
+            }}
             loading={false}
-            theme="custom-dark"
+            theme={theme === "dark" ? "custom-dark" : "custom-light"}
             defaultLanguage="typescript"
             language="typescript"
-            defaultValue={defaultText}
+            defaultValue={defaultCode}
             onChange={(e) => {
               writting(e || "");
             }}
@@ -85,12 +105,11 @@ function App() {
           />
         }
         rightComponent={
-          <>
+          <div ref={rightContainerRef} className="break-words overflow-y-auto font-semibold font-mono leading-none dark:bg-main-light bg-[#eaeaea] rounded-md rounded-l-none border-l dark:border-l-main-dark border-l-[#f7f7f7] w-full flex flex-col flex-1 p-2 px-4">
             {Array.isArray(filledArray)
               ? filledArray?.map((element) => {
                   if (element) {
-                    const { text, time } = element;
-                    console.log({ text });
+                    const { text } = element;
                     return (
                       <div className="flex w-full">
                         <div className="flex w-full justify-between font-mono leading-5">
@@ -98,7 +117,7 @@ function App() {
                             language="javascript"
                             codeTagProps={{ style: { whiteSpace: "pre-wrap" } }}
                             PreTag={"pre"}
-                            style={customTheme}
+                            style={theme === "dark" ? darkTheme : lightTheme}
                             customStyle={{
                               fontSize: 18,
                               padding: 0,
@@ -116,20 +135,17 @@ function App() {
                           >
                             {text}
                           </SyntaxHighlighter>
-                          {text !== "\n" && (
-                            <span className="bg-slate-900/20 rounded-full px-1 text-xs text-gray-600 max-h-[19px] flex items-center justify-center">
-                              {time.toFixed(1)} ms
-                            </span>
-                          )}
                         </div>
                       </div>
                     );
                   }
                 })
               : JSON.stringify(filledArray)}
-          </>
+          </div>
         }
       />
+      </section>
+     
     </main>
   );
 }

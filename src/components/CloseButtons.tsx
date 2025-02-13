@@ -8,16 +8,6 @@ declare global {
 }
 
 const CloseButtons = () => {
-  // useEffect(() => {
-  //   const maximizeWithF = (e: KeyboardEvent) => {
-  //     if (e.code === "Escape") window.electron.maximize();
-  //   };
-  //   window.addEventListener("keydown", maximizeWithF);
-
-  //   return () => {
-  //       window.removeEventListener("keydown", maximizeWithF);
-  //   }
-  // }, []);
 
   return (
     <div className="float-right w-[150px] h-full leading-[30px] bg-main-dark no-drag">
