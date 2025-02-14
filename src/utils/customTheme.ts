@@ -4,7 +4,7 @@ const darkTheme: { [key: string]: React.CSSProperties } = {
   ...dracula,
   // "hljs" suele ser la clase global. La usaremos para que de base el background sea transparente
   hljs: {
-    ...dracula['hljs'],
+    ...dracula["hljs"],
     background: "transparent",
     color: "#50fa7b",
   },
@@ -12,10 +12,10 @@ const darkTheme: { [key: string]: React.CSSProperties } = {
     color: "#bd93f9",
   },
   "hljs-boolean": {
-    color: "#bd93f9",
+    color: "#ff79c6",
   },
   "hljs-literal": {
-    color: "#bd93f9",
+    color: "#ff79c6",
   },
   "hljs-comment": {
     color: "#6272A4",
@@ -23,6 +23,17 @@ const darkTheme: { [key: string]: React.CSSProperties } = {
   },
   "hljs-attr": {
     color: "#50fa7b",
+  },
+  "hljs-title": {
+    color: "#50fa7b",
+  },
+  "hljs-name": {
+    color: "#f1fa8c",
+    fontWeight: "bold",
+  },
+  "hljs-type": {
+    color: "#f1fa8c",
+    fontWeight: "bold",
   },
 };
 

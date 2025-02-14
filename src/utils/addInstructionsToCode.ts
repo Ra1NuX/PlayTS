@@ -205,9 +205,15 @@ export function addInstructionsToCode(code: string) {
           console[consoleMethods[i]] = customLog;
         }  
         function __report(value, line, time) {
+
+          const notObject = typeof value !== 'object';
+          const isText = typeof value === 'string';
+
+          const formattedValue = isText ? \`'\${value}'\` : inspect(value, { showHidden: true, depth: null, maxArrayLength: 10000, colors: false, getters:true, showProxy: true });
+
           logger.log(JSON.stringify({
             line: line,
-            text: inspect(value, { showHidden: true, depth: null, maxArrayLength: 10000, colors: false, getters:true, showProxy: true }),
+            text: formattedValue,
             time: time,
           }));
         }
