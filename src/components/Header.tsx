@@ -21,7 +21,7 @@ const Header = () => {
       <div className="w-4/12 h-full leading-[30px] mt-1 dark:text-[#f7f7f7] float-left pl-2 flex items-center gap-2 pt-2 pb-2">
         <img src="/icon.png" className="h-[20px] inline-block" />
         <p className="text-xs font-medium">
-          RunTS <span className="font-light text-[#f7f7f740] italic">Alpha</span>
+          OpenTS <span className="font-light text-[#f7f7f740] italic">Alpha</span>
         </p>
       </div>
       {window.electron && <CloseButtons />}

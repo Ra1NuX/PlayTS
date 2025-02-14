@@ -1,6 +1,6 @@
 const config = {
-  appId: "com.arco.runts",
-  productName: 'RunTS',
+  appId: "com.arco.opents",
+  productName: 'OpenTS',
   directories: {
     buildResources: "public",
     output: "dist",
