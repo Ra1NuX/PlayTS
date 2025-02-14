@@ -1,18 +1,15 @@
-import { docco } from "react-syntax-highlighter/dist/esm/styles/hljs";
+import { dracula } from "react-syntax-highlighter/dist/esm/styles/hljs";
 
 const darkTheme: { [key: string]: React.CSSProperties } = {
-  // ...docco,
+  ...dracula,
   // "hljs" suele ser la clase global. La usaremos para que de base el background sea transparente
   hljs: {
-    // ...docco['hljs'],
+    ...dracula['hljs'],
     background: "transparent",
-    color: "InfoText",
+    color: "#50fa7b",
   },
   "hljs-number": {
     color: "#bd93f9",
-  },
-  "hljs-string": {
-    color: "#f1fa8c",
   },
   "hljs-boolean": {
     color: "#bd93f9",
@@ -20,11 +17,18 @@ const darkTheme: { [key: string]: React.CSSProperties } = {
   "hljs-literal": {
     color: "#bd93f9",
   },
+  "hljs-comment": {
+    color: "#6272A4",
+    fontStyle: "italic",
+  },
+  "hljs-attr": {
+    color: "#50fa7b",
+  },
 };
 
 const lightTheme: { [key: string]: React.CSSProperties } = {
   hljs: {
-    ...docco["hljs"],
+    ...dracula["hljs"],
     background: "transparent",
     color: "InfoText",
   },

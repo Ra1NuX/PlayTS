@@ -1,5 +1,4 @@
 import { WebContainer, WebContainerProcess } from "@webcontainer/api";
-import {inspect} from 'util'
 import { addInstructionsToCode } from "./addInstructionsToCode";
 
 let webContainer: WebContainer;
@@ -46,6 +45,8 @@ const runCode = async (code: string) => {
 
   const iCode = addInstructionsToCode(code);
 
+  console.log({iCode})
+
   webContainer.fs.writeFile("index.js", iCode);
   let results: { text: string; line: number; time: number }[] = [];
   const runProcess = await webContainer.spawn("npm", ["run", "start"]);
@@ -53,6 +54,7 @@ const runCode = async (code: string) => {
     new WritableStream({
       write(data) {
         try {
+          console.log({data})
           if (!data.includes("{")) {
             results.push({
               text: data.toString().split("\n")[0],
