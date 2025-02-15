@@ -9,11 +9,13 @@
 
   <body>
     <div id="root" ></div>
-    <script type="module" src="/src/main.tsx"></script>
     <script>
       if (localStorage.getItem('theme') === 'dark') {
         document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
       }
     </script>
+    <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
