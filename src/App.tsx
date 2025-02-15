@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { Editor, EditorProps, useMonaco } from "@monaco-editor/react";
 
 import useCompiler from "./hooks/useCompiler";
-import fillMissingLines from "./utils/fillMissingLines";
+import fillSpaces from "./utils/fillSpaces";
 import SyntaxHighlighter from "react-syntax-highlighter";
 import { darkTheme, lightTheme, monacoDarkTheme, monacoLightTheme } from "./utils/customTheme";
 import Header from "./components/Header";
@@ -75,7 +75,7 @@ function App() {
     }
   }, [])
 
-  const filledArray = fillMissingLines(result || []);
+  const filledArray = fillSpaces(result || []);
 
   return (
     <main className="h-screen flex flex-col">

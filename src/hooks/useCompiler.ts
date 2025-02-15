@@ -9,14 +9,22 @@ interface ResultType {
   time: number;
 }
 
+let paused = false;
+
+const setPaused = (value: boolean) => {
+  console.log("paused", value);
+  paused = value;
+};
+
 const useCompiler = () => {
   const [result, setResult] = useState<
     ResultType[]
   >();
 
+
   const writting = (text: string) => {
-    console.log('writting')
     try {
+      if(paused) return;
       const js = transpileTypeScript(text);
       runCode(js).then((result) => {
         setResult(result as ResultType[]);
@@ -36,6 +44,8 @@ const useCompiler = () => {
 
   return {
     writting: debounce(writting, 500),
+    setPaused,
+    paused,
     result,
   };
 };

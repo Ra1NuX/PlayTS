@@ -1,8 +1,8 @@
 {
     "THEME": "Theme",
     "LANGUAGE": "Language",
-    "PLAY": "Play",
-    "PAUSE": "Pause",
+    "PLAY": "Executing",
+    "PAUSE": "Paused",
     "DEPENDENCIES": "Dependencies",
     "DEFAULT_CODE": "// 0. Import necessary modules\n\nimport fs from 'fs/promises';\n// 1. Print something to the console\nconsole.log('Hello world from your custom editor!');\n// 2. Define a simple function\nfunction add(a, b) {\n  return a + b;\n}\n// 3. Call the function and display the result\nconst result = add(2, 3);\nconsole.log(`The sum of 2 and 3 is: ${result}`);\n// 4. Use top-level await to fetch data\nconst response = await fetch('https://pokeapi.co/api/v2/pokemon/1');\nconst data = await response.json();\n// 5. Display part of the retrieved data\nconsole.log(`Pokémon #1 is: ${data.name}`);\n// 6. Create a small array and map over it\nconst numbers = [1, 2, 3, 4, 5];\nconst squared = numbers.map(num => num * num);\nconsole.log('Squared:', squared);\n// 7. Create a file to read from later.\nawait fs.writeFile('example.txt', '1 2 3 4 5');\nconst fileContent = (await fs.readFile('example.txt')).toString();\nconsole.log('This is the content of my file:', fileContent.split(' ').map(e => Number(e)));",
     "INSTALL": "Install",

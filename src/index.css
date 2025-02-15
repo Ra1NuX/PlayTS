@@ -23,7 +23,10 @@
     cursor: default;
     @apply flex justify-center items-center
   }
+
 }
+
+
 
 .monaco-editor .scrollbar.vertical,
 .monaco-editor .scrollbar.horizontal {

@@ -22,7 +22,7 @@ export default function Modal({ Button: btn, children }: { Button: ReactElement,
                     transition
                     className="w-full max-w-md rounded-md dark:text-white dark:bg-main-light bg-[#eaeaea] backdrop-blur-2xl duration-300 ease-out data-[closed]:transform-[scale(95%)] data-[closed]:opacity-0 overflow-hidden"
                     >
-                    {children}
+                    {cloneElement(children, { close, open })}
                     </DialogPanel>
                 </div>
             </div>

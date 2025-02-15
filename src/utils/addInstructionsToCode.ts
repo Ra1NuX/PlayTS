@@ -147,7 +147,6 @@ export function addInstructionsToCode(code: string) {
       },
     });
 
-    // Convertir el AST instrumentado de vuelta a código
     const instrumentedCode = generate(ast);
     const importsCode = generate({ type: "Program", body: imports } as any);
     const finalCode = `

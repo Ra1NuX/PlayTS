@@ -6,9 +6,7 @@ let installProcess: WebContainerProcess;
 
 const runCode = async (code: string) => {
   if (!webContainer) {
-    console.log("booting");
     webContainer = await WebContainer.boot();
-    console.log("mounted");
     await webContainer.mount({
       "package.json": {
         file: {
@@ -21,31 +19,21 @@ const runCode = async (code: string) => {
               start: "node index.js",
             },
             dependencies: {
-              "object-inspect": "^1.13.3",
               ...JSON.parse(localStorage.getItem("dependencies") || "{}"),
             },
           }),
-        },
-      },
-      ".npmrc": {
-        file: {
-          contents: "loglevel=silent",
         },
       },
     });
   }
 
   if (!installProcess) {
-    console.log("installing");
     installProcess = await webContainer.spawn("npm", ["install"]);
     await installProcess.exit;
   }
 
   localStorage.setItem("code", btoa(code));
-
   const iCode = addInstructionsToCode(code);
-
-  console.log({iCode})
 
   webContainer.fs.writeFile("index.js", iCode);
   let results: { text: string; line: number; time: number }[] = [];
@@ -54,7 +42,6 @@ const runCode = async (code: string) => {
     new WritableStream({
       write(data) {
         try {
-          console.log({data})
           if (!data.includes("{")) {
             results.push({
               text: data.toString().split("\n")[0],
@@ -66,41 +53,6 @@ const runCode = async (code: string) => {
 
           const r = JSON.parse(data);
           results.push(r);
-
-          // const isText = typeof r.text === "string";
-
-          // if (isText) {
-          //   let text = r.text as string;
-
-          //   if (!text.includes("'")) {
-          //     text = `'${text}'`;
-          //   }
-          //   results.push({
-          //     ...r,
-          //     text,
-          //   });
-          //   return;
-          // }
-
-          // if (Array.isArray(r.text)) {
-          //   let array = r.text;
-          //   if (array.length > 9999) {
-          //     array = [
-          //       ...array.slice(0, 9999),
-          //       `... ${array.length - 9999} more items`,
-          //     ];
-          //   }
-          //   results.push({
-          //     ...r,
-          //     text: objectInspect(array),
-          //   });
-          //   return;
-          // }
-
-          // results.push({
-          //   ...r,
-          //   text: objectInspect(r.text, { indent: "\t" }),
-          // });
           return;
         } catch (e) {
           const { message, stack } = e as Error;

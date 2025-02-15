@@ -1,4 +1,5 @@
 import {
+  VscDebugPause,
   VscDebugStop,
   VscPackage,
   VscPlay,
@@ -9,28 +10,33 @@ import Settings from "../Settings";
 import { Dispatch, SetStateAction, useState } from "react";
 import { DependenciesPanel } from "./SidebarPannel";
 import { useTranslation } from "react-i18next";
+import useCompiler from "../hooks/useCompiler"; 
 
-const buttons = [
-  {
-    icon: <VscPlay size={22} />,
-    title: "PLAY",
-  },
-  {
-    icon: <VscDebugStop size={22} />,
-    title: "PAUSE",
-  },
-  {
-    icon: <VscPackage size={22} />,
-    title: "DEPENDENCIES",
-    onClick: (setOpen: Dispatch<SetStateAction<boolean>>) =>
-      setOpen((open: boolean) => !open),
-    panelItem: <DependenciesPanel />,
-  },
-];
 
 const Sidebar = () => {
   const [open, setOpen] = useState(false);
   const [selected, setSelected] = useState<number | null>(null);
+  const { paused: p, setPaused: stop } = useCompiler()
+
+  const [paused, setPaused] = useState(p);
+
+  const buttons = [
+    {
+      icon: paused ? <VscDebugPause size={22} color="#f1fa8c" /> : <VscPlay size={22} color="#50fa7bab" />,
+      title: paused ? "PAUSE" : "PLAY",
+      onClick: () => {
+        setPaused(!paused);
+        stop(!paused);
+      },
+    },
+    {
+      icon: <VscPackage size={22} />,
+      title: "DEPENDENCIES",
+      onClick: (setOpen: Dispatch<SetStateAction<boolean>>) =>
+        setOpen((open: boolean) => !open),
+      panelItem: <DependenciesPanel />,
+    },
+  ];
 
   const { t } = useTranslation();
   return (

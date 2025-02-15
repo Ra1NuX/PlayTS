@@ -1,8 +1,8 @@
 {
     "THEME": "Tema",
     "LANGUAGE": "Lenguaje",
-    "PLAY": "Reproducir",
-    "PAUSE": "Pausa",
+    "PLAY": "Ejecutando",
+    "PAUSE": "Pausado",
     "DEPENDENCIES": "Dependencias",
     "DEFAULT_CODE": "// 0. Importamos lo que necesitemos \n import fs from 'fs/promises' \n\n // 1. Imprimir algo en la consola \n console.log('¡Hola mundo desde tu editor personalizado!');\n \n// 2. Definir una función sencilla\n function sumar(a, b) {\n return a + b;\n}\n \n // 3. Llamar a la función y mostrar el resultado\n const resultado = sumar(2, 3);\n console.log(`La suma de 2 y 3 es: ${resultado}`);\n \n // 4. Usar un 'top-level await' para fetch de datos\n const resp = await fetch('https://pokeapi.co/api/v2/pokemon/1');\n const data = await resp.json();\n \n // 5. Mostrar parte de los datos obtenidos\n console.log(`Pokémon #1 es: ${data.name}`);\n \n // 6. Generar un pequeño array y mapearlo\n const numeros = [1, 2, 3, 4, 5];\n const alCuadrado = numeros.map(num => num * num);\n console.log('Al cuadrado:', alCuadrado);\n \n // 7. Vamos a crear un archivo para posteriormente leerlo.\n await fs.writeFile('example.txt', '1 2 3 4 5');\n const file = (await fs.readFile('example.txt')).toString()\n console.log('Esto es la información que hay dentro de mi archivo:', file.split(' ').map(e => Number(e)))" ,
     "INSTALL": "Instalar",

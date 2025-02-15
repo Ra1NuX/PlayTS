@@ -1,7 +1,5 @@
 import { contextBridge, ipcRenderer } from "electron";
 
-console.log("iom here");
-
 export const api = {
     
   maximize: () => ipcRenderer.send("app/maximize"),
