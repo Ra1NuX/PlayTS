@@ -53,7 +53,17 @@ function App() {
     monaco.languages.typescript.typescriptDefaults.setCompilerOptions({
       target: monaco.languages.typescript.ScriptTarget.Latest,
       module: monaco.languages.typescript.ModuleKind.ESNext,
-      allowJs: true,
+      moduleResolution: monaco.languages.typescript.ModuleResolutionKind.NodeJs,
+      lib: ["esnext", "dom"], // Si usas DOM
+      strict: true,
+      allowNonTsExtensions: true,
+      skipLibCheck: true,
+    })
+
+    monaco.languages.typescript.typescriptDefaults.setDiagnosticsOptions({
+      noSemanticValidation: false,
+      noSyntaxValidation: false,
+      diagnosticCodesToIgnore: [1375, 2307, 7006]
     })
   }, [monaco, theme]);
 
