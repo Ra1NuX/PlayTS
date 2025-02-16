@@ -14,6 +14,7 @@ const config = {
     owner: 'ra1nux',
     repo: 'OpenTS'
   },
+  artifactName: process.env.CHANNEL === 'beta' ? '${productName}Setup-Beta${version}.${ext}' : '${productName}Setup-${version}.${ext}',
   win: {
     icon: 'public/icon.ico',
     target: [
@@ -22,7 +23,6 @@ const config = {
         arch: ["x64"],
       },
     ],
-    artifactName: process.env.CHANNEL === 'beta' ? '${productName}Setup-Beta${version}.${ext}' : '${productName}Setup-${version}.${ext}',
   },
   linux: {
     target: [

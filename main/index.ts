@@ -66,6 +66,8 @@ app.whenReady().then(() => {
   });
 });
 
+app.commandLine.appendSwitch('enable-features','SharedArrayBuffer');
+
 app.on("window-all-closed", () => {
   if (process.platform !== "darwin") {
     app.quit();
@@ -75,6 +77,7 @@ app.on("window-all-closed", () => {
 ipcMain.on("app/minimize", () => {
   win.minimize();
 });
+
 ipcMain.on("app/maximize", () => {
   if (!win.isMaximized()) {
     win.maximize();
