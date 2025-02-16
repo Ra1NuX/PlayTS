@@ -12,7 +12,7 @@ const config = {
   publish: {
     provider: 'github',
     owner: 'ra1nux',
-    repo: 'https://github.com/Ra1NuX/OpenTS'
+    repo: 'OpenTS'
   },
   win: {
     icon: 'public/icon.ico',
