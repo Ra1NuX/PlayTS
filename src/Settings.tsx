@@ -13,11 +13,7 @@ const Settings = ({ close = Function }: SettingsProps) => {
       <nav className="flex place-content-end drag">
         <button
           onClick={() => {
-            if(window.electron) {
-              window.electron.close();
-            } else {
-              close();
-            }
+            close();
           }}
           className="hover:bg-[#ff0000dd] w-8 aspect-square hover:text-white"
         >

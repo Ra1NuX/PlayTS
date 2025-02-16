@@ -4,7 +4,7 @@
 
 const config = {
   appId: "com.arco.opents",
-  productName: 'OpenTS',
+  productName: `OpenTS ${process.env.CHANNEL === 'beta' ? 'Beta' : ''}`,
   directories: {
     buildResources: "public",
     output: "dist",

@@ -43,6 +43,17 @@ function App() {
   const [defaultCode, setDefaultCode] = useState(t('DEFAULT_CODE'));
 
   useEffect(() => {
+    if(window.electron) {
+      const main = async () => {
+        const log = await import('electron-log/renderer');
+        console = log as any;
+      }
+
+      main();
+    }
+  }, [])
+
+  useEffect(() => {
     if (!monaco) return;
 
     monaco.editor.defineTheme("custom-dark", monacoDarkTheme as any);
@@ -117,11 +128,11 @@ function App() {
         rightComponent={
           <div ref={rightContainerRef} className="break-words overflow-y-auto font-semibold font-mono leading-none dark:bg-main-light bg-[#eaeaea] rounded-md rounded-l-none border-l dark:border-l-main-dark border-l-[#f7f7f7] w-full flex flex-col flex-1 p-2 px-4">
             {Array.isArray(filledArray)
-              ? filledArray?.map((element) => {
+              ? filledArray?.map((element, i) => {
                   if (element) {
                     const { text } = element;
                     return (
-                      <div className="flex w-full">
+                      <div className="flex w-full" key={element.text+'-'+element.line+'-'+i}>
                         <div className="flex w-full justify-between font-mono leading-5">
                           <SyntaxHighlighter
                             language="javascript"

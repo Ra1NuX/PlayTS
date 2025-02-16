@@ -8,6 +8,10 @@ import {
 import { autoUpdater } from "electron-updater";
 import express from "express";
 import path from "path";
+import log from 'electron-log/main';
+
+log.initialize();
+console = log as any
 
 import { getURL } from "./tools/getUrl";
 
