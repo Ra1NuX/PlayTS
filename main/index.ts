@@ -8,10 +8,10 @@ import {
 import { autoUpdater } from "electron-updater";
 import express from "express";
 import path from "path";
-import log from 'electron-log/main';
+import log from "electron-log/main";
 
 log.initialize();
-console = log as any
+console = log as any;
 
 import { getURL } from "./tools/getUrl";
 
@@ -54,6 +54,8 @@ function createWindow() {
     win.webContents.send("toggle-titlebar", true);
   });
 
+  autoUpdater.allowPrerelease = true;
+
   autoUpdater.checkForUpdatesAndNotify();
 
   const url = getURL("/");
@@ -70,7 +72,7 @@ app.whenReady().then(() => {
   });
 });
 
-app.commandLine.appendSwitch('enable-features','SharedArrayBuffer');
+app.commandLine.appendSwitch("enable-features", "SharedArrayBuffer");
 
 app.on("window-all-closed", () => {
   if (process.platform !== "darwin") {

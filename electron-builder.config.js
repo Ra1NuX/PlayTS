@@ -4,7 +4,9 @@
 
 const config = {
   appId: "com.arco.opents",
+  generateUpdatesFilesForAllChannels: true,
   productName: `OpenTS ${process.env.CHANNEL === 'beta' ? 'Beta' : ''}`,
+  asar: true,
   directories: {
     buildResources: "public",
     output: "dist",
@@ -12,9 +14,11 @@ const config = {
   publish: {
     provider: 'github',
     owner: 'ra1nux',
-    repo: 'OpenTS'
+    repo: 'OpenTS',
+    channel: process.env.CHANNEL === 'beta' ? 'beta' : 'latest',
+    publishAutoUpdate: true,
   },
-  artifactName: process.env.CHANNEL === 'beta' ? 'Setup-${productName}-Beta${version}.${ext}' : 'Setup-${productName}-${version}.${ext}',
+  artifactName: process.env.CHANNEL === 'beta' ? 'Setup-${productName}${version}.${ext}' : 'Setup-${productName}${version}.${ext}',
   win: {
     icon: 'public/icon.ico',
     target: [
