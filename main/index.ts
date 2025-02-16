@@ -113,7 +113,6 @@ autoUpdater.on("download-progress", (progressObj) => {
   log_message =
     log_message + ` (${progressObj.transferred}/${progressObj.total})`;
   console.log(log_message);
-  
 });
 
 autoUpdater.on("update-downloaded", (info) => {
