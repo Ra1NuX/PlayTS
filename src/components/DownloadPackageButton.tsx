@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { installPackage, uninstallPackage } from "../utils/runCode";
 import { useTranslation } from "react-i18next";
 import { BiDownload, BiTrash } from "react-icons/bi";
-import { GrInstall } from "react-icons/gr";
+import { FiLoader } from "react-icons/fi";
 
 const DownloadPackageButton = ({
   pckg,
@@ -43,27 +43,27 @@ const DownloadPackageButton = ({
 
   if (isLoading)
     return (
-      <button className="bg-blue-500 px-2 rounded text-white">
-        Loading...
-      </button>
+      <div className="bg-gray-300 shadow-md px-2 rounded text-main-dark flex items-center justify-center gap-2 p-1 font-normal text-sm leading-none">
+        <FiLoader className="animate-spin duration-100" size={16}/> <span className="leading-[0px] mt-0.5">Loading</span>
+      </div>
     );
 
   if (isDownloaded)
     return (
       <button
-        className="bg-red-500 px-2 rounded text-white flex items-center gap-2"
+        className="bg-red-500 hover:bg-red-600 shadow-md px-2 rounded text-white flex items-center justify-center gap-2 p-1 font-normal text-sm leading-none"
         onClick={removePackage}
       >
-        <BiTrash /><span>{t("UNINSTALL")}</span>
+        <BiTrash size={16} /> <span className="leading-[0px] mt-0.5">{t("UNINSTALL")}</span>
       </button>
     );
 
   return (
     <button
-      className="bg-blue-500 px-2 rounded text-white shadow-md flex items-center gap-2"
+      className="bg-blue-500 hover:bg-blue-600 px-2 rounded text-white shadow-md flex items-center gap-2 p-1 font-normal text-sm leading-none"
       onClick={downloadPackage}
     >
-      <BiDownload /><span>{t("INSTALL")}</span> 
+      <BiDownload size={16} /><span className="leading-[0px] mt-0.5">{t("INSTALL")}</span> 
     </button>
   );
 };

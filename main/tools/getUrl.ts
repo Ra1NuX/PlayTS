@@ -5,8 +5,5 @@ export const domain = `http://localhost:19293`;
     // ? `http://localhost:5173/`
     // : 
 
-
-export const initialLocale = 'es-ES';
-
 export const getURL = (pathname: string) =>
   `${domain}${pathname}`;

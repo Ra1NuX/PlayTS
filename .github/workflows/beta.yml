@@ -1,0 +1,96 @@
+name: Publish Beta
+
+on:
+  push:
+    branches:
+      - develop
+
+jobs:
+  version-bump:
+    if: ${{ !contains(github.event.head_commit.message, '[skip ci]') }}
+
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Configurar Git
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+
+      - name: Instalar dependencias (incluyendo standard-version)
+        run: npm ci
+
+      - name: Bump versión usando standard-version
+        run: |
+          npx standard-version --commit-all \
+                               --releaseCommitMessageFormat "chore(release): {{currentTag}} [skip ci]" \
+                               --skip.changelog=true
+
+      - name: Push cambios de versión
+        run: |
+          # Este push lleva el commit "chore(release): 1.2.4-beta.0 [skip ci]"
+          # que impedirá que se dispare OTRA vez el workflow.
+          git push --follow-tags origin HEAD:develop
+
+  build-beta-windows:
+    runs-on: windows-latest
+    permissions:
+      contents: write 
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup Git (para que standard-version pueda hacer commit local)
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: npm ci
+      - name: Mostrar nueva versión
+        run: cat package.json
+
+      - name: Publish Beta (Windows)
+        run: |
+          npx electron-builder --win \
+                               --publish always \
+                               --config.publish.channel=beta
+  build-beta-linux:
+      runs-on: ubuntu-latest
+      permissions:
+        contents: write
+      steps:
+        - name: Checkout
+          uses: actions/checkout@v3
+
+        - name: Setup Git
+          run: |
+            git config user.name "github-actions"
+            git config user.email "github-actions@github.com"
+
+        - name: Setup Node
+          uses: actions/setup-node@v3
+          with:
+            node-version: 20
+
+        - name: Install dependencies
+          run: npm ci
+          
+        - name: Mostrar nueva versión
+          run: cat package.json
+  
+        - name: Publish Beta (Linux)
+          run: |
+            npx electron-builder --linux \
+                                 --publish always \
+                                 --config.publish.channel=beta

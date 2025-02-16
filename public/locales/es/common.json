@@ -8,5 +8,6 @@
     "INSTALL": "Instalar",
     "UNINSTALL": "Desinstalar",
     "INSTALLED_DEPENDENCIES": "Dependencias instaladas",
-    "NO_DEPENDENCIES_INSTALLED": "No hay dependencias instaladas"
+    "NO_DEPENDENCIES_INSTALLED": "No hay dependencias instaladas",
+    "SOCIAL_MEDIAS": "Redes sociales"
 }

@@ -20,8 +20,8 @@ const Header = () => {
     <nav ref={header} className="block w-full h-[30px] dark:bg-main-dark bg-[#f7f7f7] z-10 drag ">
       <div className="w-4/12 h-full leading-[30px] mt-1 dark:text-[#f7f7f7] float-left pl-2 flex items-center gap-2 pt-2 pb-2">
         <img src="/icon.png" className="h-[20px] inline-block" />
-        <p className="text-xs font-medium">
-          OpenTS <span className="font-light text-[#f7f7f740] italic">Alpha</span>
+        <p className="text-sm font-medium mt-0.5">
+          OpenTS <span className="font-light dark:text-[#f7f7f740] text-main-dark/60 italic"> Beta</span>
         </p>
       </div>
       {window.electron && <CloseButtons />}

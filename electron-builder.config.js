@@ -1,11 +1,19 @@
+/**
+ * @type {import('electron-builder').Configuration}
+ */
+
 const config = {
   appId: "com.arco.opents",
   productName: 'OpenTS',
   directories: {
     buildResources: "public",
     output: "dist",
+  },  
+  publish: {
+    provider: 'github',
+    owner: 'ra1nux',
+    repo: 'https://github.com/Ra1NuX/OpenTS'
   },
-  
   win: {
     icon: 'public/icon.ico',
     target: [
@@ -15,14 +23,6 @@ const config = {
       },
     ],
   },
-//   mac: {
-//     target: [
-//       {
-//         target: "dmg",
-//         arch: ["universal"],
-//       },
-//     ],
-//   },
   linux: {
     target: [
       {

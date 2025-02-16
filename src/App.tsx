@@ -78,7 +78,7 @@ function App() {
   const filledArray = fillSpaces(result || []);
 
   return (
-    <main className="h-screen flex flex-col">
+    <main className="h-screen flex flex-col font-[roboto] font-bold">
       <Header />
       <section className="flex flex-row flex-1 w-full overflow-hidden">
         <Sidebar />

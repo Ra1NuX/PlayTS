@@ -8,5 +8,6 @@
     "INSTALL": "Install",
     "UNINSTALL": "Uninstall",
     "INSTALLED_DEPENDENCIES": "Installed dependencies",
-    "NO_DEPENDENCIES_INSTALLED": "No dependencies installed"
+    "NO_DEPENDENCIES_INSTALLED": "No dependencies installed",
+    "SOCIAL_MEDIAS": "Social medias"
 }
