@@ -67,9 +67,9 @@ jobs:
 
       - name: Publish Beta (Windows)
         run: |
-          bunx electron-builder --win \
-                               --publish always \
-                               --config.publish.channel=beta
+          bunx electron-builder --config electron-builder.config.js -w \
+                                --config.publish.channel=beta \
+                                --publish always
   build-beta-linux:
       needs: version-bump
       runs-on: ubuntu-latest
@@ -97,6 +97,6 @@ jobs:
   
         - name: Publish Beta (Linux)
           run: |
-            bunx electron-builder --linux \
-                                 --publish always \
-                                 --config.publish.channel=beta
+            bunx electron-builder --config electron-builder.config.js -l \
+                                  --config.publish.channel=beta \
+                                  --publish always
