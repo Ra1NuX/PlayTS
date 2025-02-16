@@ -14,7 +14,7 @@ const config = {
     owner: 'ra1nux',
     repo: 'OpenTS'
   },
-  artifactName: process.env.CHANNEL === 'beta' ? '${productName}Setup-Beta${version}.${ext}' : '${productName}Setup-${version}.${ext}',
+  artifactName: process.env.CHANNEL === 'beta' ? 'Setup-${productName}-Beta${version}.${ext}' : 'Setup-${productName}-${version}.${ext}',
   win: {
     icon: 'public/icon.ico',
     target: [
