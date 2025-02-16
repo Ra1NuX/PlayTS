@@ -15,6 +15,8 @@ console = log as any;
 
 import { getURL } from "./tools/getUrl";
 
+
+
 const server = express();
 const port = 19293;
 
@@ -55,6 +57,7 @@ function createWindow() {
   });
 
   autoUpdater.allowPrerelease = true;
+  autoUpdater.channel = "beta";
   autoUpdater.checkForUpdatesAndNotify();
 
   const url = getURL("/");
