@@ -97,6 +97,4 @@ jobs:
   
         - name: Publish Beta (Linux)
           run: |
-            bunx electron-builder --config electron-builder.config.js -l \
-                                  --config.publish.channel=beta \
-                                  --publish always
+            bun run build && bunx electron-builder --config electron-builder.config.js -l --publish always --config.publish.channel=beta 

@@ -10,7 +10,7 @@
   "main": "./app/index.js",
   "scripts": {
     "dev": "vite",
-    "build:electron": "node ./esbuild.config.mjs",
+    "build:electron": "bun ./esbuild.config.mjs",
     "build:renderer": "vite build",
     "build": "npm run build:renderer && npm run build:electron",
     "lint": "eslint .",
