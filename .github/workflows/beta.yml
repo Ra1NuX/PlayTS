@@ -67,9 +67,7 @@ jobs:
 
       - name: Build & Publish Beta (Windows)
         run: |
-          bunx electron-builder --config electron-builder.config.js -w \
-                                --config.publish.channel=beta \
-                                --publish always
+          CHANNEL=beta bun run build && bunx electron-builder --config electron-builder.config.js -w --publish always --config.publish.channel=beta
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   build-beta-linux:
@@ -99,6 +97,6 @@ jobs:
   
         - name: Build & Publish Beta (Linux)
           run: |
-            bun run build && bunx electron-builder --config electron-builder.config.js -l --publish always --config.publish.channel=beta 
+            CHANNEL=beta bun run build && bunx electron-builder --config electron-builder.config.js -l --publish always --config.publish.channel=beta 
           env:
             GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -22,6 +22,7 @@ const config = {
         arch: ["x64"],
       },
     ],
+    artifactName: process.env.CHANNEL === 'beta' ? '${productName}Setup-Beta${version}.${ext}' : '${productName}Setup-${version}.${ext}',
   },
   linux: {
     target: [
