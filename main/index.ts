@@ -55,7 +55,6 @@ function createWindow() {
   });
 
   autoUpdater.allowPrerelease = true;
-
   autoUpdater.checkForUpdatesAndNotify();
 
   const url = getURL("/");
