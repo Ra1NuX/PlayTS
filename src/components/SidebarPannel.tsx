@@ -82,7 +82,7 @@ export const DependenciesPanel = () => {
                 </span>
                 {Object.entries(installedDependecies).map(([pckg, version]) => {
                   return (
-                    <div className="px-2 flex m-2 mx-auto w-full rounded-lg justify-between items-center">
+                    <div key={pckg+version} className="px-2 flex m-2 mx-auto w-full rounded-lg justify-between items-center">
                       <h2 className="dark:text-gray-300 font-semibold  flex flex-col text-left">
                         {pckg}
                         <span className="dark:text-gray-500 font-semibold text-start text-xs">

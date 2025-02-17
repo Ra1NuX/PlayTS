@@ -10,6 +10,7 @@ import DraggableDivider from "./components/DraggableDivider";
 import Sidebar from "./components/Sidebar";
 import { useTheme } from "./hooks/useTheme";
 import { useTranslation } from "react-i18next";
+import { useFont } from "./hooks/useFonts";
 
 const editorOptions: EditorProps["options"] = {
   minimap: { enabled: false }, // Elimina el minimapa
@@ -27,7 +28,9 @@ const editorOptions: EditorProps["options"] = {
   scrollbar: {
     vertical: 'auto',
     useShadows: false,
-  }
+  },
+  fontLigatures: true,
+  fontVariations: true,
 };
 
 function App() {
@@ -41,6 +44,17 @@ function App() {
   const { theme } = useTheme();
 
   const [defaultCode, setDefaultCode] = useState(t('DEFAULT_CODE'));
+
+  useEffect(() => {
+    if(window.electron) {
+      const main = async () => {
+        const log = await import('electron-log/renderer');
+        console = log as any;
+      }
+
+      main();
+    }
+  }, [])
 
   useEffect(() => {
     if (!monaco) return;
@@ -75,6 +89,8 @@ function App() {
     }
   }, [])
 
+  const { font, size } = useFont()
+
   const filledArray = fillSpaces(result || []);
 
   return (
@@ -97,7 +113,6 @@ function App() {
                   const rightHeight = rightContainerRef.current.clientHeight;
                   const ratio = scrollTop / (scrollHeight - editorHeight);
                   const rightScrollTop = ratio * (rightScrollHeight - rightHeight);
-                  
                   rightContainerRef.current.scrollTop = rightScrollTop;
                 }
               });
@@ -110,26 +125,25 @@ function App() {
             onChange={(e) => {
               writting(e || "");
             }}
-            options={editorOptions}
+            options={{...editorOptions, fontFamily: font, fontSize: size}}
             className="font-mono leading-none w-full flex flex-1 focus-visible:outline-none resize-none"
           />
         }
         rightComponent={
           <div ref={rightContainerRef} className="break-words overflow-y-auto font-semibold font-mono leading-none dark:bg-main-light bg-[#eaeaea] rounded-md rounded-l-none border-l dark:border-l-main-dark border-l-[#f7f7f7] w-full flex flex-col flex-1 p-2 px-4">
             {Array.isArray(filledArray)
-              ? filledArray?.map((element) => {
+              ? filledArray?.map((element, i) => {
                   if (element) {
                     const { text } = element;
                     return (
-                      <div className="flex w-full">
+                      <div className="flex w-full" key={element.text+'-'+element.line+'-'+i}>
                         <div className="flex w-full justify-between font-mono leading-5">
                           <SyntaxHighlighter
                             language="javascript"
-                            codeTagProps={{ style: { whiteSpace: "pre-wrap" } }}
+                            codeTagProps={{ style: { whiteSpace: "pre-wrap", fontFamily: `"${font}"`, fontSize: size } }}
                             PreTag={"pre"}
                             style={theme === "dark" ? darkTheme : lightTheme}
                             customStyle={{
-                              fontSize: 18,
                               padding: 0,
                               paddingLeft: "1.25rem",
                               backgroundColor: "transparent",
@@ -137,7 +151,7 @@ function App() {
                               color: "#fafafa",
                               lineHeight: "28px",
                             }}
-                            className={`font-thin text-[#f1fa8c] ${
+                            className={`font-normal text-[#f1fa8c] ${
                               text !== "\n"
                                 ? "border-l-4 border-gray-900/10 "
                                 : ""
