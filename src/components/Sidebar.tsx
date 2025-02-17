@@ -1,6 +1,5 @@
 import {
   VscDebugPause,
-  VscDebugStop,
   VscPackage,
   VscPlay,
   VscSettingsGear,
@@ -10,20 +9,33 @@ import Settings from "../Settings";
 import { Dispatch, SetStateAction, useState } from "react";
 import { DependenciesPanel } from "./SidebarPannel";
 import { useTranslation } from "react-i18next";
-import useCompiler from "../hooks/useCompiler"; 
-
+import useCompiler from "../hooks/useCompiler";
+import merge from "../tools/merge";
+import { FaPause, FaPlay } from "react-icons/fa6";
 
 const Sidebar = () => {
   const [open, setOpen] = useState(false);
   const [selected, setSelected] = useState<number | null>(null);
-  const { paused: p, setPaused: stop } = useCompiler()
+  const { paused: p, setPaused: stop } = useCompiler();
 
   const [paused, setPaused] = useState(p);
 
   const buttons = [
     {
-      icon: paused ? <VscDebugPause size={22} color="#f1fa8c" /> : <VscPlay size={22} color="#50fa7bab" />,
-      title: paused ? "PAUSE" : "PLAY",
+      icon: paused ? (
+        <FaPlay
+          size={14}
+          className="ml-[3px] fill-[#ffffffaf] group-hover:fill-green-600 transition-colors duration-200"
+        />
+      ) : (
+        <FaPause
+          size={16}
+          className="ml-[1px] fill-[#ffffffaf] group-hover:fill-red-500 transition-colors duration-200"
+        />
+      ),
+      title: paused ? "PLAY" : "PAUSE",
+      className:
+        "rounded-xl hover:bg-white/10 hover:shadow-md border border-white/5 group",
       onClick: () => {
         setPaused(!paused);
         stop(!paused);
@@ -32,8 +44,10 @@ const Sidebar = () => {
     {
       icon: <VscPackage size={22} />,
       title: "DEPENDENCIES",
-      onClick: (setOpen: Dispatch<SetStateAction<boolean>>) =>
-        setOpen((open: boolean) => !open),
+      onClick: (setOpen: Dispatch<SetStateAction<boolean>>, index: number) => {
+        setOpen((open: boolean) => !open);
+        setSelected(index);
+      },
       panelItem: <DependenciesPanel />,
     },
   ];
@@ -49,11 +63,13 @@ const Sidebar = () => {
               title={t(button.title)}
               onClick={() => {
                 if (button.onClick) {
-                  button.onClick(setOpen);
-                  setSelected(index);
+                  button.onClick(setOpen, index);
                 }
               }}
-              className="flex w-9 h-9 aspect-square hover:bg-white/5 items-center gap-2 p-2 dark:text-white font-bold rounded "
+              className={merge(
+                "flex w-9 h-9 aspect-square hover:bg-white/5 items-center gap-2 p-2 dark:text-white font-bold rounded transition-colors",
+                button.className
+              )}
             >
               {button.icon}
             </button>
