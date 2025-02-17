@@ -39,10 +39,6 @@ jobs:
       - name: Push cambios de versión
         run: |
           git push --follow-tags origin HEAD:develop
-      
-      - name: Convertir en beta
-        run: |
-          bunx standard-version --prerelease beta --release-as $(bun --print "require('./package.json').version")
 
   build-beta-windows:
     needs: version-bump
