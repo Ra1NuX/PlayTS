@@ -56,7 +56,7 @@ function createWindow() {
     win.webContents.send("toggle-titlebar", true);
   });
 
-  autoUpdater.allowPrerelease = true;
+  // autoUpdater.allowPrerelease = true;
   autoUpdater.channel = "beta";
   autoUpdater.checkForUpdatesAndNotify();
 
