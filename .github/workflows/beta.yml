@@ -33,7 +33,7 @@ jobs:
       - name: Bump versión usando standard-version
         run: |
           bunx standard-version --commit-all \
-                               --prerelease \
+                               --prerelease beta \
                                --releaseCommitMessageFormat "chore(release): {{currentTag}} [skip ci]" \
                                --skip.changelog=true
 
