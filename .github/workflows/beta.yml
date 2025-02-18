@@ -33,18 +33,13 @@ jobs:
       - name: Bump versión usando standard-version
         run: |
           bunx standard-version --commit-all \
+                               --prerelease \
                                --releaseCommitMessageFormat "chore(release): {{currentTag}} [skip ci]" \
                                --skip.changelog=true
 
       - name: Push cambios de versión
         run: |
           git push --follow-tags origin HEAD:develop
-
-      - name: For BETA
-        run: |
-          bunx standard-version --commit-all \
-                               --prerelease beta\
-                               --skip.changelog=true
 
   build-beta-windows:
     needs: version-bump
