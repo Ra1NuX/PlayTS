@@ -40,6 +40,12 @@ jobs:
         run: |
           git push --follow-tags origin HEAD:develop
 
+      - name: For BETA
+        run: |
+          bunx standard-version --commit-all \
+                               --prerelease beta\
+                               --skip.changelog=true
+
   build-beta-windows:
     needs: version-bump
 
