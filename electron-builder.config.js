@@ -16,7 +16,9 @@ const config = {
     owner: 'ra1nux',
     repo: 'OpenTS',
     channel: process.env.CHANNEL === 'beta' ? 'beta' : 'latest',
+    releaseType: process.env.CHANNEL === 'beta' ? 'prerelease' : 'release',
     publishAutoUpdate: true,
+
   },
   artifactName: process.env.CHANNEL === 'beta' ? 'Setup-${productName}${version}.${ext}' : 'Setup-${productName}${version}.${ext}',
   win: {
