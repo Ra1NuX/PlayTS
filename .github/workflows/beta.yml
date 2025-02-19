@@ -30,6 +30,13 @@ jobs:
       - name: Instalar dependencias (incluyendo standard-version)
         run: bun install
 
+      
+      - name: Setup Git (para que standard-version pueda hacer commit local)
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+
+
       - name: Bump versión usando standard-version
         run: |
           bunx standard-version --commit-all \
@@ -55,10 +62,9 @@ jobs:
         with:
           bun-version: "latest"
 
-      - name: Setup Git (para que standard-version pueda hacer commit local)
+      - name: Sincronizar cambios antes de leer package.json
         run: |
-          git config user.name "github-actions"
-          git config user.email "github-actions@github.com"
+          git pull --rebase origin develop
 
       - name: Install dependencies
         run: bun install
@@ -84,11 +90,10 @@ jobs:
           uses: oven-sh/setup-bun@v2
           with:
             bun-version: "latest"
-
-        - name: Setup Git
+          
+        - name: Sincronizar cambios antes de leer package.json
           run: |
-            git config user.name "github-actions"
-            git config user.email "github-actions@github.com"
+            git pull --rebase origin develop
 
         - name: Install dependencies
           run: bun install
