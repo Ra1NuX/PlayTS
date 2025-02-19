@@ -57,8 +57,7 @@ function createWindow() {
   });
 
   autoUpdater.allowPrerelease = true;
-  autoUpdater.channel = "beta";
-  autoUpdater.checkForUpdatesAndNotify();
+  autoUpdater.checkForUpdatesAndNotify().catch(console.error);
 
   const url = getURL("/");
   win.loadURL(url);

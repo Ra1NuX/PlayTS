@@ -15,7 +15,6 @@ const config = {
     provider: 'github',
     owner: 'ra1nux',
     repo: 'OpenTS',
-    channel: process.env.CHANNEL === 'beta' ? 'beta' : 'latest',
     releaseType: process.env.CHANNEL === 'beta' ? 'prerelease' : 'release',
     publishAutoUpdate: true,
 
