@@ -25,17 +25,17 @@ const Sidebar = () => {
       icon: paused ? (
         <FaPlay
           size={14}
-          className="ml-[3px] fill-[#ffffffaf] group-hover:fill-green-600 transition-colors duration-200"
+          className="ml-[3px] dark:fill-[#ffffffaf] fill-main-dark/80 group-hover:fill-green-600 transition-colors duration-200"
         />
       ) : (
         <FaPause
           size={16}
-          className="ml-[1px] fill-[#ffffffaf] group-hover:fill-red-500 transition-colors duration-200"
+          className="ml-[1px] dark:fill-[#ffffffaf] fill-main-dark/80 group-hover:fill-red-500 transition-colors duration-200"
         />
       ),
       title: paused ? "PLAY" : "PAUSE",
       className:
-        "rounded-xl hover:bg-white/10 hover:shadow-md border border-white/5 group",
+        "rounded-xl dark:hover:bg-white/10 hover:shadow-md border dark:border-white/5 group",
       onClick: () => {
         setPaused(!paused);
         stop(!paused);
@@ -67,7 +67,7 @@ const Sidebar = () => {
                 }
               }}
               className={merge(
-                "flex w-9 h-9 aspect-square hover:bg-white/5 items-center gap-2 p-2 dark:text-white font-bold rounded transition-colors",
+                "flex w-9 h-9 aspect-square dark:hover:bg-white/5 hover:bg-main-dark/5 items-center gap-2 p-2 dark:text-white font-bold rounded-xl transition-colors",
                 button.className
               )}
             >
@@ -78,7 +78,7 @@ const Sidebar = () => {
         <section className="flex flex-col gap-2 ">
           <MyModal
             Button={
-              <button className="flex w-9 h-9 aspect-square hover:bg-white/5 items-center gap-2 p-2 dark:text-white font-bold rounded">
+              <button className="flex w-9 h-9 aspect-square dark:hover:bg-white/5 hover:bg-main-dark/10 items-center gap-2 p-2 dark:text-white font-bold rounded-xl">
                 <VscSettingsGear size={22} />
               </button>
             }

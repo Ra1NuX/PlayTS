@@ -30,13 +30,6 @@ jobs:
       - name: Instalar dependencias (incluyendo standard-version)
         run: bun install
 
-      
-      - name: Setup Git (para que standard-version pueda hacer commit local)
-        run: |
-          git config user.name "github-actions"
-          git config user.email "github-actions@github.com"
-
-
       - name: Bump versión usando standard-version
         run: |
           bunx standard-version --commit-all \
@@ -46,7 +39,6 @@ jobs:
       - name: Push cambios de versión
         run: |
           git push --follow-tags origin HEAD:develop
-
   build-beta-windows:
     needs: version-bump
 
@@ -68,8 +60,6 @@ jobs:
 
       - name: Install dependencies
         run: bun install
-      - name: Mostrar nueva versión
-        run: cat package.json
 
       - name: Build & Publish Beta (Windows)
         run: |
@@ -104,6 +94,36 @@ jobs:
         - name: Build & Publish Beta (Linux)
           run: |
             bun run build && bunx electron-builder --config electron-builder.config.js -l --publish always 
+          env:
+            GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            CHANNEL: beta
+  build-beta-mac:
+      needs: version-bump
+      runs-on: macos-latest
+      permissions:
+        contents: write
+      steps:
+        - name: Checkout
+          uses: actions/checkout@v3
+        
+        - name: Setup Bun
+          uses: oven-sh/setup-bun@v2
+          with:
+            bun-version: "latest"
+          
+        - name: Sincronizar cambios antes de leer package.json
+          run: |
+            git pull --rebase origin develop
+
+        - name: Install dependencies
+          run: bun install
+          
+        - name: Mostrar nueva versión
+          run: cat package.json
+  
+        - name: Build & Publish Beta (Mac)
+          run: |
+            bun run build && bunx electron-builder --config electron-builder.config.js -m --publish always
           env:
             GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
             CHANNEL: beta

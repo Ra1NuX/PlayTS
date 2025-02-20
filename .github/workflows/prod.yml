@@ -1,0 +1,82 @@
+name: Publish Prod
+
+on:
+  pull_request:
+    branches:
+      - main
+jobs:
+  build-prod-windows:
+    runs-on: windows-latest
+    permissions:
+      contents: write 
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: "latest"
+
+      - name: Sincronizar cambios antes de leer package.json
+        run: |
+          git pull --rebase origin main
+
+      - name: Instalar dependencias
+        run: bun install
+
+      - name: Build & Publish Beta (Windows)
+        run: |
+          bun run build && bunx electron-builder --config electron-builder.config.js -w --publish always
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  build-prod-linux:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: "latest"
+
+      - name: Sincronizar cambios antes de leer package.json
+        run: |
+          git pull --rebase origin main
+
+      - name: Install dependencies
+        run: bun install
+
+      - name: Build & Publish Beta (Linux)
+        run: |
+          bun run build && bunx electron-builder --config electron-builder.config.js -l --publish always
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  build-prod-mac:
+    runs-on: macos-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: "latest"
+
+      - name: Sincronizar cambios antes de leer package.json
+        run: |
+          git pull --rebase origin main
+
+      - name: Install dependencies
+        run: bun install
+
+      - name: Build & Publish Beta (Mac)
+        run: |
+          bun run build && bunx electron-builder --config electron-builder.config.js -m --publish always
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

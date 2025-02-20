@@ -11,7 +11,7 @@ i18n
     fallbackLng: "en",
     supportedLngs: ["en", "es"],
     load: "languageOnly",
-    ns: ["common"],
+    ns: ["common", "desktop"],
     defaultNS: "common",
     backend: {
       loadPath: "/locales/{{lng}}/{{ns}}.json",
@@ -19,12 +19,12 @@ i18n
 
     detection: {
         order: [
-            'cookie',
             'localStorage',
             'sessionStorage',
+            'cookie',
             'navigator',
           ],
-          caches: ['cookie', 'localStorage', 'sessionStorage'],
+          caches: ['localStorage', 'sessionStorage', 'cookie'],
     },
     interpolation: {
       escapeValue: false,

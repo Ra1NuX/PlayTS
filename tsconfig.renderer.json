@@ -23,5 +23,5 @@
     "noFallthroughCasesInSwitch": true,
     "noUncheckedSideEffectImports": true
   },
-  "include": ["src", "src/workers"]
+  "include": ["src", "src/workers", "i18n.config.ts"]
 }

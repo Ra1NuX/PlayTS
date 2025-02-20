@@ -16,7 +16,6 @@ const editorOptions: EditorProps["options"] = {
   minimap: { enabled: false }, // Elimina el minimapa
   fontFamily: "Fira Code, monospace", // Cambia el estilo de la fuente
   fontSize: 18, // Cambia el tamaño de la fuente
-  theme: "custom-dark", // Tema personalizado
   lineNumbers: "off",
   renderLineHighlight: "none",
   "semanticHighlighting.enabled": "configuredByTheme",
@@ -61,7 +60,7 @@ function App() {
 
     monaco.editor.defineTheme("custom-dark", monacoDarkTheme as any);
     monaco.editor.defineTheme("custom-light", monacoLightTheme as any);
-
+    console.log({theme})
     monaco.editor.setTheme(theme === "dark" ? "custom-dark" : "custom-light");
     
     monaco.languages.typescript.typescriptDefaults.setCompilerOptions({
@@ -118,7 +117,6 @@ function App() {
               });
             }}
             loading={false}
-            theme={theme === "dark" ? "custom-dark" : "custom-light"}
             defaultLanguage="typescript"
             language="typescript"
             defaultValue={defaultCode}
@@ -147,8 +145,7 @@ function App() {
                               padding: 0,
                               paddingLeft: "1.25rem",
                               backgroundColor: "transparent",
-                              fontPalette: "dark",
-                              color: "#fafafa",
+                              color: theme === 'dark' ? "#fafafa" : "#0008",
                               lineHeight: "28px",
                             }}
                             className={`font-normal text-[#f1fa8c] ${

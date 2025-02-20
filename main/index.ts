@@ -10,12 +10,12 @@ import express from "express";
 import path from "path";
 import log from "electron-log/main";
 
+import i18n from '../i18n.config'
+
 log.initialize();
-console = log as any;
+console = log as unknown as Console;
 
 import { getURL } from "./tools/getUrl";
-
-
 
 const server = express();
 const port = 19293;
@@ -129,7 +129,7 @@ autoUpdater.on("update-downloaded", (info) => {
   // OPCIONAL: Preguntar al usuario si quiere reiniciar y aplicar la actualización
   const dialogOpts: MessageBoxOptions = {
     type: "info",
-    buttons: ["Reiniciar", "Después"],
+    buttons: [i18n.t("Reiniciar"), "Después"],
     title: "Actualización lista",
     message: "Hay una actualización lista para instalar.",
     detail: "¿Deseas reiniciar la aplicación ahora para aplicar los cambios?",
@@ -137,7 +137,7 @@ autoUpdater.on("update-downloaded", (info) => {
 
   dialog.showMessageBox(dialogOpts).then((returnValue) => {
     if (returnValue.response === 0) {
-      autoUpdater.quitAndInstall();
+      autoUpdater.quitAndInstall(true, true);
     }
   });
 });
