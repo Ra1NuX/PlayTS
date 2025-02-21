@@ -157,21 +157,20 @@ export function addInstructionsToCode(code: string) {
 
         function customLog(...args) {
           if (args.length === 1) {
-
-            return args[0];
+            if(typeof args[0] === 'string')  return "'"+args[0]+"'"
+            return args[0]
           }
           return args
-          // .map((item) => {
-          //   if (typeof item === "object") {
-          //     return inspect(item, { showHidden: true, depth: null, maxArrayLength: 10000, colors: false, getters:true, showProxy: true });
-          //   }
-          //   if(typeof item === 'string') {
-          //     return "'"+item+"'"
-          //   }
-          //   return String(item)
-          // })
-          // .join(" ");
-
+          .map((item) => {
+            if (typeof item === "object") {
+              return inspect(item, { showHidden: true, depth: null, maxArrayLength: 10000, colors: false, getters:true, showProxy: true });
+            }
+            if(typeof item === 'string') {
+              return "'"+item+"'"
+            }
+            return String(item)
+          })
+          .join(" ");
         }
   
         var consoleMethods = [
@@ -204,17 +203,12 @@ export function addInstructionsToCode(code: string) {
           console[consoleMethods[i]] = customLog;
         }  
         function __report(value, line, time) {
-
-          const notObject = typeof value !== 'object';
-          const isText = typeof value === 'string';
-
-          const formattedValue = isText ? \`'\${value}'\` : inspect(value, { showHidden: true, depth: null, maxArrayLength: 10000, colors: false, getters:true, showProxy: true });
-
           logger.log(JSON.stringify({
             line: line,
-            text: formattedValue,
+            text: value,
             time: time,
           }));
+
         }
       
         ${instrumentedCode}

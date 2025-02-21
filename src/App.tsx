@@ -20,7 +20,7 @@ const editorOptions: EditorProps["options"] = {
   renderLineHighlight: "none",
   "semanticHighlighting.enabled": "configuredByTheme",
   cursorBlinking: "expand",
-  lineHeight: 28,
+  lineHeight: 29,
   glyphMargin: false,
   wordWrap: 'on',
   scrollBeyondLastLine: false,
@@ -60,7 +60,6 @@ function App() {
 
     monaco.editor.defineTheme("custom-dark", monacoDarkTheme as any);
     monaco.editor.defineTheme("custom-light", monacoLightTheme as any);
-    console.log({theme})
     monaco.editor.setTheme(theme === "dark" ? "custom-dark" : "custom-light");
     
     monaco.languages.typescript.typescriptDefaults.setCompilerOptions({
@@ -134,8 +133,8 @@ function App() {
                   if (element) {
                     const { text } = element;
                     return (
-                      <div className="flex w-full" key={element.text+'-'+element.line+'-'+i}>
-                        <div className="flex w-full justify-between font-mono leading-5">
+                      <div className="flex w-full rounded" key={element.text+'-'+element.line+'-'+i}>
+                        <div className="flex w-full justify-between font-mono">
                           <SyntaxHighlighter
                             language="javascript"
                             codeTagProps={{ style: { whiteSpace: "pre-wrap", fontFamily: `"${font}"`, fontSize: size } }}
@@ -146,7 +145,7 @@ function App() {
                               paddingLeft: "1.25rem",
                               backgroundColor: "transparent",
                               color: theme === 'dark' ? "#fafafa" : "#0008",
-                              lineHeight: "28px",
+                              lineHeight: "27px",
                             }}
                             className={`font-normal text-[#f1fa8c] ${
                               text !== "\n"

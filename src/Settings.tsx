@@ -3,7 +3,7 @@ import LanguageSelector from "./components/settings/LanguageSelector";
 import SocialMedias from "./components/settings/SocialMedias";
 import FontSelector from "./components/settings/FontSelector";
 import FontSizeSelector from "./components/settings/FontSizeSelector";
-import DownloadPackageButton from "./components/DownloadPackageButton";
+import AppInfo from "./components/settings/AppInfo";
 
 interface SettingsProps {
   open?: () => void;
@@ -30,6 +30,7 @@ const Settings = ({ close = Function }: SettingsProps) => {
         <FontSelector />
         <FontSizeSelector />
         <div className="w-full h-0.5 dark:bg-white/5 bg-main-light/10 !my-4 rounded-full shadow-md" />
+        <AppInfo />
         <SocialMedias /> 
       </section>
     </main>

@@ -99,6 +99,10 @@ ipcMain.on("app/close", () => {
   app.quit();
 });
 
+ipcMain.on("app/version", (event) => {
+  event.returnValue = app.getVersion();
+});
+
 autoUpdater.on("checking-for-update", () => {
   console.log("Buscando actualizaciones...");
 });

@@ -14,7 +14,9 @@ function fillSpaces(arr: LineItem[]): LineItem[] {
   let currentLine = 1;
 
   for (const item of arr) {
-    while (currentLine < item.line) {
+    if(item?.text === "\r" || item.text === "") continue;
+    while (currentLine < item.line && item.line != -1) {
+
       filled.push({
         line: currentLine,
         text: "\n",
@@ -23,9 +25,14 @@ function fillSpaces(arr: LineItem[]): LineItem[] {
       currentLine++;
     }
 
-    filled.push({ ...item, line: currentLine });
-    const newlines = (item.text.match(/\n/g) || []).length;
-    currentLine = currentLine + (newlines || 1);
+    if(!item.text.toString().match(/(["'`])(?:\\.|(?!\1)[^\\])*?\1/) && typeof item.text === 'string') {
+      item.text = `'${item.text}'`;
+    }
+
+    filled.push({ ...item, text: item.text.toString(), line: currentLine });
+    const newlines = (item.text.toString().match(/\n/g) || []).length;
+
+    currentLine = currentLine + newlines+1
   }
 
   while (currentLine <= maxLine) {

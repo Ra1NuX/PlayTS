@@ -45,20 +45,18 @@ const runCode = async (code: string) => {
           if (!data.includes("{")) {
             results.push({
               text: data.toString().split("\n")[0],
-              line: 0,
+              line: -1,
               time: 0,
             });
             return;
           }
-
           const r = JSON.parse(data);
           results.push(r);
           return;
         } catch (e) {
           const { message, stack } = e as Error;
-
           results.push({
-            line: 0,
+            line: -1,
             time: 0,
             text: message || stack || JSON.stringify(e),
           });
