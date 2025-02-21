@@ -1,7 +1,7 @@
 {
   "name": "opents",
   "private": true,
-  "version": "0.2.24",
+  "version": "0.2.25",
   "description": "OpenTS",
   "author": {
     "name": "Ra1NuX",
@@ -17,9 +17,8 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "start": "electronmon ./app",
-    "electron:vite:build":"concurrently \"cross-env BROWSER=none bun dev\" \"wait-on http://localhost:5173 && bun build:dev:electron\"",
-    "electron:dev": "concurrently \"bun electron:vite:build\" \"bun start\"" ,
-
+    "electron:vite:build": "concurrently \"cross-env BROWSER=none bun dev\" \"wait-on http://localhost:5173 && bun build:dev:electron\"",
+    "electron:dev": "concurrently \"bun electron:vite:build\" \"bun start\"",
     "dist": "npm run build && electron-builder --config electron-builder.config.js -w",
     "docker-build": "docker run --rm -ti --env-file <(env | grep -iE 'DEBUG|NODE_|ELECTRON_|YARN_|NPM_|CI|CIRCLE|TRAVIS_TAG|TRAVIS|TRAVIS_REPO_|TRAVIS_BUILD_|TRAVIS_BRANCH|TRAVIS_PULL_REQUEST_|APPVEYOR_|CSC_|GH_|GITHUB_|BT_|AWS_|STRIP|BUILD_') --env ELECTRON_CACHE='/root/.cache/electron' --env ELECTRON_BUILDER_CACHE='/root/.cache/electron-builder' -v ${PWD}:/project -v ${PWD##*/}-node-modules:/project/node_modules -v ~/.cache/electron:/root/.cache/electron "
   },
