@@ -12,11 +12,14 @@
     "dev": "vite",
     "build:electron": "bun ./esbuild.config.mjs",
     "build:renderer": "vite build",
+    "build:dev:electron": "bun ./esbuild.config.mjs --watch",
     "build": "npm run build:renderer && npm run build:electron",
     "lint": "eslint .",
     "preview": "vite preview",
-    "dev:electron": "concurrently \"cross-env BROWSER=none npm run dev\" \"wait-on http://localhost:5173 && npm run build:electron\"",
     "start": "electronmon ./app",
+    "electron:vite:build":"concurrently \"cross-env BROWSER=none bun dev\" \"wait-on http://localhost:5173 && bun build:dev:electron\"",
+    "electron:dev": "concurrently \"bun electron:vite:build\" \"bun start\"" ,
+
     "dist": "npm run build && electron-builder --config electron-builder.config.js -w",
     "docker-build": "docker run --rm -ti --env-file <(env | grep -iE 'DEBUG|NODE_|ELECTRON_|YARN_|NPM_|CI|CIRCLE|TRAVIS_TAG|TRAVIS|TRAVIS_REPO_|TRAVIS_BUILD_|TRAVIS_BRANCH|TRAVIS_PULL_REQUEST_|APPVEYOR_|CSC_|GH_|GITHUB_|BT_|AWS_|STRIP|BUILD_') --env ELECTRON_CACHE='/root/.cache/electron' --env ELECTRON_BUILDER_CACHE='/root/.cache/electron-builder' -v ${PWD}:/project -v ${PWD##*/}-node-modules:/project/node_modules -v ~/.cache/electron:/root/.cache/electron "
   },

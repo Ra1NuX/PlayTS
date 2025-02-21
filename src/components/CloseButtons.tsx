@@ -10,10 +10,10 @@ declare global {
 const CloseButtons = () => {
 
   return (
-    <div className="float-right w-[150px] h-full leading-[30px] bg-main-dark no-drag">
+    <div className="float-right w-[150px] h-full leading-[30px] dark:bg-main-dark  no-drag">
       <button
         onClick={() => window?.electron?.minimize()}
-        className="tileStyleButton hover:bg-[#333333aa]"
+        className="tileStyleButton "
       >
         <svg
           stroke="currentColor"
@@ -29,7 +29,7 @@ const CloseButtons = () => {
       </button>
       <button
         onClick={() => window?.electron?.maximize()}
-        className="tileStyleButton hover:bg-[#333333aa]"
+        className="tileStyleButton"
       >
         <svg
           stroke="currentColor"
@@ -49,7 +49,7 @@ const CloseButtons = () => {
       </button>
       <button
         onClick={() => window?.electron?.close()}
-        className="tileStyleButton hover:bg-[#ff0000dd]"
+        className="tileStyleButton hover:bg-[#ff0000dd] dark:hover:bg-[#ff0000dd] hover:text-white"
       >
         <span>&times;</span>
       </button>

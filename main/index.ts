@@ -16,19 +16,20 @@ log.initialize();
 console = log as unknown as Console;
 
 import { getURL } from "./tools/getUrl";
+import isDev from "./tools/isDev";
 
-const server = express();
-const port = 19293;
 
-server.use(express.static(path.join(__dirname, "renderer")));
-
-server.get("/", (_req, res) => {
-  res.sendFile(path.join(__dirname, "renderer", "index.html"));
-});
-
-server.listen(port, () => {
-  console.log(`Servidor HTTP ejecutándose en http://localhost:${port}`);
-});
+if(!isDev) {
+  const server = express();
+  const port = 19293;
+  server.use(express.static(path.join(__dirname, "renderer")));
+  server.get("/", (_req, res) => {
+    res.sendFile(path.join(__dirname, "renderer", "index.html"));
+  });
+  server.listen(port, () => {
+    console.log(`Servidor HTTP ejecutándose en http://localhost:${port}`);
+  });
+}
 
 let win: BrowserWindow;
 

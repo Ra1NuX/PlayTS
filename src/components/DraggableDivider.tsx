@@ -148,7 +148,7 @@ const DraggableDivider: React.FC<{
         {leftComponent}
       </div>
       <div
-        className="relative h-full w-2 dark:bg-main-dark bg-[#f7f7f7] cursor-ew-resize select-none touch-none"
+        className="relative h-full w-1 dark:bg-main-dark bg-[#f7f7f7] cursor-ew-resize select-none touch-none"
         onMouseDown={handleMouseDown}
         onTouchStart={handleTouchStart}
         onKeyDown={handleKeyDown}
