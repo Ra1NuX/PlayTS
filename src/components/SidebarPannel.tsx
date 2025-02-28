@@ -26,7 +26,7 @@ export const DependenciesPanel = () => {
   }, []);
 
   useEffect(() => {
-    if (!search) return;
+    if (!search || search.length <= 1) return;
 
     fetch(`https://registry.npmjs.org/-/v1/search?text=${search}&size=20`)
       .then((response) => response.json())
