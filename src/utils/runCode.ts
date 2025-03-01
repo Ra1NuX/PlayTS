@@ -31,8 +31,11 @@ const runCode = async (code: string) => {
     installProcess = await webContainer.spawn("npm", ["install"]);
     await installProcess.exit;
   }
+  
+  if(code.length < 300){
+    localStorage.setItem("code", btoa(code));
+  } 
 
-  localStorage.setItem("code", btoa(code));
   const iCode = addInstructionsToCode(code);
 
   webContainer.fs.writeFile("index.js", iCode);
