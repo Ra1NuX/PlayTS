@@ -14,7 +14,7 @@ import { useFont } from "./hooks/useFonts";
 
 const editorOptions: EditorProps["options"] = {
   minimap: { enabled: false }, // Elimina el minimapa
-  fontFamily: "Fira Code, monospace", // Cambia el estilo de la fuente
+  // fontFamily: "Fira Code, monospace", // Cambia el estilo de la fuente
   fontSize: 18, // Cambia el tamaño de la fuente
   lineNumbers: "off",
   renderLineHighlight: "none",
@@ -30,6 +30,7 @@ const editorOptions: EditorProps["options"] = {
   },
   fontLigatures: true,
   fontVariations: true,
+  
 };
 
 function App() {
@@ -75,7 +76,7 @@ function App() {
     monaco.languages.typescript.typescriptDefaults.setDiagnosticsOptions({
       noSemanticValidation: false,
       noSyntaxValidation: false,
-      diagnosticCodesToIgnore: [1375, 2307, 7006]
+      diagnosticCodesToIgnore: [1375, 2307, 7006, 2367, 2839, 2845]
     })
   }, [monaco, theme]);
 

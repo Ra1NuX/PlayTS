@@ -55,7 +55,7 @@ const Sidebar = () => {
   const { t } = useTranslation();
   return (
     <>
-      <aside className="dark:bg-main-dark bg-[#f7f7f7] p-2 pt-4 flex flex-col">
+      <aside className="dark:bg-main-dark bg-[#f7f7f7] p-2 pt-4 md:flex flex-col hidden">
         <section className="flex-1 flex flex-col gap-2">
           {buttons.map((button, index) => (
             <button

@@ -38,8 +38,17 @@ const DraggableDivider: React.FC<{
       let clientX: number;
 
       if (e instanceof MouseEvent) {
-        clientX = e.clientX;
+        if(isMobile) {
+          clientX = e.clientY;
+        }else {
+          clientX = e.clientX;
+        }
       } else if (e instanceof TouchEvent) {
+        if(isMobile) {
+          clientX = e.touches[0].clientY;
+        }else {
+          clientX = e.touches[0].clientY;
+        }
         clientX = e.touches[0].clientX;
       } else {
         return;
@@ -136,19 +145,32 @@ const DraggableDivider: React.FC<{
     };
   }, []);
 
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(()=> {
+    const checkScreenSize = () => {
+      setIsMobile(window.innerWidth < 768); // md en Tailwind es 768px
+    };
+
+    checkScreenSize(); // Llamada inicial
+    window.addEventListener("resize", checkScreenSize);
+
+    return () => window.removeEventListener("resize", checkScreenSize);
+  }, [])
+
   const leftPanelWidthPercent = dividerRatio * 100;
   const rightPanelWidthPercent = (1 - dividerRatio) * 100;
 
   return (
-    <div className="flex dark:bg-main-dark bg-[#f7f7f7] h-full overflow-hidden p-2 pl-0 flex-1" ref={containerRef}>
+    <div className="flex flex-col dark:bg-main-dark bg-[#f7f7f7] h-full overflow-hidden p-2 md:pl-0 flex-1 md:flex-row" ref={containerRef}>
       <div
         className="rounded-md overflow-hidden dark:bg-main-light bg-[#eaeaea] p-2 pl-0 rounded-r-none border-r dark:border-r-main-dark border-r-[#f7f7f7]"
-        style={{ width: `${leftPanelWidthPercent}%` }}
+        style={{ width: !isMobile ? `${leftPanelWidthPercent}%`: '100%', height: isMobile ? `${leftPanelWidthPercent}%` : '100%' }}
       >
         {leftComponent}
       </div>
       <div
-        className="relative h-full w-1 dark:bg-main-dark bg-[#f7f7f7] cursor-ew-resize select-none touch-none"
+        className="relative md:h-full md:w-1 h-1 w-full dark:bg-main-dark bg-[#f7f7f7] cursor-ew-resize select-none touch-none"
         onMouseDown={handleMouseDown}
         onTouchStart={handleTouchStart}
         onKeyDown={handleKeyDown}
@@ -158,7 +180,7 @@ const DraggableDivider: React.FC<{
         aria-label="Divider"
       />
       <div className="flex flex-col flex-1"
-        style={{ width: `${rightPanelWidthPercent}%` }}
+       style={{ width: !isMobile ? `${rightPanelWidthPercent}%`: '100%', height: isMobile ? `${rightPanelWidthPercent}%` : '100%' }}
       >
         {rightComponent}
       </div>

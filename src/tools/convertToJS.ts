@@ -1,6 +1,12 @@
 import ts from "typescript";
 
 function transpileTypeScript(tsCode: string): string {
+  
+
+ // sustituye todos los saltos de linea por console.log() vacios
+
+  // tsCode = tsCode.replace(/\n/g, "\nconsole.log()\n");
+  
   const result = ts.transpileModule(tsCode, {
     compilerOptions: {
       module: ts.ModuleKind.ESNext,
