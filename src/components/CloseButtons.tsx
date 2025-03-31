@@ -1,4 +1,3 @@
-import { useEffect } from "react";
 import { api } from "../../main/preload";
 
 declare global {
@@ -8,9 +7,8 @@ declare global {
 }
 
 const CloseButtons = () => {
-
   return (
-    <div className="float-right w-[150px] h-full leading-[30px] dark:bg-main-dark  no-drag">
+    <div className="float-right h-full flex leading-[30px] no-drag gap-1">
       <button
         onClick={() => window?.electron?.minimize()}
         className="tileStyleButton "
@@ -51,7 +49,7 @@ const CloseButtons = () => {
         onClick={() => window?.electron?.close()}
         className="tileStyleButton hover:bg-[#ff0000dd] dark:hover:bg-[#ff0000dd] hover:text-white"
       >
-        <span>&times;</span>
+        <span className="text-2xl font-extralight mb-1.5">&times;</span>
       </button>
     </div>
   );

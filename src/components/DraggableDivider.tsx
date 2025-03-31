@@ -162,7 +162,7 @@ const DraggableDivider: React.FC<{
   const rightPanelWidthPercent = (1 - dividerRatio) * 100;
 
   return (
-    <div className="flex flex-col dark:bg-main-dark bg-[#f7f7f7] h-full overflow-hidden p-2 md:pl-0 flex-1 md:flex-row" ref={containerRef}>
+    <div className="flex flex-col dark:bg-main-dark bg-[#f7f7f7] h-full overflow-hidden p-1.5 md:pl-0 flex-1 md:flex-row" ref={containerRef}>
       <div
         className="rounded-md overflow-hidden dark:bg-main-light bg-[#eaeaea] p-2 pl-0 rounded-r-none border-r dark:border-r-main-dark border-r-[#f7f7f7]"
         style={{ width: !isMobile ? `${leftPanelWidthPercent}%`: '100%', height: isMobile ? `${leftPanelWidthPercent}%` : '100%' }}

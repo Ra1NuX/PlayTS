@@ -10,13 +10,11 @@ const defaultSettings: GlobalSettings = {
   size: 14,
 };
 
-// Inicializamos con valores persistidos (si existen) o con valores por defecto
 let globalSettings: GlobalSettings = {
   font: localStorage.getItem("globalFont") || defaultSettings.font,
   size: parseInt(localStorage.getItem("globalSize") || defaultSettings.size.toString(), 10),
 };
 
-// Conjunto global de listeners para notificar cambios en la configuración
 const listeners = new Set<(newSettings: GlobalSettings) => void>();
 
 const notifyAll = () => {

@@ -9,7 +9,6 @@ import { autoUpdater } from "electron-updater";
 import express from "express";
 import path from "path";
 import log from "electron-log/main";
-
 import i18n from '../i18n.config'
 
 log.initialize();
@@ -19,7 +18,7 @@ import { getURL } from "./tools/getUrl";
 import isDev from "./tools/isDev";
 
 
-if(!isDev) {
+if (!isDev) {
   const server = express();
   const port = 19293;
   server.use(express.static(path.join(__dirname, "renderer")));
@@ -40,6 +39,7 @@ function createWindow() {
     minWidth: 800,
     minHeight: 600,
     titleBarStyle: "hidden",
+    icon: path.join(__dirname, "renderer", "icon.png"),
     webPreferences: {
       preload: path.join(__dirname, "preload.js"),
       nodeIntegration: true,
@@ -63,6 +63,8 @@ function createWindow() {
 
   const url = getURL("/");
   win.loadURL(url);
+
+
 }
 
 app.whenReady().then(() => {
@@ -131,13 +133,12 @@ autoUpdater.on("download-progress", (progressObj) => {
 autoUpdater.on("update-downloaded", (info) => {
   console.log("Actualización descargada", info);
 
-  // OPCIONAL: Preguntar al usuario si quiere reiniciar y aplicar la actualización
   const dialogOpts: MessageBoxOptions = {
     type: "info",
-    buttons: [i18n.t("Reiniciar"), "Después"],
-    title: "Actualización lista",
-    message: "Hay una actualización lista para instalar.",
-    detail: "¿Deseas reiniciar la aplicación ahora para aplicar los cambios?",
+    buttons: [i18n.t("RESTART NOW"), i18n.t("RESTART AFTER")],
+    title: i18n.t("UPDATE AVAILABLE"),
+    message: i18n.t("UPDATE AVAILABLE "),
+    // detail: i18n.t("UPDATE_AVAILABLE_DETAIL"),
   };
 
   dialog.showMessageBox(dialogOpts).then((returnValue) => {

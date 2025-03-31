@@ -1,6 +1,6 @@
 interface LineItem {
   line: number;
-  text: unknown;
+  text: string;
   time: number;
 }
 

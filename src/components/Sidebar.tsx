@@ -1,12 +1,10 @@
 import {
-  VscDebugPause,
   VscPackage,
-  VscPlay,
   VscSettingsGear,
 } from "react-icons/vsc";
 import MyModal from "./Modal";
 import Settings from "../Settings";
-import { Dispatch, SetStateAction, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { DependenciesPanel } from "./SidebarPannel";
 import { useTranslation } from "react-i18next";
 import useCompiler from "../hooks/useCompiler";
@@ -15,8 +13,16 @@ import { FaPause, FaPlay } from "react-icons/fa6";
 
 const Sidebar = () => {
   const [open, setOpen] = useState(false);
+  const [desactivate, setDesactivate] = useState(false);
   const [selected, setSelected] = useState<number | null>(null);
   const { paused: p, setPaused: stop } = useCompiler();
+
+  useEffect(() => {
+    setDesactivate(true);
+    setTimeout(() => {
+      setDesactivate(false);
+    }, 200);
+  }, [open]);
 
   const [paused, setPaused] = useState(p);
 
@@ -59,6 +65,7 @@ const Sidebar = () => {
         <section className="flex-1 flex flex-col gap-2">
           {buttons.map((button, index) => (
             <button
+              disabled={desactivate}
               key={index}
               title={t(button.title)}
               onClick={() => {
@@ -67,7 +74,7 @@ const Sidebar = () => {
                 }
               }}
               className={merge(
-                "flex w-9 h-9 aspect-square dark:hover:bg-white/5 hover:bg-main-dark/5 items-center gap-2 p-2 dark:text-white font-bold rounded-xl transition-colors",
+                "flex w-9 h-9 aspect-square disabled:cursor-pointer dark:hover:bg-white/5 hover:bg-main-dark/5 items-center gap-2 p-2 dark:text-white font-bold rounded-xl transition-colors",
                 button.className
               )}
             >
@@ -88,7 +95,7 @@ const Sidebar = () => {
       </aside>
       <aside
         aria-current={!open}
-        className="aria-current:w-0 w-72 dark:bg-main-dark bg-[#f7f7f7] py-2 pr-2 aria-current:hidden flex flex-col"
+        className="aria-current:w-[0%] w-full max-w-72 transition-[width,padding] duration-100 dark:bg-main-dark bg-[#f7f7f7] aria-current:pr-0 py-2 pr-2 flex flex-col overflow-hidden"
       >
         {buttons[selected!]?.panelItem}
       </aside>

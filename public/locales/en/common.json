@@ -11,5 +11,10 @@
     "NO_DEPENDENCIES_INSTALLED": "No dependencies installed",
     "SOCIAL_MEDIAS": "Social medias",
     "EDITOR_FONT_SIZE": "Editor font size",
-    "EDITOR_FONT": "Editor font"
+    "EDITOR_FONT": "Editor font",
+    "RESTART": "Restart",
+    "AFTER": "After",
+    "UPDATE_AVAILABLE": "Update available",
+    "UPDATE_AVAILABLE_MESSAGE": "There is an update available",
+    "UPDATE_AVAILABLE_DETAIL": "Do you want to apply the update now?"
 }
