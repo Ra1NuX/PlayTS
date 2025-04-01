@@ -17,7 +17,7 @@ const Header = () => {
   }, []);
 
   return (
-    <nav ref={header} className="h-10 dark:bg-main-dark bg-[#f7f7f7] drag z-10 p-1 pb-0">
+    <nav ref={header} className="h-10 dark:bg-main-dark bg-[#f7f7f7] drag z-10 p-1.5 pb-0">
       <div className="md:w-4/12 w-full h-full leading-[30px] dark:text-[#f7f7f7] float-left pl-2 flex items-center gap-2 ">
         <img src="/icon.png" className="md:h-[20px] h-8 inline-block" />
         <p className="md:text-sm text-xl font-medium mt-0.5">

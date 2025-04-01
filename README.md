@@ -178,7 +178,7 @@ Thank you for using and contributing to OpenTS! Together, we are building a powe
 
 If OpenTS has proven useful to you, please consider making a donation. Your support is vital in driving continued development and improvement of the project.
 
-[![Donate](https://img.shields.io/badge/Donate-Support%20Us-green)](https://www.paypal.me/Ra1NuX)
+[![Donate](https://img.shields.io/badge/Donate-Support%20Us-green)](https://www.paypal.me/Ra1NuXs)
 
 ```
 
