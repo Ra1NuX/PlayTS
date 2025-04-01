@@ -1,6 +1,6 @@
 # OpenTS
 
-[![Download OpenTS](https://img.shields.io/badge/Download-OpenTS-blue)](https://github.com/Ra1NuX/OpenTS/releases/latest) [![Donate](https://img.shields.io/badge/Donate-Support%20Us-green)](https://www.paypal.me/Ra1NuX)
+[![Download OpenTS](https://img.shields.io/badge/Download-OpenTS-blue)](https://github.com/Ra1NuX/OpenTS/releases/latest) [![Donate](https://img.shields.io/badge/Donate-Support%20Us-green)](https://www.paypal.me/Ra1NuXs)
 
 OpenTS is an open-source transpiler designed for efficient and versatile code transformation. Leveraging modern web and desktop technologies, OpenTS provides a seamless experience for converting and optimizing source code.
 
