@@ -2,6 +2,20 @@ import { generate } from "astring";
 import * as walk from "acorn-walk";
 import * as acorn from "acorn";
 
+interface CallExpression extends acorn.Node {
+  type: 'CallExpression';
+  callee: {
+    type: string;
+    object?: {
+      name?: string;
+    };
+  };
+}
+
+function isCallExpression(node: any): node is CallExpression {
+  return node?.type === 'CallExpression';
+}
+
 export function addInstructionsToCode(code: string) {
   try {
     const ast = acorn.parse(code, {
@@ -28,7 +42,13 @@ export function addInstructionsToCode(code: string) {
           "Identifier",
           "BinaryExpression",
           "Literal",
+          "ArrayExpression",
         ];
+
+        console.log(node.expression.type)
+
+        const isConsole = isCallExpression(node.expression) && 
+          node.expression.callee?.object?.name === "console";
 
         if (allowed.includes(node.expression.type)) {
           const substring = code.slice(0, node.start);
@@ -105,7 +125,7 @@ export function addInstructionsToCode(code: string) {
                       ],
                       kind: "const",
                     },
-                    // __report(__result, lineNumber, __end - __start);
+                    // __report(__result, lineNumber, __end - __start, isConsole);
                     {
                       type: "ExpressionStatement",
                       expression: {
@@ -120,6 +140,10 @@ export function addInstructionsToCode(code: string) {
                             left: { type: "Identifier", name: "__end" },
                             right: { type: "Identifier", name: "__start" },
                           },
+                          {
+                            type: 'Literal',
+                            value: isConsole,
+                          }
                         ],
                       },
                     },
@@ -155,23 +179,19 @@ export function addInstructionsToCode(code: string) {
       
   (async () => {
 
+        let logger;
         function customLog(...args) {
-          if (args.length === 1) {
-
-            return args[0];
-          }
           return args
-          // .map((item) => {
-          //   if (typeof item === "object") {
-          //     return inspect(item, { showHidden: true, depth: null, maxArrayLength: 10000, colors: false, getters:true, showProxy: true });
-          //   }
-          //   if(typeof item === 'string') {
-          //     return "'"+item+"'"
-          //   }
-          //   return String(item)
-          // })
-          // .join(" ");
-
+          .map((item) => {
+            if (typeof item === "object" || Array.isArray(item)) {
+              return inspect(item, { showHidden: true, depth: null, maxArrayLength: 10000, colors: false, getters: true, showProxy: true });
+            }
+            if(typeof item === 'string') {
+              return "\\'"+item+"\\'"
+            }
+            return String(item)
+          })
+          .join(" ");
         }
   
         var consoleMethods = [
@@ -197,26 +217,19 @@ export function addInstructionsToCode(code: string) {
           'groupCollapsed'
         ];
         
-        const logger = {};
-  
+        logger = console.log
         for (let i = 0; i < consoleMethods.length; i++) {
-          logger[consoleMethods[i]] = console[consoleMethods[i]];
-          console[consoleMethods[i]] = customLog;
-        }  
-        function __report(value, line, time) {
-
-          const notObject = typeof value !== 'object';
-          const isText = typeof value === 'string';
-
-          const formattedValue = isText ? \`'\${value}'\` : inspect(value, { showHidden: true, depth: null, maxArrayLength: 10000, colors: false, getters:true, showProxy: true });
-
-          logger.log(JSON.stringify({
+          console[consoleMethods[i]] = (...arg) => arg;
+        }
+        
+        function __report(value, line, time, isConsole) {
+          return logger(JSON.stringify({
             line: line,
-            text: formattedValue,
+            text: isConsole ? customLog(...value) : customLog(value),
             time: time,
           }));
         }
-      
+
         ${instrumentedCode}
       })()
     `;

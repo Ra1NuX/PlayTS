@@ -50,13 +50,13 @@ export const DependenciesPanel = () => {
           searchFunction(e);
         }}
       />
-      <section className="flex flex-1 flex-col h-auto overflow-y-auto">
+      <section className="flex flex-1 flex-col h-auto overflow-y-auto gap-2">
         {search ? (
           info?.objects.map((element) => {
             return (
               <div
                 key={element.package.name}
-                className="p-2 flex m-2 mx-auto w-full rounded-lg justify-between items-center"
+                className="p-2 flex w-full justify-between items-center rounded-lg"
               >
                 <h2 className="dark:text-gray-300 text-main-dark font-semibold  flex flex-col text-left w-1/2 break-words">
                   {element.package.name}

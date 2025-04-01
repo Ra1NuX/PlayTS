@@ -16,15 +16,14 @@
 
 @layer components {
   .tileStyleButton {
-    float: left;
     height: 100%;
-    width: 33%;
+    width: 100%;
+    aspect-ratio: 1/1;
     text-align: center;
     color: #f7f7f7;
-    cursor: default;
-    @apply flex justify-center items-center
+    cursor: pointer;
+    @apply flex justify-center items-center rounded dark:hover:bg-[#94949458] hover:bg-[#eaeaea] dark:text-white text-black transition-colors duration-200 ease-in-out;
   }
-
 }
 
 

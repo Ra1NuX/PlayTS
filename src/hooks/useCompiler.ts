@@ -12,7 +12,6 @@ interface ResultType {
 let paused = false;
 
 const setPaused = (value: boolean) => {
-  console.log("paused", value);
   paused = value;
 };
 

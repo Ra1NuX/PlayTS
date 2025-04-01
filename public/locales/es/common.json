@@ -11,5 +11,10 @@
     "NO_DEPENDENCIES_INSTALLED": "No hay dependencias instaladas",
     "SOCIAL_MEDIAS": "Redes sociales",
     "EDITOR_FONT_SIZE": "Tamaño de fuente",
-    "EDITOR_FONT": "Fuente del editor"
+    "EDITOR_FONT": "Fuente del editor",
+    "RESTART": "Reiniciar",
+    "AFTER": "Después",
+    "UPDATE_AVAILABLE": "Actualización disponible",
+    "UPDATE_AVAILABLE_MESSAGE": "Hay una actualización disponible",
+    "UPDATE_AVAILABLE_DETAIL": "¿Quieres aplicar la actualización ahora?"
 }

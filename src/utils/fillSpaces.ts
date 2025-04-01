@@ -5,16 +5,43 @@ interface LineItem {
 }
 
 function fillSpaces(arr: LineItem[]): LineItem[] {
-  if (arr.length === 0) return arr;
+  try {
 
-  arr.sort((a, b) => a.line - b.line);
-  const maxLine = Math.max(...arr.map((o) => o.line));
+    if (arr.length === 0) return arr;
 
-  const filled: LineItem[] = [];
-  let currentLine = 1;
+    arr.sort((a, b) => a.line - b.line);
+    const maxLine = Math.max(...arr.map((o) => o.line));
 
-  for (const item of arr) {
-    while (currentLine < item.line) {
+    const filled: LineItem[] = [];
+    let currentLine = 1;
+
+    for (const item of arr) {
+
+      const { text, line } = item;
+
+      if (text === "\r" || text === "") continue;
+
+      while (currentLine < line && line != -1) {
+        filled.push({
+          line: currentLine,
+          text: "\n",
+          time: 0,
+        });
+        currentLine++;
+      }
+
+      const itemTextStr = String(text);
+      if (!itemTextStr.match(/(["'`])(?:\\.|(?!\1)[^\\])*?\1/)) {
+        item.text = itemTextStr
+      }
+
+      filled.push({ ...item, text: String(item.text), line: currentLine });
+      const newlines = String(item.text).match(/\n/g)?.length || 0;
+
+      currentLine = currentLine + newlines + 1
+    }
+
+    while (currentLine <= maxLine) {
       filled.push({
         line: currentLine,
         text: "\n",
@@ -23,21 +50,12 @@ function fillSpaces(arr: LineItem[]): LineItem[] {
       currentLine++;
     }
 
-    filled.push({ ...item, line: currentLine });
-    const newlines = (item.text.match(/\n/g) || []).length;
-    currentLine = currentLine + (newlines || 1);
-  }
+    return filled;
 
-  while (currentLine <= maxLine) {
-    filled.push({
-      line: currentLine,
-      text: "\n",
-      time: 0,
-    });
-    currentLine++;
+  } catch (error) {
+    console.log(error);
+    return arr;
   }
-
-  return filled;
 }
 
 export default fillSpaces;

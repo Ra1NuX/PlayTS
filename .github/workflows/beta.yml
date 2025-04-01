@@ -39,7 +39,6 @@ jobs:
       - name: Push cambios de versión
         run: |
           git push --follow-tags origin HEAD:develop
-
   build-beta-windows:
     needs: version-bump
 
@@ -55,15 +54,12 @@ jobs:
         with:
           bun-version: "latest"
 
-      - name: Setup Git (para que standard-version pueda hacer commit local)
+      - name: Sincronizar cambios antes de leer package.json
         run: |
-          git config user.name "github-actions"
-          git config user.email "github-actions@github.com"
+          git pull --rebase origin develop
 
       - name: Install dependencies
         run: bun install
-      - name: Mostrar nueva versión
-        run: cat package.json
 
       - name: Build & Publish Beta (Windows)
         run: |
@@ -84,11 +80,10 @@ jobs:
           uses: oven-sh/setup-bun@v2
           with:
             bun-version: "latest"
-
-        - name: Setup Git
+          
+        - name: Sincronizar cambios antes de leer package.json
           run: |
-            git config user.name "github-actions"
-            git config user.email "github-actions@github.com"
+            git pull --rebase origin develop
 
         - name: Install dependencies
           run: bun install
@@ -99,6 +94,36 @@ jobs:
         - name: Build & Publish Beta (Linux)
           run: |
             bun run build && bunx electron-builder --config electron-builder.config.js -l --publish always 
+          env:
+            GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            CHANNEL: beta
+  build-beta-mac:
+      needs: version-bump
+      runs-on: macos-latest
+      permissions:
+        contents: write
+      steps:
+        - name: Checkout
+          uses: actions/checkout@v3
+        
+        - name: Setup Bun
+          uses: oven-sh/setup-bun@v2
+          with:
+            bun-version: "latest"
+          
+        - name: Sincronizar cambios antes de leer package.json
+          run: |
+            git pull --rebase origin develop
+
+        - name: Install dependencies
+          run: bun install
+          
+        - name: Mostrar nueva versión
+          run: cat package.json
+  
+        - name: Build & Publish Beta (Mac)
+          run: |
+            bun run build && bunx electron-builder --config electron-builder.config.js -m --publish always
           env:
             GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
             CHANNEL: beta

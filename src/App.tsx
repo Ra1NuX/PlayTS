@@ -14,14 +14,13 @@ import { useFont } from "./hooks/useFonts";
 
 const editorOptions: EditorProps["options"] = {
   minimap: { enabled: false }, // Elimina el minimapa
-  fontFamily: "Fira Code, monospace", // Cambia el estilo de la fuente
+  // fontFamily: "Fira Code, monospace", // Cambia el estilo de la fuente
   fontSize: 18, // Cambia el tamaño de la fuente
-  theme: "custom-dark", // Tema personalizado
   lineNumbers: "off",
   renderLineHighlight: "none",
   "semanticHighlighting.enabled": "configuredByTheme",
   cursorBlinking: "expand",
-  lineHeight: 28,
+  lineHeight: 29,
   glyphMargin: false,
   wordWrap: 'on',
   scrollBeyondLastLine: false,
@@ -31,6 +30,7 @@ const editorOptions: EditorProps["options"] = {
   },
   fontLigatures: true,
   fontVariations: true,
+  
 };
 
 function App() {
@@ -61,7 +61,6 @@ function App() {
 
     monaco.editor.defineTheme("custom-dark", monacoDarkTheme as any);
     monaco.editor.defineTheme("custom-light", monacoLightTheme as any);
-
     monaco.editor.setTheme(theme === "dark" ? "custom-dark" : "custom-light");
     
     monaco.languages.typescript.typescriptDefaults.setCompilerOptions({
@@ -77,7 +76,7 @@ function App() {
     monaco.languages.typescript.typescriptDefaults.setDiagnosticsOptions({
       noSemanticValidation: false,
       noSyntaxValidation: false,
-      diagnosticCodesToIgnore: [1375, 2307, 7006]
+      diagnosticCodesToIgnore: [1375, 2307, 7006, 2367, 2839, 2845]
     })
   }, [monaco, theme]);
 
@@ -118,7 +117,6 @@ function App() {
               });
             }}
             loading={false}
-            theme={theme === "dark" ? "custom-dark" : "custom-light"}
             defaultLanguage="typescript"
             language="typescript"
             defaultValue={defaultCode}
@@ -136,8 +134,8 @@ function App() {
                   if (element) {
                     const { text } = element;
                     return (
-                      <div className="flex w-full" key={element.text+'-'+element.line+'-'+i}>
-                        <div className="flex w-full justify-between font-mono leading-5">
+                      <div className="flex w-full rounded" key={element.text+'-'+element.line+'-'+i}>
+                        <div className="flex w-full justify-between font-mono">
                           <SyntaxHighlighter
                             language="javascript"
                             codeTagProps={{ style: { whiteSpace: "pre-wrap", fontFamily: `"${font}"`, fontSize: size } }}
@@ -147,9 +145,8 @@ function App() {
                               padding: 0,
                               paddingLeft: "1.25rem",
                               backgroundColor: "transparent",
-                              fontPalette: "dark",
-                              color: "#fafafa",
-                              lineHeight: "28px",
+                              color: theme === 'dark' ? "#fafafa" : "#0008",
+                              lineHeight: "27px",
                             }}
                             className={`font-normal text-[#f1fa8c] ${
                               text !== "\n"

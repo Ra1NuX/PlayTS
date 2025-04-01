@@ -1,9 +1,9 @@
-// import isDev from './isDev'
 
-export const domain = `http://localhost:19293`;
-    // isDev
-    // ? `http://localhost:5173/`
-    // : 
+import path from 'path'
+import isDev from './isDev'
 
-export const getURL = (pathname: string) =>
-  `${domain}${pathname}`;
+export const domain = isDev
+    ? `http://localhost:5173`
+    : 'http://localhost:19293'
+
+export const getURL = (pathname: string) => path.join(domain, pathname)
