@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { BiHelpCircle, BiMessageSquare, BiSend } from "react-icons/bi";
-import { callOpenAI } from "../hooks/useAI";
+import { BiHelpCircle, BiSend } from "react-icons/bi";
+import { callOpenAI } from "../utils/callOpenAI";
 import useCompiler from "../hooks/useCompiler";
 
 interface FooterProps {
@@ -11,7 +11,7 @@ const Footer = ({ open }: FooterProps) => {
   const [message, setMessage] = useState("");
   const { writting } = useCompiler();
   const [chatHistory, setChatHistory] = useState<
-    { role: string; content: string, error?: boolean }[]
+    { role: string; content: string; error?: boolean }[]
   >([
     {
       role: "assistant",
@@ -20,33 +20,30 @@ const Footer = ({ open }: FooterProps) => {
   ]);
 
   const handleSend = async () => {
-    
     if (!message.trim()) return;
     setMessage("");
-    
+
     setChatHistory((prev) => [...prev, { role: "user", content: message }]);
+    setChatHistory((prev) => [...prev, { role: "assistant", content: '' }]);
 
-    const response = await callOpenAI([
-      ...chatHistory,
-      { role: "user", content: message },
-    ]);
+    await callOpenAI(
+      [...chatHistory, { role: "user", content: message }],
+      (data) => {
+        setChatHistory((prev) => [
+          ...prev.slice(0, -1),
+          { role: "assistant", content: data.response },
+        ]);
+      },
+      (data) =>  {
+        setChatHistory((prev) => [
+          ...prev.slice(0, -1),
+          { role: "assistant", content: data.response, error: data.error },
+        ]);
 
-    if (!response || response.error) {
-      setChatHistory((prev) => [
-        ...prev,
-        { role: "assistant", content: response?.response || 'Error al obtener respuesta de TSita', error: true },
-      ]);
-      return;
-    }
+        writting(data.code);
 
-    setChatHistory((prev) => [
-      ...prev,
-      { role: "assistant", content: response.response },
-    ]);
-
-    writting(response.code)
-    
-
+      }
+    );
   };
 
   const handleExplain = () => {
@@ -66,28 +63,6 @@ const Footer = ({ open }: FooterProps) => {
           role: "assistant",
           content:
             "Este código crea un patrón de diamante con asteriscos. Utiliza Array.reduce() para construir el patrón línea por línea. La variable 'count' controla cuántos asteriscos se muestran en cada línea, y 'spaces' controla la indentación. El operador ternario incrementa o decrementa 'count' dependiendo de si estamos en la primera o segunda mitad del diamante.",
-        },
-      ]);
-    }, 1000);
-  };
-
-  const handleAsk = () => {
-    setChatHistory([
-      ...chatHistory,
-      {
-        role: "user",
-        content: "Tengo una pregunta sobre este código",
-      },
-    ]);
-
-    // Simular respuesta de la IA
-    setTimeout(() => {
-      setChatHistory((prev) => [
-        ...prev,
-        {
-          role: "assistant",
-          content:
-            "¿Qué te gustaría saber sobre este código? Puedo explicar cómo funciona, sugerir mejoras, o ayudarte a modificarlo para lograr un resultado diferente.",
         },
       ]);
     }, 1000);
@@ -127,13 +102,6 @@ const Footer = ({ open }: FooterProps) => {
           >
             <BiHelpCircle className="h-4 w-4 mr-2" />
             Explicar
-          </button>
-          <button
-            onClick={handleAsk}
-            className="bg-[#252526] border-gray-600 hover:bg-[#3E3E42] text-white flex items-center justify-center p-2 rounded shadow"
-          >
-            <BiMessageSquare className="h-4 w-4 mr-2" />
-            Preguntar
           </button>
         </div>
 
