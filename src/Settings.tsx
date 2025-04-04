@@ -4,6 +4,7 @@ import SocialMedias from "./components/settings/SocialMedias";
 import FontSelector from "./components/settings/FontSelector";
 import FontSizeSelector from "./components/settings/FontSizeSelector";
 import AppInfo from "./components/settings/AppInfo";
+import ApiKey from "./components/settings/ApiKey";
 
 interface SettingsProps {
   open?: () => void;
@@ -29,6 +30,8 @@ const Settings = ({ close = Function }: SettingsProps) => {
         <div className="w-full h-0.5 dark:bg-white/5 bg-main-light/10 !my-4 rounded-full shadow-md" />
         <FontSelector />
         <FontSizeSelector />
+        <div className="w-full h-0.5 dark:bg-white/5 bg-main-light/10 !my-4 rounded-full shadow-md" />
+        <ApiKey />
         <div className="w-full h-0.5 dark:bg-white/5 bg-main-light/10 !my-4 rounded-full shadow-md" />
         <AppInfo />
         <SocialMedias /> 

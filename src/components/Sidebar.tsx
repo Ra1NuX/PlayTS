@@ -15,7 +15,7 @@ const Sidebar = () => {
   const [open, setOpen] = useState(false);
   const [desactivate, setDesactivate] = useState(false);
   const [selected, setSelected] = useState<number | null>(null);
-  const { paused: p, setPaused: stop } = useCompiler();
+  const { paused, setPaused } = useCompiler();
 
   useEffect(() => {
     setDesactivate(true);
@@ -24,7 +24,7 @@ const Sidebar = () => {
     }, 200);
   }, [open]);
 
-  const [paused, setPaused] = useState(p);
+  // const [paused, setPaused] = useState(p);
 
   const buttons = [
     {
@@ -44,7 +44,7 @@ const Sidebar = () => {
         "rounded-xl dark:hover:bg-white/10 hover:shadow-md border dark:border-white/5 group",
       onClick: () => {
         setPaused(!paused);
-        stop(!paused);
+        // stop(!paused);
       },
     },
     {

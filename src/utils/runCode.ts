@@ -48,16 +48,8 @@ const runCode = async (code: string) => {
     installProcess = await webContainer.spawn("npm", ["install"]);
     await installProcess.exit;
   }
-  
-  if(code.length < 300){
-    localStorage.setItem("code", btoa(code));
-  } 
-
-  console.log(code);
 
   const iCode = addInstructionsToCode(code);
-
-  console.log(iCode);
 
   const dataScheme = z.object({
     line: z.number(),
@@ -80,11 +72,8 @@ const runCode = async (code: string) => {
             });
             return;
           }
-          console.log({data});
           const cleanData = cleanAnsiAndSpecialChars(data);
-          console.log({cleanData});
           const r = JSON.parse(cleanData);
-          console.log({r});
           results.push(r);
           return;
         } catch (e) {
