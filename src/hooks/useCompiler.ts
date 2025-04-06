@@ -13,55 +13,18 @@ interface ResultType {
   time: number;
 }
 
-// let paused = false;
-
-// const setPaused = (value: boolean) => {
-//   paused = value;
-// };
-
-// const useCompiler = () => {
-//   const [result, setResult] = useState<
-//     ResultType[]
-//   >();
-
-//   const writting = (text: string) => {
-//     try {
-//       if(paused) return;
-//       const js = transpileTypeScript(text);
-//       runCode(js).then((result) => {
-//         setResult(result as ResultType[]);
-//       });
-//     } catch (ex) {
-//       const { message, stack } = ex as Error;
-//       setResult([
-//         {
-//           line: 1,
-//           text: message || stack || JSON.stringify(ex),
-//           time: 10,
-//         },
-//       ]);
-//     }
-//   };
-
-//   return {
-//     writting: debounce(writting, 500),
-//     setPaused,
-//     paused,
-//     result,
-//   };
-// };
-
-// export default useCompiler;
-
 const listeners = new Set<(result: ResultType[]) => void>();
 const pausedListeners = new Set<(paused: boolean) => void>();
+const codeListeners = new Set<(code: string) => void>();
 
 let globalPaused = false;
 let globalResult: ResultType[] = [];
+let globalCode = "";
 
 const notifyAll = () => {
   listeners.forEach((listener) => listener(globalResult));
   pausedListeners.forEach((listener) => listener(globalPaused));
+  codeListeners.forEach((listener) => listener(globalCode));
 };
 
 const setGlobalResult = (result: ResultType[]) => {
@@ -74,19 +37,30 @@ const setPausedGlobal = (value: boolean) => {
   notifyAll();
 };
 
+const setGlobalCode = (code: string) => {
+  globalCode = code;
+  notifyAll();
+};
+
 const useCompiler = () => {
   const [result, setResult] = useState<ResultType[]>([]);
   const [paused, setPaused] = useState(false);
+  const [code, setCodeState] = useState(globalCode);
 
-  const writting = (text: string, force?: boolean) => {
+  const updateCode = (newCode: string, force?: boolean) => {
+
+    if (newCode.length < 300) {
+      localStorage.setItem("code", btoa(newCode));
+    }
+
+    if (paused && !force) return;
+
+    if(force) {
+      setGlobalCode(newCode);
+    }
+
     try {
-      if (text.length < 300) {
-        localStorage.setItem("code", btoa(text));
-      }
-
-      if (paused && !force) return;
-
-      const js = transpileTypeScript(text);
+      const js = transpileTypeScript(newCode);
       runCode(js).then((result) => {
         setGlobalResult(result as ResultType[]);
       });
@@ -102,42 +76,39 @@ const useCompiler = () => {
     }
   };
 
-  const pause = (value: boolean) => {
-    setPausedGlobal(value);
+  const pause = (isPaused: boolean) => {
+    setPausedGlobal(isPaused);
 
-    console.log({value})
-
-    if (!value) {
-      const code = localStorage.getItem("code");
-
-      console.log({code})
-      if (code) {
-        writting(atob(code), true);
+    if (!isPaused) {
+      const savedCode = localStorage.getItem("code");
+      if (savedCode) {
+        const decoded = atob(savedCode);
+        updateCode(decoded, true);
       }
     }
   };
 
   useEffect(() => {
-    const listener = (newResult: ResultType[]) => {
-      setResult(newResult);
-    };
-
-    const pausedListener = (newPaused: boolean) => {
-      setPaused(newPaused);
-    };
+    const listener = (newResult: ResultType[]) => setResult(newResult);
+    const pausedListener = (newPaused: boolean) => setPaused(newPaused);
+    const codeListener = (newCode: string) => setCodeState(newCode);
 
     listeners.add(listener);
     pausedListeners.add(pausedListener);
+    codeListeners.add(codeListener);
 
     return () => {
       listeners.delete(listener);
       pausedListeners.delete(pausedListener);
+      codeListeners.delete(codeListener);
     };
   }, []);
 
   return {
-    writting: debounce(writting, 500),
+    updateCode: debounce(updateCode, 500),
     setPaused: pause,
+    setCode: setGlobalCode,
+    code,
     paused,
     result,
   };

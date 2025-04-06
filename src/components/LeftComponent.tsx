@@ -26,8 +26,7 @@ const editorOptions: EditorProps["options"] = {
 };
 
 const LeftComponent = () => {
-  
-  const { writting } = useCompiler();
+  const { updateCode, code, setCode } = useCompiler();
   const { font, size } = useFont();
   const { t } = useTranslation();
   const { theme } = useTheme();
@@ -65,7 +64,7 @@ const LeftComponent = () => {
     const code = atob(localStorage.getItem("code") || "");
     if (code) {
       setDefaultCode(code);
-      writting(code);
+      updateCode(code);
     }
   }, []);
 
@@ -91,8 +90,9 @@ const LeftComponent = () => {
       defaultLanguage="typescript"
       language="typescript"
       defaultValue={defaultCode}
+      value={code}
       onChange={(e) => {
-        writting(e || "");
+        updateCode(e ?? "");
       }}
       options={{ ...editorOptions, fontFamily: font, fontSize: size }}
       className="font-mono leading-none w-full flex flex-1 focus-visible:outline-none resize-none"

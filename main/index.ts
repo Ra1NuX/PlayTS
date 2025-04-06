@@ -34,8 +34,8 @@ let win: BrowserWindow;
 
 function createWindow() {
   win = new BrowserWindow({
-    width: 800,
-    height: 600,
+    width: 1140,
+    height: 635,
     minWidth: 800,
     minHeight: 600,
     titleBarStyle: "hidden",
