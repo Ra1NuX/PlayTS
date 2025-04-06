@@ -101,9 +101,9 @@ console.log("The area of the circle is: " + area);`,
   return (
     <div
       aria-expanded={open}
-      className="aria-expanded:h-auto h-0 overflow-hidden pr-1.5 bg-main-dark"
+      className="aria-expanded:h-full h-0 overflow-hidden bg-main-dark flex flex-col flex-1"
     >
-      <div className="overflow-scroll max-h-96 rounded-md dark:bg-main-dark bg-[#f7f7f7] p-4 font-normal flex flex-col flex-1">
+      <div className="py-4 overflow-scroll rounded-md dark:bg-main-dark bg-[#f7f7f7] font-normal flex flex-col flex-1">
         {chatHistory.map((msg, index) => (
           <div
             key={index}

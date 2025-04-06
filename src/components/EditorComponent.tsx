@@ -25,7 +25,7 @@ const editorOptions: EditorProps["options"] = {
   fontVariations: true,
 };
 
-const LeftComponent = () => {
+const EditorComponent = () => {
   const { updateCode, code, setCode } = useCompiler();
   const { font, size } = useFont();
   const { t } = useTranslation();
@@ -100,4 +100,4 @@ const LeftComponent = () => {
   );
 };
 
-export default LeftComponent;
+export default EditorComponent;
