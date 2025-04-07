@@ -103,7 +103,7 @@ console.log("The area of the circle is: " + area);`,
       aria-expanded={open}
       className="aria-expanded:h-full h-0 overflow-hidden bg-main-dark flex flex-col flex-1"
     >
-      <div className="py-4 overflow-scroll rounded-md dark:bg-main-dark bg-[#f7f7f7] font-normal flex flex-col flex-1">
+      <div className="py-4 pr-2 overflow-scroll rounded-md dark:bg-main-dark bg-[#f7f7f7] font-normal flex flex-col flex-1">
         {chatHistory.map((msg, index) => (
           <div
             key={index}

@@ -1,4 +1,4 @@
-import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
+import { Panel, PanelGroup, PanelResizeHandle, ImperativePanelHandle } from "react-resizable-panels";
 import SyntaxHighlighter from "react-syntax-highlighter";
 import { useEffect, useRef, useState } from "react";
 import { BsStars } from "react-icons/bs";
@@ -15,6 +15,7 @@ import EditorComponent from "./components/EditorComponent";
 import Sidebar from "./components/Sidebar";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
+import useResizePanelSizes from "./hooks/useResizePanelSizes";
 
 function App() {
   const { theme } = useTheme();
@@ -22,9 +23,14 @@ function App() {
   const { settings } = useSettings();
   const { font, size } = useFont();
 
-  const rightContainerRef = useRef<HTMLDivElement>(null);
+  const editorComponent = useRef<ImperativePanelHandle>(null);
+  const outputComponent = useRef<ImperativePanelHandle>(null);
+  const footerSection = useRef<ImperativePanelHandle>(null);
+  const sidebarSection = useRef<ImperativePanelHandle>(null);
 
-  const [openIaMenu, setOpenIaMenu] = useState(false);
+  const { width: minSize } = useResizePanelSizes("sidebar-main", { width: 52, height: 32 });
+  const { width: maxSize } = useResizePanelSizes("sidebar-main", { width: 308, height: 32 });
+
 
   useEffect(() => {
     if (window.electron) {
@@ -42,18 +48,20 @@ function App() {
     <main className="h-screen flex flex-col font-[roboto] font-bold">
       <Header />
       <section className="flex flex-row flex-1 w-full overflow-hidden dark:bg-main-dark bg-[#f7f7f7]">
-        <PanelGroup direction="horizontal">
+        <PanelGroup direction="horizontal" id='sidebar-main'>
           <Panel
-            collapsedSize={3.5}
-            defaultSize={10}
-            minSize={6}
-            maxSize={20}
+            minSize={minSize+5}
+            maxSize={maxSize}
+            collapsedSize={minSize}
+            defaultSize={maxSize}
             collapsible
+            id="sidebar"
+            ref={sidebarSection}
             className="dark:bg-main-dark bg-[#f7f7f7] flex flex-row flex-1 h-full overflow-hidden"
           >
-            <Sidebar />
+            <Sidebar ref={sidebarSection} />
           </Panel>
-          <PanelResizeHandle />
+          <PanelResizeHandle id={'resize-handle-sidebar-main'} />
           <Panel className="pr-1.5">
             <PanelGroup direction="vertical">
               <Panel>
@@ -65,7 +73,7 @@ function App() {
                     <EditorComponent />
                   </Panel>
                   <PanelResizeHandle />
-                  <Panel minSize={20} className="break-words group overflow-y-auto font-semibold font-mono leading-none dark:bg-main-light bg-[#eaeaea] rounded-md rounded-l-none border-l-2 dark:border-l-main-dark border-l-[#f7f7f7] w-full flex flex-col flex-1 p-2 px-4">
+                  <Panel minSize={20} className="break-words group overflow-y-scroll font-semibold font-mono leading-none dark:bg-main-light bg-[#eaeaea] rounded-md rounded-l-none border-l-2 dark:border-l-main-dark border-l-[#f7f7f7] w-full flex flex-col flex-1 p-2 px-4">
                       {Array.isArray(filledArray)
                         ? filledArray?.map((element, i) => {
                             if (element) {
@@ -116,7 +124,12 @@ function App() {
                       {settings.apiKey && (
                         <button
                           onClick={() => {
-                            setOpenIaMenu((o) => !o);
+                            if(footerSection.current?.isCollapsed()) {
+                              footerSection.current?.expand(50);
+
+                            } else {
+                              footerSection.current?.collapse();
+                            }
                           }}
                           className="absolute right-3.5 font-bold p-1.5 rounded-lg opacity-10 group-hover:opacity-100 transition-all duration-300 ease-in-out text-[#eaeaea]"
                         >
@@ -127,8 +140,8 @@ function App() {
                 </PanelGroup>
               </Panel>
               <PanelResizeHandle />
-              <Panel maxSize={70} minSize={20} collapsible>
-                <Footer open={openIaMenu} />
+              <Panel maxSize={70} minSize={20} collapsible defaultSize={0} ref={footerSection}>
+                <Footer open={true} />
               </Panel>
             </PanelGroup>
           </Panel>
