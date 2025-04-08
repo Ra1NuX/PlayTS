@@ -7,6 +7,8 @@ interface GlobalSettings {
   theme: string;
   font: string;
   size: number;
+  name?: string | null;
+  email?: string | null;
 }
 const defaultSettings: GlobalSettings = {
   apiKey: "",
@@ -23,6 +25,8 @@ export let globalSettings: GlobalSettings = {
     localStorage.getItem("globalSize") || defaultSettings.size.toString(),
     10
   ),
+  name: localStorage.getItem("name"),
+  email: localStorage.getItem("email"),
 };
 
 
@@ -70,7 +74,18 @@ export const useSettings = () => {
     notifyAll();
   };
 
-  return { settings, changeApiKey, changeFont, changeSize };
+  const changeSettings = (newSettings: Partial<GlobalSettings>) => {
+    globalSettings = { ...globalSettings, ...newSettings };
+    localStorage.setItem("apiKey", globalSettings.apiKey);
+    localStorage.setItem("globalFont", globalSettings.font);
+    localStorage.setItem("globalSize", globalSettings.size.toString());
+    localStorage.setItem("name", globalSettings.name || "");
+    localStorage.setItem("email", globalSettings.email || "");
+    notifyAll();
+  }
+
+
+  return { settings, changeApiKey, changeFont, changeSize, changeSettings };
 };
 export default useSettings;
 export type { GlobalSettings };

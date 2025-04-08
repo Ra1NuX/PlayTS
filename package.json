@@ -8,6 +8,9 @@
     "email": "ra1nux.01@gmail.com"
   },
   "main": "./app/index.js",
+  "electronmon": {
+    "patterns": ["!app/renderer/**", "!src/**"]
+  },
   "scripts": {
     "dev": "vite",
     "build:electron": "bun ./esbuild.config.mjs",
