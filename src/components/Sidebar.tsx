@@ -11,14 +11,28 @@ import MyModal from "./Modal";
 import merge from "../tools/merge";
 
 import useCompiler from "../hooks/useCompiler";
+import { BsStars } from "react-icons/bs";
+import Footer from "./Footer";
+import { BiSolidPackage } from "react-icons/bi";
 
 const Sidebar = forwardRef<ImperativePanelHandle>((_, ref) => {
   if (!ref || !("current" in ref) || !ref.current) return null;
 
-  ref;
-
   const [selected, setSelected] = useState<number | null>(null);
   const { paused, setPaused } = useCompiler();
+
+  const open = (
+    ref: MutableRefObject<ImperativePanelHandle | null>,
+    index: number
+  ) => {
+    if (!ref.current) return;
+
+    if (index === selected && !ref.current.isCollapsed()) {
+      ref.current.collapse();
+      return;
+    }
+    ref.current.expand(100);
+  };
 
   const buttons = [
     {
@@ -42,20 +56,28 @@ const Sidebar = forwardRef<ImperativePanelHandle>((_, ref) => {
       },
     },
     {
-      icon: <VscPackage size={22} />,
+      icon: <BiSolidPackage size={22} />,
       title: "DEPENDENCIES",
       onClick: (
         ref: MutableRefObject<ImperativePanelHandle | null>,
         index: number
       ) => {
-        if (!ref.current) return;
-        ref.current.isCollapsed()
-          ? ref.current.expand(100)
-          : ref.current.collapse();
-
+        open(ref,index);
         setSelected(index);
       },
       panelItem: <DependenciesPanel />,
+    },
+    {
+      icon: <BsStars size={22} />,
+      title: "IA",
+      onClick: (
+        ref: MutableRefObject<ImperativePanelHandle | null>,
+        index: number
+      ) => {
+        open(ref, index);
+        setSelected(index);
+      },
+      panelItem: <Footer />,
     },
   ];
 
@@ -93,9 +115,7 @@ const Sidebar = forwardRef<ImperativePanelHandle>((_, ref) => {
           />
         </section>
       </aside>
-      <aside
-        className="w-full max-w-72 transition-[width,padding] duration-100 dark:bg-main-dark bg-[#f7f7f7] aria-current:pr-0 py-2 pr-2 flex flex-col overflow-hidden"
-      >
+      <aside className="w-full transition-[width,padding] duration-100 dark:bg-main-dark bg-[#f7f7f7] aria-current:pr-0 py-2 pr-2 flex flex-col overflow-hidden">
         {buttons[selected!]?.panelItem}
       </aside>
     </>

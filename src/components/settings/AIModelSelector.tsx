@@ -6,16 +6,23 @@ import {
 } from "@headlessui/react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
+import useSettings, { AiModel } from "../../hooks/useSettings";
 
 const models = [
-  { key: "gpt-4o", name: "GPT-4o" },
-  { key: "mistral", name: "Mistral" },
+  ...Object.entries(AiModel).map(([k,v]) => ({
+    key: k,
+    name: v,
+  })),
 ];
 
 const AIModelSelector = () => {
   const { t } = useTranslation();
+  const { settings, changeSettings } = useSettings();
 
-  const [selectedModel, setSelectedModel] = useState(models[0]);
+
+  console.log({settings})
+
+  const [selectedModel, setSelectedModel] = useState(models.find((model) => model.name === settings.aiModel) || models[0]);
 
   return (
     <div className="flex flex-row gap-5 justify-between items-center">
@@ -24,6 +31,9 @@ const AIModelSelector = () => {
         value={selectedModel}
         onChange={(value) => {
           setSelectedModel(value);
+          changeSettings({
+            aiModel: value.name,
+          })
         }}
       >
         <ListboxButton className="font-[roboto] font-normal dark:bg-main-dark/50 bg-[#fafafa] dark:hover:bg-main-dark hover:bg-[#f0f0f0] border shadow-md dark:border-main-dark/20 p-1 pr-2 rounded-xl flex justify-center min-w-[110px] text-center">

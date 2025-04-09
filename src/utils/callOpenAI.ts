@@ -2,6 +2,7 @@ import { zodResponseFormat } from "openai/helpers/zod";
 import { z } from "zod";
 
 import { context } from "../model/ai";
+import { globalSettings } from "../hooks/useSettings";
 
 const schema = z.object({
   response: z.string(),
@@ -32,7 +33,7 @@ export async function callOpenAI(
           Authorization: `Bearer ${apiKey}`,
         },
         body: JSON.stringify({
-          model: "gpt-4o",
+          model: globalSettings.aiModel,
           messages: [{ role: "system", content: context }, ...messages],
           stream: true,
           response_format: responseFormat,

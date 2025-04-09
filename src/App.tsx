@@ -29,7 +29,7 @@ function App() {
   const sidebarSection = useRef<ImperativePanelHandle>(null);
 
   const { width: minSize } = useResizePanelSizes("sidebar-main", { width: 52, height: 32 });
-  const { width: maxSize } = useResizePanelSizes("sidebar-main", { width: 308, height: 32 });
+  const { width: maxSize } = useResizePanelSizes("sidebar-main", { width: 450, height: 32 });
 
 
   useEffect(() => {
@@ -121,27 +121,9 @@ function App() {
                           })
                         : JSON.stringify(filledArray)}
 
-                      {settings.apiKey && (
-                        <button
-                          onClick={() => {
-                            if(footerSection.current?.isCollapsed()) {
-                              footerSection.current?.expand(50);
 
-                            } else {
-                              footerSection.current?.collapse();
-                            }
-                          }}
-                          className="absolute right-3.5 font-bold p-1.5 rounded-lg opacity-10 group-hover:opacity-100 transition-all duration-300 ease-in-out text-[#eaeaea]"
-                        >
-                          <BsStars className="text-xl" />
-                        </button>
-                      )}
                   </Panel>
                 </PanelGroup>
-              </Panel>
-              <PanelResizeHandle />
-              <Panel maxSize={70} minSize={20} collapsible defaultSize={0} ref={footerSection}>
-                <Footer open={true} />
               </Panel>
             </PanelGroup>
           </Panel>

@@ -2,8 +2,16 @@
 
 import { useState, useEffect } from "react";
 
+export enum AiModel {
+  GPT_4O = "gpt-4o",
+  GPT_3_5 = "gpt-3.5-turbo",
+  GPT_4 = "gpt-4",
+  GPT_4_TURBO = "gpt-4-turbo",
+}
+
 interface GlobalSettings {
   apiKey: string;
+  aiModel: AiModel;
   theme: string;
   font: string;
   size: number;
@@ -15,6 +23,7 @@ const defaultSettings: GlobalSettings = {
   theme: "dark",
   font: "FiraCode",
   size: 14,
+  aiModel: AiModel.GPT_4O,
 };
 
 export let globalSettings: GlobalSettings = {
@@ -27,6 +36,7 @@ export let globalSettings: GlobalSettings = {
   ),
   name: localStorage.getItem("name"),
   email: localStorage.getItem("email"),
+  aiModel: localStorage.getItem("aiModel") as AiModel || defaultSettings.aiModel,
 };
 
 
@@ -81,6 +91,7 @@ export const useSettings = () => {
     localStorage.setItem("globalSize", globalSettings.size.toString());
     localStorage.setItem("name", globalSettings.name || "");
     localStorage.setItem("email", globalSettings.email || "");
+    localStorage.setItem("aiModel", globalSettings.aiModel);
     notifyAll();
   }
 
