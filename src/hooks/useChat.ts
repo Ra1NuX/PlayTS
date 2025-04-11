@@ -1,6 +1,7 @@
 import { useState } from "react";
 import useSettings, { AiModel } from "./useSettings";
 import { callOpenAI } from "../utils/callOpenAI";
+import { globalCode } from "./useCompiler";
 
 interface ChatProps {
   role: string;
@@ -43,7 +44,7 @@ const useChat = () => {
       case AiModel.GPT_4:
       case AiModel.GPT_4_TURBO:
       await callOpenAI(
-          [...chatHistory, { role: "user", content: message }],
+          [...chatHistory, { role: "user", content: `Este es el codigo actual: ${globalCode} - ${message}` }],
           (data) => {
             setChatHistory((prev) => [
               ...prev.slice(0, -1),

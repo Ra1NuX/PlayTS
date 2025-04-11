@@ -5,7 +5,6 @@ import { useEffect, useState } from "react";
 
 import transpileTypeScript from "../tools/convertToJS";
 import runCode from "../utils/runCode";
-import debounce from "../tools/debounce";
 
 interface ResultType {
   line: number;
@@ -19,7 +18,7 @@ const codeListeners = new Set<(code: string) => void>();
 
 let globalPaused = false;
 let globalResult: ResultType[] = [];
-let globalCode = "";
+export let globalCode = "";
 
 const notifyAll = () => {
   listeners.forEach((listener) => listener(globalResult));
@@ -39,42 +38,36 @@ const setPausedGlobal = (value: boolean) => {
 
 const setGlobalCode = (code: string) => {
   globalCode = code;
+  if (code.length < 300) localStorage.setItem("code", btoa(code));
   notifyAll();
 };
+
+const updateAndRunCode = async (code: string) => {
+  if (globalPaused) return;
+
+  setGlobalCode(code);
+
+  try {
+    const js = transpileTypeScript(code);
+    const result = await runCode(js);
+    setGlobalResult(result as ResultType[]);
+  } catch (ex) {
+    const { message, stack } = ex as Error;
+    setGlobalResult([
+      {
+        line: 1,
+        text: message || stack || JSON.stringify(ex),
+        time: 10,
+      },
+    ]);
+  }
+};
+
 
 const useCompiler = () => {
   const [result, setResult] = useState<ResultType[]>([]);
   const [paused, setPaused] = useState(false);
   const [code, setCodeState] = useState(globalCode);
-
-  const updateCode = (newCode: string, force?: boolean) => {
-
-    if (newCode.length < 300) {
-      localStorage.setItem("code", btoa(newCode));
-    }
-
-    if (paused && !force) return;
-
-    if(force) {
-      setGlobalCode(newCode);
-    }
-
-    try {
-      const js = transpileTypeScript(newCode);
-      runCode(js).then((result) => {
-        setGlobalResult(result as ResultType[]);
-      });
-    } catch (ex) {
-      const { message, stack } = ex as Error;
-      setGlobalResult([
-        {
-          line: 1,
-          text: message || stack || JSON.stringify(ex),
-          time: 10,
-        },
-      ]);
-    }
-  };
 
   const pause = (isPaused: boolean) => {
     setPausedGlobal(isPaused);
@@ -83,7 +76,7 @@ const useCompiler = () => {
       const savedCode = localStorage.getItem("code");
       if (savedCode) {
         const decoded = atob(savedCode);
-        updateCode(decoded, true);
+        updateAndRunCode(decoded);
       }
     }
   };
@@ -105,7 +98,7 @@ const useCompiler = () => {
   }, []);
 
   return {
-    updateCode: debounce(updateCode, 500),
+    updateCode: updateAndRunCode,
     setPaused: pause,
     setCode: setGlobalCode,
     code,

@@ -1,9 +1,11 @@
-import { Panel, PanelGroup, PanelResizeHandle, ImperativePanelHandle } from "react-resizable-panels";
+import {
+  Panel,
+  PanelGroup,
+  PanelResizeHandle,
+  ImperativePanelHandle,
+} from "react-resizable-panels";
 import SyntaxHighlighter from "react-syntax-highlighter";
-import { useEffect, useRef, useState } from "react";
-import { BsStars } from "react-icons/bs";
-
-import useSettings from "./hooks/useSettings";
+import { useEffect, useRef } from "react";
 import useCompiler from "./hooks/useCompiler";
 import { useTheme } from "./hooks/useTheme";
 import { useFont } from "./hooks/useFonts";
@@ -14,13 +16,11 @@ import fillSpaces from "./utils/fillSpaces";
 import EditorComponent from "./components/EditorComponent";
 import Sidebar from "./components/Sidebar";
 import Header from "./components/Header";
-import Footer from "./components/Footer";
 import useResizePanelSizes from "./hooks/useResizePanelSizes";
 
 function App() {
   const { theme } = useTheme();
   const { result } = useCompiler();
-  const { settings } = useSettings();
   const { font, size } = useFont();
 
   const editorComponent = useRef<ImperativePanelHandle>(null);
@@ -28,9 +28,14 @@ function App() {
   const footerSection = useRef<ImperativePanelHandle>(null);
   const sidebarSection = useRef<ImperativePanelHandle>(null);
 
-  const { width: minSize } = useResizePanelSizes("sidebar-main", { width: 52, height: 32 });
-  const { width: maxSize } = useResizePanelSizes("sidebar-main", { width: 450, height: 32 });
-
+  const { width: minSize } = useResizePanelSizes("sidebar-main", {
+    width: 52,
+    height: 32,
+  });
+  const { width: maxSize } = useResizePanelSizes("sidebar-main", {
+    width: 450,
+    height: 32,
+  });
 
   useEffect(() => {
     if (window.electron) {
@@ -48,9 +53,9 @@ function App() {
     <main className="h-screen flex flex-col font-[roboto] font-bold">
       <Header />
       <section className="flex flex-row flex-1 w-full overflow-hidden dark:bg-main-dark bg-[#f7f7f7]">
-        <PanelGroup direction="horizontal" id='sidebar-main'>
+        <PanelGroup direction="horizontal" id="sidebar-main">
           <Panel
-            minSize={minSize+5}
+            minSize={minSize + 15}
             maxSize={maxSize}
             collapsedSize={minSize}
             defaultSize={maxSize}
@@ -61,19 +66,26 @@ function App() {
           >
             <Sidebar ref={sidebarSection} />
           </Panel>
-          <PanelResizeHandle id={'resize-handle-sidebar-main'} />
+          <PanelResizeHandle id={"resize-handle-sidebar-main"} />
           <Panel className="pr-1.5">
             <PanelGroup direction="vertical">
               <Panel>
                 <PanelGroup
                   direction="horizontal"
-                  className="dark:bg-main-dark bg-[#f7f7f7] pb-1.5"
+                  className="dark:bg-main-dark bg-[#f7f7f7] pb-1.5 h-full"
                 >
-                  <Panel minSize={20} className="rounded-md overflow-hidden dark:bg-main-light bg-[#eaeaea] p-2 rounded-r-none border-r-2 dark:border-r-main-dark border-r-[#f7f7f7]">
+                  <Panel
+                    minSize={20}
+                    className="rounded-md overflow-hidden dark:bg-main-light bg-[#eaeaea] p-2 rounded-r-none border-r-2 dark:border-r-main-dark border-r-[#f7f7f7]"
+                  >
                     <EditorComponent />
                   </Panel>
                   <PanelResizeHandle />
-                  <Panel minSize={20} className="break-words group overflow-y-scroll font-semibold font-mono leading-none dark:bg-main-light bg-[#eaeaea] rounded-md rounded-l-none border-l-2 dark:border-l-main-dark border-l-[#f7f7f7] w-full flex flex-col flex-1 p-2 px-4">
+                  <Panel
+                    minSize={20}
+                    className="break-words group overflow-y-auto pr-1.5 font-semibold font-mono leading-none dark:bg-main-light bg-[#eaeaea] rounded-md rounded-l-none border-l-2 dark:border-l-main-dark border-l-[#f7f7f7] w-full flex flex-col p-2 px-4"
+                  >
+                    <div className="overflow-auto">
                       {Array.isArray(filledArray)
                         ? filledArray?.map((element, i) => {
                             if (element) {
@@ -104,6 +116,7 @@ function App() {
                                       customStyle={{
                                         padding: 0,
                                         paddingLeft: "1.25rem",
+                                        paddingRight: "1.25rem",
                                         backgroundColor: "transparent",
                                         color:
                                           theme === "dark"
@@ -120,8 +133,7 @@ function App() {
                             }
                           })
                         : JSON.stringify(filledArray)}
-
-
+                    </div>
                   </Panel>
                 </PanelGroup>
               </Panel>

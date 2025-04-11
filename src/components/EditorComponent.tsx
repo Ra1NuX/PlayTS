@@ -1,40 +1,50 @@
 import { Editor, EditorProps, useMonaco } from "@monaco-editor/react";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { monacoDarkTheme, monacoLightTheme } from "../utils/customTheme";
 import { useTheme } from "../hooks/useTheme";
 import useCompiler from "../hooks/useCompiler";
 import { useFont } from "../hooks/useFonts";
-
-const editorOptions: EditorProps["options"] = {
-  minimap: { enabled: false },
-  fontSize: 18,
-  lineNumbers: "off",
-  renderLineHighlight: "none",
-  "semanticHighlighting.enabled": "configuredByTheme",
-  cursorBlinking: "expand",
-  lineHeight: 29,
-  glyphMargin: false,
-  wordWrap: "on",
-  scrollBeyondLastLine: false,
-  scrollbar: {
-    vertical: "auto",
-    useShadows: false,
-  },
-  fontLigatures: true,
-  fontVariations: true,
-};
+import debounce from "../tools/debounce";
 
 const EditorComponent = () => {
-  const { updateCode, code, setCode } = useCompiler();
+  const { updateCode, code } = useCompiler();
   const { font, size } = useFont();
   const { t } = useTranslation();
   const { theme } = useTheme();
   const monaco = useMonaco();
 
-  const [defaultCode, setDefaultCode] = useState(t("DEFAULT_CODE"));
+  const [defaultCode, setDefaultCode] = useState(code);
 
   const editorRef = useRef<any>(null);
+
+  const editorOptions: EditorProps["options"] = useMemo(() => ({
+    minimap: { enabled: false },
+    fontSize: size,
+    lineNumbers: "off",
+    renderLineHighlight: "none",
+    "semanticHighlighting.enabled": "configuredByTheme",
+    cursorBlinking: "expand",
+    lineHeight: 29,
+    glyphMargin: false,
+    wordWrap: "on",
+    scrollBeyondLastLine: false,
+    scrollbar: {
+      vertical: "auto",
+      useShadows: false,
+    },
+    fontLigatures: true,
+    fontVariations: true,
+    fontFamily: font,
+  }), [font, size]);
+
+  
+  const handleChange = useCallback(
+    debounce((e: string|undefined) => {
+      updateCode(e??'');
+    }, 300),
+    []
+  );
 
   useEffect(() => {
     if (!monaco) return;
@@ -62,17 +72,13 @@ const EditorComponent = () => {
 
   useEffect(() => {
     const code = atob(localStorage.getItem("code") || "");
-    if (code) {
-      setDefaultCode(code);
-      updateCode(code);
-    }
+    setDefaultCode(code || t("DEFAULT_CODE"));
+    updateCode(code || t("DEFAULT_CODE"));
   }, []);
 
-  return (
-    <Editor
-      onMount={(editor) => {
-        editorRef.current = editor;
-        // editor.onDidScrollChange(() => {
+  const handleEditorMount = useCallback((editor: any) => {
+    editorRef.current = editor;
+     // editor.onDidScrollChange(() => {
         //   const scrollTop = editor.getScrollTop();
         //   const scrollHeight = editor.getScrollHeight();
         //   const editorHeight = editor.getLayoutInfo().height;
@@ -85,16 +91,18 @@ const EditorComponent = () => {
         //     rightContainerRef.current.scrollTop = rightScrollTop;
         //   }
         // });
-      }}
+  }, []);
+
+  return (
+    <Editor
+      onMount={handleEditorMount}
       loading={false}
       defaultLanguage="typescript"
       language="typescript"
       defaultValue={defaultCode}
       value={code}
-      onChange={(e) => {
-        updateCode(e ?? "");
-      }}
-      options={{ ...editorOptions, fontFamily: font, fontSize: size }}
+      onChange={handleChange}
+      options={{ ...editorOptions }}
       className="font-mono leading-none w-full flex flex-1 focus-visible:outline-none resize-none"
     />
   );

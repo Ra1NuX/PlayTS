@@ -32,7 +32,15 @@ export const DependenciesPanel = () => {
       .then((response) => response.json())
       .then((data: NpmSearchResponse) => {
         setInfo(data);
-      });
+      })
+      .catch((error) => {
+        console.error("Error fetching data:", error);
+      })
+      .finally(() => {
+        // Reset search input after fetching
+        setSearch(null);
+      }
+      );
   }, [search]);
 
   return (

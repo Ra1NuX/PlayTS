@@ -3,6 +3,7 @@ import { z } from "zod";
 
 import { context } from "../model/ai";
 import { globalSettings } from "../hooks/useSettings";
+import { globalCode } from "../hooks/useCompiler";
 
 const schema = z.object({
   response: z.string(),

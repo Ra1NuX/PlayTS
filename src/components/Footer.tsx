@@ -90,7 +90,7 @@ const Footer = ({ open }: FooterProps) => {
                     <div className="flex gap-2 p-2">
                       <button
                         onClick={() => {
-                          updateCode(msg.code || "", true);
+                          updateCode(msg.code || "");
                           setCodeState(index, true);
                         }}
                         className="hover:text-[#ff79c6] group flex items-center justify-center gap-1 text-gray-300"
