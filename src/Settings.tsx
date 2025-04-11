@@ -22,7 +22,7 @@ interface SettingsProps {
 
 const Settings = ({ close = Function }: SettingsProps) => {
   return (
-    <main className="flex flex-col font-[roboto] font-medium">
+    <main className="flex flex-col font-[roboto] font-medium text-main-dark dark:text-white">
       <TabGroup>
         <nav className="flex justify-between p-1">
           <TabList className="flex gap-1 p-0.5 bg-main-light/10 dark:bg-white/5 rounded-md shadow-md">
@@ -54,11 +54,11 @@ const Settings = ({ close = Function }: SettingsProps) => {
           <TabPanel className="flex flex-col gap-2">
             <UsernameInput />
             <EmailInput />
-            <div className="flex justify-between items-center pt-2">
+            {/* <div className="flex justify-between items-center pt-2">
               <button className="hover:bg-red-500 text-white font-bold py-2 px-4 rounded-md transition-colors duration-200 ease-in-out">
                 <span>Reset Settings</span>
               </button>
-            </div>
+            </div> */}
           </TabPanel>
           <TabPanel className="flex flex-col gap-2 ">
             <SwitchTheme />

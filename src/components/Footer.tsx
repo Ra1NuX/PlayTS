@@ -36,7 +36,7 @@ const Footer = ({ open }: FooterProps) => {
   return (
     <div
       aria-expanded={open}
-      className="aria-expanded:h-full h-0 overflow-hidden bg-main-dark flex flex-col flex-1"
+      className="aria-expanded:h-full h-0 overflow-hidden flex flex-col flex-1"
     >
       <div className="p-2 rounded-md dark:bg-main-dark bg-[#f7f7f7] font-normal flex flex-col flex-1 overflow-auto">
         {chatHistory.map((msg, index) => (
@@ -56,7 +56,7 @@ const Footer = ({ open }: FooterProps) => {
                 className={`aria-invalid:text-red-600 group text-left relative aria-invalid:bg-transparent aria-invalid:shadow-none inline-block p-2 shadow rounded-lg max-w-[90%] break-words whitespace-normal ${
                   msg.role === "user"
                     ? "bg-[#0078D4] text-white"
-                    : "bg-main-light text-white"
+                    : "dark:bg-main-light bg-[#fff] dark:text-white"
                 }`}
               >
                 {msg.accepted && (
@@ -83,7 +83,7 @@ const Footer = ({ open }: FooterProps) => {
               index === chatHistory.length - 1 &&
               msg.accepted == undefined && (
                 <div className="rounded-md border mt-2 border-[#ff79c6] overflow-hidden shadow-lg">
-                  <span className="text-sm w-full flex items-center justify-between bg-main-light">
+                  <span className="text-sm w-full flex items-center justify-between dark:bg-main-light">
                     <span className="text-[#ff79c6] p-2 font-semibold">
                       Código:
                     </span>
@@ -93,30 +93,31 @@ const Footer = ({ open }: FooterProps) => {
                           updateCode(msg.code || "");
                           setCodeState(index, true);
                         }}
-                        className="hover:text-[#ff79c6] group flex items-center justify-center gap-1 text-gray-300"
+                        className="hover:text-[#ff79c6] dark:hover:text-[#ff79c6] group flex items-center justify-center gap-1 dark:text-gray-300 text-gray-600"
                       >
-                        <kbd className="bg-gray-100/20  px-1.5 py-0.5 rounded">
+                        <kbd className="dark:bg-gray-100/20 bg-white px-1.5 py-0.5 rounded shadow">
                           Enter
                         </kbd>
-                        <span>Aceptar</span>
+                        {/* <span>Aceptar</span> */}
                       </button>
+                      /
                       <button
                         onClick={() => {
                           setCodeState(index, false);
                         }}
-                        className="hover:text-[#ff79c6] group flex items-center justify-center gap-1 text-gray-300"
+                        className="hover:text-[#ff79c6] dark:hover:text-[#ff79c6] group flex items-center justify-center gap-1 dark:text-gray-300 text-gray-600"
                       >
-                        <kbd className="bg-gray-100/20  px-1.5 py-0.5 rounded">
+                        <kbd className="dark:bg-gray-100/20 bg-white px-1.5 py-0.5 rounded shadow">
                           Ctrl
                         </kbd>
-                        <kbd className="bg-gray-100/20  px-1.5 py-0.5 rounded">
+                        <kbd className="dark:bg-gray-100/20 bg-white px-1.5 py-0.5 rounded shadow">
                           C
                         </kbd>
-                        <span>Cancelar</span>
+                        {/* <span>Cancelar</span> */}
                       </button>
                     </div>
                   </span>
-                  <div className="h-[1px] w-full bg-[#ff79c6]" />
+                  <div className="h-[1px] w-full bg-[#ff79c6] " />
                   <SyntaxHighlighter
                     language="typescript"
                     codeTagProps={{
@@ -130,7 +131,7 @@ const Footer = ({ open }: FooterProps) => {
                     style={theme === "dark" ? darkTheme : lightTheme}
                     customStyle={{
                       padding: "1.25rem",
-                      backgroundColor: "transparent",
+                      backgroundColor: theme === "dark" ? "#282a36" : "#eaeaea",
                       color: theme === "dark" ? "#fafafa" : "#0008",
                       lineHeight: "27px",
                     }}
@@ -144,14 +145,14 @@ const Footer = ({ open }: FooterProps) => {
         ))}
       </div>
       <div className="dark:bg-main-dark bg-[#f7f7f7] rounded-md">
-        <div className="flex flex-grow relative ">
+        <div className="flex flex-grow relative">
           <textarea
             rows={1}
             value={message}
             onChange={(e) => setMessage(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && handleSend(e)}
             placeholder="Escribe un mensaje..."
-            className="field-content max-h-64 w-full min-h-9 text-md p-1.5 pr-10 rounded dark:text-main-dark text-main-dark focus:outline-none focus:border-[#0078D4]"
+            className="field-content border-main-light/20 dark:bg-main-light border max-h-64 w-full min-h-9 text-md p-1.5 pr-10 rounded dark:text-white font-normal text-main-dark focus:outline-none focus:border-[#0078D4]"
           />
           <button
             onClick={handleSend}

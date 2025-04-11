@@ -50,7 +50,7 @@ function App() {
   const filledArray = fillSpaces(result || []);
 
   return (
-    <main className="h-screen flex flex-col font-[roboto] font-bold">
+    <main className="h-screen flex flex-col font-[roboto] font-bold text-main-dark">
       <Header />
       <section className="flex flex-row flex-1 w-full overflow-hidden dark:bg-main-dark bg-[#f7f7f7]">
         <PanelGroup direction="horizontal" id="sidebar-main">
