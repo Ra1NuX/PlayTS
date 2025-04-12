@@ -2,6 +2,7 @@ import { useState } from "react";
 import useSettings, { AiModel } from "./useSettings";
 import { callOpenAI } from "../utils/callOpenAI";
 import { globalCode } from "./useCompiler";
+import { randomUUIDv7 } from "bun";
 
 interface ChatProps {
   role: string;
@@ -9,6 +10,7 @@ interface ChatProps {
   error?: boolean;
   code?: string;
   accepted?: boolean;
+  id?: string | null;
 }
 
 const defaultChatHistory: ChatProps[] = [
@@ -43,8 +45,15 @@ const useChat = () => {
       case AiModel.GPT_3_5:
       case AiModel.GPT_4:
       case AiModel.GPT_4_TURBO:
-      await callOpenAI(
-          [...chatHistory, { role: "user", content: `Este es el codigo actual: ${globalCode} - ${message}` }],
+        await callOpenAI(
+          [
+            ...chatHistory,
+            {
+              role: "system",
+              content: `Este es el código mas actualizado, solo debes acceder a el cuando te pregunten algo del código: ${globalCode} `,
+            },
+            { role: "user", content: `${message}` },
+          ],
           (data) => {
             setChatHistory((prev) => [
               ...prev.slice(0, -1),
@@ -59,6 +68,7 @@ const useChat = () => {
                 content: data.response,
                 error: data.error,
                 code: data.code,
+                id: data.id,
               },
             ]);
           }
@@ -67,16 +77,16 @@ const useChat = () => {
     notifyAll();
   };
 
-  const setCodeState = (index: number, accepted: boolean) => {
+  const setCodeState = (id: string, accepted: boolean) => {
     setChatHistory((prev) => {
       const newHistory = [...prev];
+      const index = newHistory.findIndex((msg) => msg.id === id);
       newHistory[index] = {
         ...newHistory[index],
         accepted,
       };
       return newHistory;
-    }
-    );
+    });
     notifyAll();
   };
 
@@ -85,7 +95,14 @@ const useChat = () => {
     notifyAll();
   };
 
-  return { chatHistory, message, addMessage, clearMessages, setMessage, setCodeState };
+  return {
+    chatHistory,
+    message,
+    addMessage,
+    clearMessages,
+    setMessage,
+    setCodeState,
+  };
 };
 
 export default useChat;

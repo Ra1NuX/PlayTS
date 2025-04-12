@@ -43,9 +43,9 @@ const setGlobalCode = (code: string) => {
 };
 
 const updateAndRunCode = async (code: string) => {
-  if (globalPaused) return;
-
+  
   setGlobalCode(code);
+  if (globalPaused) return;
 
   try {
     const js = transpileTypeScript(code);
@@ -76,7 +76,7 @@ const useCompiler = () => {
       const savedCode = localStorage.getItem("code");
       if (savedCode) {
         const decoded = atob(savedCode);
-        updateAndRunCode(decoded);
+        updateAndRunCode(decoded).catch(console.error);
       }
     }
   };

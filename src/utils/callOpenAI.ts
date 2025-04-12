@@ -3,7 +3,8 @@ import { z } from "zod";
 
 import { context } from "../model/ai";
 import { globalSettings } from "../hooks/useSettings";
-import { globalCode } from "../hooks/useCompiler";
+
+import { v4 as uuid } from "uuid";
 
 const schema = z.object({
   response: z.string(),
@@ -14,7 +15,7 @@ const schema = z.object({
 export async function callOpenAI(
   messages: { role: string; content: string }[],
   onData: (data: { response: string }) => void,
-  onFinally: (data: { response: string; code: string; error: boolean }) => void
+  onFinally: (data: { response: string; code: string; error: boolean, id: string|null }) => void
 ) {
   const apiKey = localStorage.getItem("apiKey");
   if (!apiKey) {
@@ -52,8 +53,6 @@ export async function callOpenAI(
 
       const decoder = new TextDecoder("utf-8");
       let accumulatedResponse = "";
-      let codeBlock = "";
-      let isCodeBlock = false;
 
       let message = "";
 
@@ -70,28 +69,28 @@ export async function callOpenAI(
           const jsonStr = line.replace(/^data: /, "").trim();
           if (jsonStr === "[DONE]") {
             console.log("✅ Stream completo");
+            onData({
+              response: accumulatedResponse,
+            });
             break;
           }
 
           try {
             const parsed = JSON.parse(jsonStr);
             const delta = parsed.choices?.[0]?.delta?.content || "";
-
             message += delta;
-
-            if (delta.includes("code")) {
-              isCodeBlock = true;
-              accumulatedResponse = accumulatedResponse.slice(0, -2);
-            } else if (isCodeBlock) {
-              codeBlock += delta;
-            }
-
-            if (!isCodeBlock) {
-              accumulatedResponse += delta;
+            console.log({message})
+            if (message.replaceAll(' ', '').includes('"response":"')) {
+              const match = message.match(
+                /"response"\s*:\s*"((?:[^"\\]|\\.)*)/
+              );
+              if (match) {
+                accumulatedResponse = match[1] || "";
+              }
             }
 
             onData({
-              response: accumulatedResponse.slice(13, -1),
+              response: accumulatedResponse,
             });
           } catch (err) {
             console.error("Error parseando JSON del chunk:", err);
@@ -107,6 +106,7 @@ export async function callOpenAI(
           response: "",
           code: "",
           error: true,
+          id: null,
         });
         return;
       }
@@ -123,6 +123,7 @@ export async function callOpenAI(
         response: finalResponse,
         error,
         code: finalCode,
+        id: uuid()
       });
       return;
     } catch (error) {
@@ -131,6 +132,7 @@ export async function callOpenAI(
         response: "",
         code: "",
         error: true,
+        id: null,
       });
       return;
     }
