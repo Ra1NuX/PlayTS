@@ -15,6 +15,17 @@ const Code = ({ code, id }: CodeProps) => {
   const { setCodeState } = useChat();
   const { theme } = useTheme();
 
+  const handleEnter = () => {
+    if (id) {
+      updateCode(code || "");
+      setCodeState(id, true);
+    }
+  }
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(code || "");
+  };
+
   return (
     <div className="rounded-md border my-2 border-[#ff79c597] overflow-hidden">
       <span className="text-sm w-full flex items-center justify-between dark:bg-main-light">
@@ -22,24 +33,17 @@ const Code = ({ code, id }: CodeProps) => {
         {id && (
           <div className="flex gap-2 p-2">
             <button
-              onClick={() => {
-                updateCode(code || "");
-                setCodeState(id, true);
-              }}
+              onClick={handleEnter}
               className="hover:text-[#ff79c597] dark:hover:text-[#ff79c597] group flex items-center justify-center gap-1 dark:text-gray-300 text-gray-600"
             >
-              <Kbd keys={["Enter"]} />
-              {/* <span>Aceptar</span> */}
+              <Kbd keys={["Enter"]} onKeyPress={handleEnter} />
             </button>
             /
             <button
-              onClick={() => {
-                navigator.clipboard.writeText(code || "");
-              }}
+              onClick={handleCopy}
               className="hover:text-[#ff79c597] dark:hover:text-[#ff79c597] group flex items-center justify-center gap-1 dark:text-gray-300 text-gray-600"
             >
-              <Kbd keys={["Ctrl", "C"]} />
-              {/* <span>Cancelar</span> */}
+              <Kbd keys={["Control", "C"]} onKeyPress={handleCopy} />
             </button>
           </div>
         )}

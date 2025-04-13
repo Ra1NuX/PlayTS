@@ -2,7 +2,7 @@ import { forwardRef, MutableRefObject, useState } from "react";
 import { ImperativePanelHandle } from "react-resizable-panels";
 import { FaPause, FaPlay } from "react-icons/fa6";
 import { useTranslation } from "react-i18next";
-import { VscPackage, VscSettingsGear } from "react-icons/vsc";
+import { VscSettingsGear } from "react-icons/vsc";
 
 import { DependenciesPanel } from "./SidebarPannel";
 import Settings from "../Settings";
@@ -12,14 +12,16 @@ import merge from "../tools/merge";
 
 import useCompiler from "../hooks/useCompiler";
 import { BsStars } from "react-icons/bs";
-import Footer from "./Footer";
+import IAChat from "./IAChat";
 import { BiSolidPackage } from "react-icons/bi";
+import useSettings from "../hooks/useSettings";
 
 const Sidebar = forwardRef<ImperativePanelHandle>((_, ref) => {
   if (!ref || !("current" in ref) || !ref.current) return null;
 
   const [selected, setSelected] = useState<number | null>(null);
   const { paused, setPaused } = useCompiler();
+  const { settings } = useSettings()
 
   const open = (
     ref: MutableRefObject<ImperativePanelHandle | null>,
@@ -70,6 +72,7 @@ const Sidebar = forwardRef<ImperativePanelHandle>((_, ref) => {
     {
       icon: <BsStars size={22} />,
       title: "IA",
+      hidden: !settings.apiKey,
       onClick: (
         ref: MutableRefObject<ImperativePanelHandle | null>,
         index: number
@@ -77,7 +80,7 @@ const Sidebar = forwardRef<ImperativePanelHandle>((_, ref) => {
         open(ref, index);
         setSelected(index);
       },
-      panelItem: <Footer />,
+      panelItem: <IAChat />,
     },
   ];
 
@@ -86,8 +89,9 @@ const Sidebar = forwardRef<ImperativePanelHandle>((_, ref) => {
     <>
       <aside className="dark:bg-main-dark bg-[#f7f7f7] p-2 pt-4 md:flex flex-col hidden">
         <section className="flex-1 flex flex-col gap-2">
-          {buttons.map((button, index) => (
-            <button
+          {buttons.map((button, index) => {
+            if (button.hidden) return null;
+            return <button
               key={index}
               title={t(button.title)}
               onClick={() => {
@@ -102,7 +106,7 @@ const Sidebar = forwardRef<ImperativePanelHandle>((_, ref) => {
             >
               {button.icon}
             </button>
-          ))}
+          })}
         </section>
         <section className="flex flex-col gap-2 ">
           <MyModal

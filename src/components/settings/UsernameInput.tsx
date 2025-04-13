@@ -8,7 +8,6 @@ const UsernameInput = () => {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     changeSettings({ name: e.target.value });
-
   };
 
   return (

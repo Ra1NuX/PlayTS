@@ -18,33 +18,37 @@ const EditorComponent = () => {
 
   const editorRef = useRef<any>(null);
 
-  const editorOptions: EditorProps["options"] = useMemo(() => ({
-    minimap: { enabled: false },
-    fontSize: size,
-    lineNumbers: "off",
-    renderLineHighlight: "none",
-    "semanticHighlighting.enabled": "configuredByTheme",
-    cursorBlinking: "expand",
-    lineHeight: 29,
-    glyphMargin: false,
-    wordWrap: "on",
-    scrollBeyondLastLine: false,
-    scrollbar: {
-      vertical: "auto",
-      useShadows: false,
-    },
-    fontLigatures: true,
-    fontVariations: true,
-    fontFamily: font,
-  }), [font, size]);
-
-  
-  const handleChange = useCallback(
-    debounce((e: string|undefined) => {
-      updateCode(e??'');
-    }, 300),
-    []
+  const editorOptions: EditorProps["options"] = useMemo(
+    () => ({
+      minimap: { enabled: false },
+      fontSize: size,
+      lineNumbers: "off",
+      renderLineHighlight: "none",
+      "semanticHighlighting.enabled": "configuredByTheme",
+      cursorBlinking: "expand",
+      lineHeight: 29,
+      glyphMargin: false,
+      wordWrap: "on",
+      scrollBeyondLastLine: false,
+      scrollbar: {
+        vertical: "auto",
+        useShadows: false,
+      },
+      fontLigatures: true,
+      fontVariations: true,
+      fontFamily: font,
+    }),
+    [font, size]
   );
+
+  const debouncedUpdateCode = useMemo(() => {
+    return debounce((value?: string) => {
+      
+      updateCode(value??'');
+    }, 500);
+  }, [updateCode]);
+
+  const handleChange = useCallback(debouncedUpdateCode, []);
 
   useEffect(() => {
     if (!monaco) return;
@@ -78,19 +82,19 @@ const EditorComponent = () => {
 
   const handleEditorMount = useCallback((editor: any) => {
     editorRef.current = editor;
-     // editor.onDidScrollChange(() => {
-        //   const scrollTop = editor.getScrollTop();
-        //   const scrollHeight = editor.getScrollHeight();
-        //   const editorHeight = editor.getLayoutInfo().height;
+    // editor.onDidScrollChange(() => {
+    //   const scrollTop = editor.getScrollTop();
+    //   const scrollHeight = editor.getScrollHeight();
+    //   const editorHeight = editor.getLayoutInfo().height;
 
-        //   if (rightContainerRef.current) {
-        //     const rightScrollHeight = rightContainerRef.current.scrollHeight;
-        //     const rightHeight = rightContainerRef.current.clientHeight;
-        //     const ratio = scrollTop / (scrollHeight - editorHeight);
-        //     const rightScrollTop = ratio * (rightScrollHeight - rightHeight);
-        //     rightContainerRef.current.scrollTop = rightScrollTop;
-        //   }
-        // });
+    //   if (rightContainerRef.current) {
+    //     const rightScrollHeight = rightContainerRef.current.scrollHeight;
+    //     const rightHeight = rightContainerRef.current.clientHeight;
+    //     const ratio = scrollTop / (scrollHeight - editorHeight);
+    //     const rightScrollTop = ratio * (rightScrollHeight - rightHeight);
+    //     rightContainerRef.current.scrollTop = rightScrollTop;
+    //   }
+    // });
   }, []);
 
   return (

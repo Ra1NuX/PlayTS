@@ -115,15 +115,6 @@ export const installPackage = async (name: string, version: string): Promise<boo
     const container = await getWebContainer();
     const install = await container.spawn("npm", ["install", `${name}@${version}`]);
     await install.exit;
-
-    localStorage.setItem(
-      "dependencies",
-      JSON.stringify({
-        ...JSON.parse(localStorage.getItem("dependencies") || "{}"),
-        [name]: version,
-      })
-    );
-
     return true;
   } catch (error) {
     console.error("Error en la instalación:", error);
@@ -136,12 +127,6 @@ export const uninstallPackage = async (name: string): Promise<boolean> => {
     const container = await getWebContainer();
     const uninstall = await container.spawn("npm", ["uninstall", name]);
     await uninstall.exit;
-
-    const dependencies = JSON.parse(localStorage.getItem("dependencies") || "{}");
-    delete dependencies[name];
-
-    localStorage.setItem("dependencies", JSON.stringify(dependencies));
-
     return true;
   } catch (error) {
     console.error("Error en la desinstalación:", error);

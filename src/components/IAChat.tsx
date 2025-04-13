@@ -7,22 +7,16 @@ import {
   IoMdCloseCircleOutline,
 } from "react-icons/io";
 
-import useCompiler from "../hooks/useCompiler";
-import SyntaxHighlighter from "react-syntax-highlighter";
-import { darkTheme, lightTheme } from "../utils/customTheme";
-import { useTheme } from "../hooks/useTheme";
 import useChat from "../hooks/useChat";
 import Code from "./chat/Code";
+import Bash from "./chat/Bash";
 
-interface FooterProps {
+interface IAChatProps {
   open?: boolean;
 }
 
-const Footer = ({ open }: FooterProps) => {
-
-
-  const { chatHistory, addMessage, message, setMessage,  } =
-    useChat();
+const IAChat = ({ open }: IAChatProps) => {
+  const { chatHistory, addMessage, message, setMessage } = useChat();
 
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
   const scrollContainerRef = useRef<HTMLDivElement | null>(null);
@@ -56,6 +50,7 @@ const Footer = ({ open }: FooterProps) => {
             el.scrollHeight - el.scrollTop - el.clientHeight < 30;
           isAtBottomRef.current = isAtBottom;
         }}
+        id="scroll-container"
         className="p-2 rounded-md dark:bg-main-dark bg-[#f7f7f7] font-normal flex flex-col flex-1 overflow-auto"
       >
         {chatHistory.map((msg, index) => (
@@ -95,17 +90,37 @@ const Footer = ({ open }: FooterProps) => {
                       </span>
                     </span>
                   )}
-                  <ReactMarkdown remarkPlugins={[remarkBreaks]} components={{
-                    code({ children }) {
-                      return <Code id={msg.id} code={String(children).replace(/\n$/, '')} />
-                    }
-                  }}>{msg.content}</ReactMarkdown>
+                  <ReactMarkdown
+                    remarkPlugins={[remarkBreaks]}
+                    components={{
+                      code({ children, className }) {
+                        const match = /language-(\w+)/.exec(className || "");
+                        
+                        const language = match ? match[1] : "";
+
+                        if(language.includes('bash') || language.includes('shell') || language.includes('sh') || !language) {
+                          return <Bash code={String(children).replace(/\n$/, "")} />;
+                        }
+
+                        if (match) {
+                          return (
+                            <Code
+                              id={msg.id}
+                              code={String(children).replace(/\n$/, "")}
+                            />
+                          );
+                        }
+                      },
+                    }}
+                  >
+                    {msg.content}
+                  </ReactMarkdown>
                 </div>
               </div>
               {msg.code &&
                 index === chatHistory.length - 1 &&
                 msg.accepted == undefined && (
-                  <Code code={msg.code} id={msg.id}  />
+                  <Code code={msg.code} id={msg.id} />
                 )}
             </div>
           </>
@@ -121,7 +136,7 @@ const Footer = ({ open }: FooterProps) => {
             onChange={(e) => setMessage(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && handleSend(e)}
             placeholder="Escribe un mensaje..."
-            className="field-content border-main-light/20 dark:bg-main-light border max-h-64 w-full min-h-9 text-md p-1.5 pr-10 rounded dark:text-white font-normal text-main-dark focus:outline-none focus:border-[#0078D4]"
+            className="field-content border-main-light/20 dark:bg-main-light max-h-64 w-full min-h-9 text-md p-1.5 px-3 pr-10 rounded dark:text-white font-normal text-main-dark focus:outline-none focus:border-[#0078D4]"
           />
           <button
             onClick={handleSend}
@@ -135,4 +150,4 @@ const Footer = ({ open }: FooterProps) => {
   );
 };
 
-export default Footer;
+export default IAChat;

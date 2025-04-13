@@ -2,7 +2,6 @@ import { useState } from "react";
 import useSettings, { AiModel } from "./useSettings";
 import { callOpenAI } from "../utils/callOpenAI";
 import { globalCode } from "./useCompiler";
-import { randomUUIDv7 } from "bun";
 
 interface ChatProps {
   role: string;
@@ -16,7 +15,7 @@ interface ChatProps {
 const defaultChatHistory: ChatProps[] = [
   {
     role: "assistant",
-    content: "Hola soy TSita, ¿en qué puedo ayudarte con este código?",
+    content: "Hola, ¿en qué puedo ayudarte con este código?",
   },
 ];
 
@@ -42,15 +41,16 @@ const useChat = () => {
     setChatHistory((prev) => [...prev, { role: "assistant", content: "" }]);
     switch (settings.aiModel) {
       case AiModel.GPT_4O:
-      case AiModel.GPT_3_5:
-      case AiModel.GPT_4:
-      case AiModel.GPT_4_TURBO:
+      case AiModel.GPT_4O_MINI:
+      case AiModel.GPT_4_5_PREVIEW:
+      case AiModel.GPT_O1:
+      case AiModel.GPT_O3:
         await callOpenAI(
           [
             ...chatHistory,
             {
               role: "system",
-              content: `Este es el código mas actualizado, solo debes acceder a el cuando te pregunten algo del código: ${globalCode} `,
+              content: `Solo debes acceder a esta info si el usuario te lo pide: code: ${globalCode}, name: ${settings.name}, email: ${settings.email}`,
             },
             { role: "user", content: `${message}` },
           ],
