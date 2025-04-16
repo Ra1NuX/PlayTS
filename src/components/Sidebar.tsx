@@ -54,7 +54,6 @@ const Sidebar = forwardRef<ImperativePanelHandle>((_, ref) => {
         "rounded-xl dark:hover:bg-white/10 hover:shadow-md border dark:border-white/5 group",
       onClick: () => {
         setPaused(!paused);
-        // stop(!paused);
       },
     },
     {
