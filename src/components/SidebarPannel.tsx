@@ -1,39 +1,29 @@
-import { ChangeEvent, useEffect, useState } from "react";
-import { NpmSearchResponse } from "../model/npm";
+import { ChangeEvent, useCallback, useMemo } from "react";
 import debounce from "../tools/debounce";
 import DownloadPackageButton from "./DownloadPackageButton";
 import { BiSolidStar } from "react-icons/bi";
 import { useTranslation } from "react-i18next";
+import useDependencies from "../hooks/useDependencies";
+import Pagination from "./Pagination";
 
 export const DependenciesPanel = () => {
-  const [search, setSearch] = useState<string | null>(null);
-  const [info, setInfo] = useState<NpmSearchResponse | null>(null);
-
   const { t } = useTranslation();
 
-  const [installedDependecies, setInstalledDependencies] = useState<{
-    [x: string]: string;
-  } | null>(null);
+  const { search, totalPages, setPage, info, isLoading, packages} = useDependencies();
 
-  const searchFunction = debounce((e: ChangeEvent<HTMLInputElement>) => {
-    setSearch(e.target.value);
-  }, 1000);
+  console.log({packages})
+  const debouncedSearch = useMemo(
+    () =>
+      debounce((value: string) => {
+        search(value);
+      }, 500),
+    []
+  );
 
-  useEffect(() => {
-    setInstalledDependencies(
-      JSON.parse(localStorage.getItem("dependencies") || "{}")
-    );
+  const searchFunction = useCallback((e: ChangeEvent<HTMLInputElement>) => {
+    const { value } = e.target;
+    debouncedSearch(value);
   }, []);
-
-  useEffect(() => {
-    if (!search || search.length <= 1) return;
-
-    fetch(`https://registry.npmjs.org/-/v1/search?text=${search}&size=20`)
-      .then((response) => response.json())
-      .then((data: NpmSearchResponse) => {
-        setInfo(data);
-      });
-  }, [search]);
 
   return (
     <>
@@ -46,62 +36,97 @@ export const DependenciesPanel = () => {
         id="dependencies"
         autoCorrect="off"
         className="dark:bg-main-light dark:text-white shadow-md p-2 flex m-2 mx-auto w-full rounded-lg font-normal"
-        onChange={(e) => {
-          searchFunction(e);
-        }}
+        onChange={searchFunction}
       />
-      <section className="flex flex-1 flex-col h-auto overflow-y-auto gap-2">
-        {search ? (
-          info?.objects.map((element) => {
-            return (
-              <div
-                key={element.package.name}
-                className="p-2 flex w-full justify-between items-center rounded-lg"
-              >
-                <h2 className="dark:text-gray-300 text-main-dark font-semibold  flex flex-col text-left w-1/2 break-words">
-                  {element.package.name}
-                  <span className="dark:text-gray-500 text-main-light/60 font-semibold text-start text-xs">
-                    {element.package.version}
-                  </span>
-                </h2>
-                <DownloadPackageButton
-                  pckg={element.package.name}
-                  version={element.package.version}
-                />
+
+      {info ? (
+        <>
+          <section className="flex flex-1 flex-col h-auto overflow-y-auto gap-2">
+            {isLoading && (
+              <div className="flex justify-center items-center">
+                <svg
+                  className="animate-spin h-5 w-5 text-gray-500"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    fill="none"
+                    strokeWidth="4"
+                    stroke="currentColor"
+                  />
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8v2a6 6 0 100 12v2a8 8 0 01-8-8z"
+                  />
+                </svg>
               </div>
-            );
-          })
-        ) : (
-          <>
-            {installedDependecies &&
-            Object.keys(installedDependecies).length > 0 ? (
-              <h2 className="dark:text-gray-300 font-semibold flex flex-col text-left pt-4">
-                <span className="flex items-center gap-2 px-2">
-                  <BiSolidStar color="#d8e548" />{" "}
-                  {t("INSTALLED_DEPENDENCIES")}:
-                </span>
-                {Object.entries(installedDependecies).map(([pckg, version]) => {
-                  return (
-                    <div key={pckg+version} className="px-2 flex m-2 mx-auto w-full rounded-lg justify-between items-center">
-                      <h2 className="dark:text-gray-300 font-semibold  flex flex-col text-left">
-                        {pckg}
-                        <span className="dark:text-gray-500 font-semibold text-start text-xs">
-                          {version}
-                        </span>
-                      </h2>
-                      <DownloadPackageButton pckg={pckg} version={version} />
-                    </div>
-                  );
-                })}
-              </h2>
-            ) : (
-              <h2 className="dark:text-gray-600 font-semibold pt-4 flex flex-col text-center italic">
-                {t("NO_DEPENDENCIES_INSTALLED")}
-              </h2>
             )}
-          </>
-        )}
-      </section>
+
+            {!isLoading &&
+              info.objects.map((element) => {
+                return (
+                  <div
+                    key={element.package.name}
+                    className="p-2 flex w-full justify-between items-center rounded-lg"
+                  >
+                    <h2 className="dark:text-gray-300 text-main-dark font-semibold  flex flex-col text-left w-1/2 break-words">
+                      {element.package.name}
+                      <span className="dark:text-gray-500 text-main-light/60 font-semibold text-start text-xs">
+                        {element.package.version}
+                      </span>
+                    </h2>
+                    <DownloadPackageButton
+                      pckg={element.package.name}
+                      version={element.package.version}
+                    />
+                  </div>
+                );
+              })}
+          </section>
+          <Pagination
+            totalPages={totalPages}
+            onPageChange={(page) => {
+              setPage(page - 1);
+            }}
+          />
+        </>
+      ) : (
+        <>
+          {packages &&
+          Object.keys(packages).length > 0 ? (
+            <h2 className="dark:text-gray-300 font-semibold flex flex-col text-left pt-4">
+              <span className="flex items-center gap-2 px-2">
+                <BiSolidStar color="#d8e548" /> {t("INSTALLED_DEPENDENCIES")}:
+              </span>
+              {Object.entries(packages).map(([pckg, version]) => {
+                return (
+                  <div
+                    key={pckg + version}
+                    className="px-2 flex m-2 mx-auto w-full rounded-lg justify-between items-center"
+                  >
+                    <h2 className="dark:text-gray-300 font-semibold  flex flex-col text-left">
+                      {pckg}
+                      <span className="dark:text-gray-500 font-semibold text-start text-xs">
+                        {version}
+                      </span>
+                    </h2>
+                    <DownloadPackageButton pckg={pckg} version={version} />
+                  </div>
+                );
+              })}
+            </h2>
+          ) : (
+            <h2 className="dark:text-gray-600 font-semibold pt-4 flex flex-col text-center italic">
+              {t("NO_DEPENDENCIES_INSTALLED")}
+            </h2>
+          )}
+        </>
+      )}
     </>
   );
 };

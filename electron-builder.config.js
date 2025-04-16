@@ -5,23 +5,31 @@
 const config = {
   appId: "com.arco.opents",
   generateUpdatesFilesForAllChannels: true,
-  productName: `OpenTS ${process.env.CHANNEL === 'beta' ? 'Beta' : ''}`,
+  productName: `OpenTS ${process.env.CHANNEL === "beta" ? "Beta" : ""}`,
   asar: true,
+  extraResources: [
+    {
+      from: "public/locales",
+      to: "locales",
+    },
+  ],
   directories: {
     buildResources: "public",
     output: "dist",
-  },  
-  publish: {
-    provider: 'github',
-    owner: 'ra1nux',
-    repo: 'OpenTS',
-    releaseType: process.env.CHANNEL === 'beta' ? 'prerelease' : 'release',
-    publishAutoUpdate: true,
-
   },
-  artifactName: process.env.CHANNEL === 'beta' ? 'Setup-${productName}${version}.${ext}' : 'Setup-${productName}${version}.${ext}',
+  publish: {
+    provider: "github",
+    owner: "ra1nux",
+    repo: "OpenTS",
+    releaseType: process.env.CHANNEL === "beta" ? "prerelease" : "release",
+    publishAutoUpdate: true,
+  },
+  artifactName:
+    process.env.CHANNEL === "beta"
+      ? "Setup-${productName}${version}.${ext}"
+      : "Setup-${productName}${version}.${ext}",
   win: {
-    icon: 'public/icon.ico',
+    icon: "public/icon.ico",
     target: [
       {
         target: "nsis",
@@ -41,6 +49,6 @@ const config = {
       },
     ],
   },
-}
+};
 
 module.exports = config;
