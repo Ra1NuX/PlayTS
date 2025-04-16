@@ -1,15 +1,12 @@
-import { KeyboardEvent, MouseEvent, useEffect, useRef } from "react";
+import { Fragment, KeyboardEvent, MouseEvent, useEffect, useRef } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkBreaks from "remark-breaks";
 import { BiSend } from "react-icons/bi";
-import {
-  IoMdCheckmarkCircleOutline,
-  IoMdCloseCircleOutline,
-} from "react-icons/io";
 
 import useChat from "../hooks/useChat";
 import Code from "./chat/Code";
 import Bash from "./chat/Bash";
+import { useTranslation } from "react-i18next";
 
 interface IAChatProps {
   open?: boolean;
@@ -17,6 +14,7 @@ interface IAChatProps {
 
 const IAChat = ({ open }: IAChatProps) => {
   const { chatHistory, addMessage, message, setMessage } = useChat();
+  const { t } = useTranslation();
 
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
   const scrollContainerRef = useRef<HTMLDivElement | null>(null);
@@ -54,7 +52,7 @@ const IAChat = ({ open }: IAChatProps) => {
         className="p-2 rounded-md dark:bg-main-dark bg-[#f7f7f7] font-normal flex flex-col flex-1 overflow-auto"
       >
         {chatHistory.map((msg, index) => (
-          <>
+          <Fragment key={index}>
             <div
               key={index}
               className={`mb-2 ${
@@ -74,22 +72,6 @@ const IAChat = ({ open }: IAChatProps) => {
                       : "dark:bg-main-light bg-[#fff] dark:text-white"
                   }`}
                 >
-                  {msg.accepted && (
-                    <span className=" group-hover:opacity-100 opacity-0 transition-opacity duration-300 flex items-center justify-center gap-1 select-none absolute bottom-1 right-1">
-                      <IoMdCheckmarkCircleOutline className="text-[#ff79c6] text-3xl" />
-                      {/* <span className="text-sm text-[#ff79c6] font-semibold">
-                    Aceptado
-                  </span> */}
-                    </span>
-                  )}
-                  {msg.accepted == false && (
-                    <span className="flex items-center justify-center gap-1 select-none">
-                      <IoMdCloseCircleOutline className="text-red-600" />
-                      <span className="text-sm text-red-600 font-semibold">
-                        Rechazado
-                      </span>
-                    </span>
-                  )}
                   <ReactMarkdown
                     remarkPlugins={[remarkBreaks]}
                     components={{
@@ -123,7 +105,7 @@ const IAChat = ({ open }: IAChatProps) => {
                   <Code code={msg.code} id={msg.id} />
                 )}
             </div>
-          </>
+          </Fragment>
         ))}
         <div ref={messagesEndRef} />
       </div>
@@ -132,10 +114,11 @@ const IAChat = ({ open }: IAChatProps) => {
         <div className="flex flex-grow relative">
           <textarea
             rows={1}
+            spellCheck="false"
             value={message}
             onChange={(e) => setMessage(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && handleSend(e)}
-            placeholder="Escribe un mensaje..."
+            placeholder={t("MESSAGE_PLACEHOLDER")}
             className="field-content border-main-light/20 dark:bg-main-light max-h-64 w-full min-h-9 text-md p-1.5 px-3 pr-10 rounded dark:text-white font-normal text-main-dark focus:outline-none focus:border-[#0078D4]"
           />
           <button

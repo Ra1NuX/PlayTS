@@ -1,10 +1,12 @@
 import { useState } from "react";
 import useSettings from "../../hooks/useSettings";
 import debounce from "../../tools/debounce";
+import { useTranslation } from "react-i18next";
 
 const UsernameInput = () => {
   const { changeSettings, settings } = useSettings();
   const [name, setName] = useState<string>(settings.name || "");
+  const { t } = useTranslation();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     changeSettings({ name: e.target.value });
@@ -12,7 +14,7 @@ const UsernameInput = () => {
 
   return (
     <div>
-      <h2 className="p-0.5">Display Name</h2>
+      <h2 className="p-0.5">{t('DISPLAY_NAME')}</h2>
       <input
         type="text"
         placeholder=""

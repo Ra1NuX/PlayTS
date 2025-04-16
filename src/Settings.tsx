@@ -14,13 +14,17 @@ import { FaUserEdit } from "react-icons/fa";
 import AIModelSelector from "./components/settings/AIModelSelector";
 import UsernameInput from "./components/settings/UsernameInput";
 import EmailInput from "./components/settings/EmailInput";
+import { useTranslation } from "react-i18next";
 
 interface SettingsProps {
   open?: () => void;
   close?: () => void;
 }
 
-const Settings = ({ close = Function }: SettingsProps) => {
+const Settings = ({ close = Function, }: SettingsProps) => {
+
+  const { t } = useTranslation();
+
   return (
     <main className="flex flex-col font-[roboto] font-medium text-main-dark dark:text-white">
       <TabGroup>
@@ -28,24 +32,24 @@ const Settings = ({ close = Function }: SettingsProps) => {
           <TabList className="flex gap-1 p-0.5 bg-main-light/10 dark:bg-white/5 rounded-md shadow-md">
             <Tab className="flex gap-2 items-center justify-center rounded-md  p-0.5 px-2 focus:outline-none data-[selected]:bg-white/10 data-[hover]:bg-white/5 data-[selected]:data-[hover]:bg-white/10 data-[focus]:outline-1 data-[focus]:outline-white">
               <FaUserEdit className="w-4 h-4" />
-              General
+              {t("GENERAL")}
             </Tab>
             <Tab className="flex gap-2 items-center justify-center rounded-md  p-1 px-2 focus:outline-none data-[selected]:bg-white/10 data-[hover]:bg-white/5 data-[selected]:data-[hover]:bg-white/10 data-[focus]:outline-1 data-[focus]:outline-white">
               <FaPalette className="w-4 h-4" />
-              Apparence
+              {t("APPARENCE")}
             </Tab>
             <Tab className="flex gap-2 items-center justify-center rounded-md  p-1 px-2 focus:outline-none data-[selected]:bg-white/10 data-[hover]:bg-white/5 data-[selected]:data-[hover]:bg-white/10 data-[focus]:outline-1 data-[focus]:outline-white">
               <BsStars className="w-4 h-4" />
-              AI
+              {t("AI")}
             </Tab>
             <Tab className="flex gap-2 items-center justify-center rounded-md  p-1 px-2 focus:outline-none data-[selected]:bg-white/10 data-[hover]:bg-white/5 data-[selected]:data-[hover]:bg-white/10 data-[focus]:outline-1 data-[focus]:outline-white">
               <BiSolidHelpCircle className="w-4 h-4" />
-              Ayuda
+              {t("ABOUT")}
             </Tab>
           </TabList>
           <button
             onClick={() => close()}
-            className="flex justify-center aspect-square w-9 h-9 items-center rounded hover:bg-[#ff0000dd] dark:hover:bg-[#ff0000dd] hover:text-white"
+            className="flex justify-center aspect-square w-9 h-9 ml-1.5 items-center rounded hover:bg-[#ff0000dd] dark:hover:bg-[#ff0000dd] hover:text-white"
           >
             <span className="text-2xl font-extralight mb-1.5">&times;</span>
           </button>

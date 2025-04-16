@@ -1,10 +1,11 @@
 import { zodResponseFormat } from "openai/helpers/zod";
 import { z } from "zod";
 
-import { context } from "../model/ai";
 import { globalSettings } from "../hooks/useSettings";
 
 import { v4 as uuid } from "uuid";
+import { globalCode } from "../hooks/useCompiler";
+import { t } from "i18next";
 
 const schema = z.object({
   response: z.string(),
@@ -15,28 +16,46 @@ const schema = z.object({
 export async function callOpenAI(
   messages: { role: string; content: string }[],
   onData: (data: { response: string }) => void,
-  onFinally: (data: { response: string; code: string; error: boolean, id: string|null }) => void
+  onFinally: (data: {
+    response: string;
+    code: string;
+    error: boolean;
+    id: string | null;
+  }) => void
 ) {
-  const apiKey = localStorage.getItem("apiKey");
-  if (!apiKey) {
-    throw new Error("API key is not set");
-  }
 
   const responseFormat = zodResponseFormat(schema, "correct");
 
   let retries = 3;
   let response;
+
+  console.log({
+    messages,
+  });
+
   do {
     try {
       response = await fetch("https://api.openai.com/v1/chat/completions", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${apiKey}`,
+          Authorization: `Bearer ${globalSettings.apiKey}`,
         },
         body: JSON.stringify({
           model: globalSettings.aiModel,
-          messages: [{ role: "system", content: context }, ...messages],
+          messages: [
+            {
+              role: "system",
+              content:
+                t("SYSTEM_CONTEXT") + ' ' + 
+                t("SYSTEM_MESSAGE_CONTEXT", {
+                  code: globalCode,
+                  name: globalSettings.name,
+                  email: globalSettings.email,
+                }),
+            },
+            ...messages,
+          ],
           stream: true,
           response_format: responseFormat,
         }),
@@ -79,8 +98,8 @@ export async function callOpenAI(
             const parsed = JSON.parse(jsonStr);
             const delta = parsed.choices?.[0]?.delta?.content || "";
             message += delta;
-            console.log({message})
-            if (message.replaceAll(' ', '').includes('"response":"')) {
+            console.log({ message });
+            if (message.replaceAll(" ", "").includes('"response":"')) {
               const match = message.match(
                 /"response"\s*:\s*"((?:[^"\\]|\\.)*)/
               );
@@ -123,7 +142,7 @@ export async function callOpenAI(
         response: finalResponse,
         error,
         code: finalCode,
-        id: uuid()
+        id: uuid(),
       });
       return;
     } catch (error) {

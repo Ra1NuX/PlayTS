@@ -55,7 +55,7 @@ function App() {
       <section className="flex flex-row flex-1 w-full overflow-hidden dark:bg-main-dark bg-[#f7f7f7]">
         <PanelGroup direction="horizontal" id="sidebar-main">
           <Panel
-            minSize={minSize + 15}
+            minSize={minSize ? minSize + 15 : 0}
             maxSize={maxSize}
             collapsedSize={minSize}
             defaultSize={maxSize}

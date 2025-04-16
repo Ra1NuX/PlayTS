@@ -10,7 +10,7 @@ export enum AiModel {
   GPT_O1 = "o1",
 }
 
-interface GlobalSettings {
+export interface GlobalSettings {
   apiKey: string;
   aiModel: AiModel;
   theme: string;
@@ -98,4 +98,3 @@ export const useSettings = () => {
   return { settings, changeApiKey, changeFont, changeSize, changeSettings };
 };
 export default useSettings;
-export type { GlobalSettings };
