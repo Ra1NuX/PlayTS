@@ -29,7 +29,7 @@ const Pagination = ({totalPages, initialPage=1, onPageChange}: PaginationProps) 
 
     if (startPage > 1) {
       pages.push(
-        <button key="1" onClick={() => handlePageChange(1)} className="px-3 py-1 text-white hover:bg-[#2a2e33] rounded">
+        <button key="1" onClick={() => handlePageChange(1)} className="px-3 py-1 dark:text-white dark:hover:bg-[#2a2e33] hover:bg-[#eaeaea] rounded">
           1
         </button>,
       )
@@ -85,7 +85,7 @@ const Pagination = ({totalPages, initialPage=1, onPageChange}: PaginationProps) 
           onClick={() => handlePageChange(currentPage - 1)}
           disabled={currentPage === 1}
           className={`p-1 rounded-md ${
-            currentPage === 1 ? "text-gray-500 cursor-not-allowed" : "text-white hover:bg-[#2a2e33]"
+            currentPage === 1 ? "text-gray-500 cursor-not-allowed" : "dark:text-white dark:hover:bg-[#2a2e33] hover:bg-[#eaeaea]"
           }`}
           aria-label="Página anterior"
         >
@@ -98,7 +98,7 @@ const Pagination = ({totalPages, initialPage=1, onPageChange}: PaginationProps) 
           onClick={() => handlePageChange(currentPage + 1)}
           disabled={currentPage === totalPages}
           className={`p-1 rounded-md ${
-            currentPage === totalPages ? "text-gray-500 cursor-not-allowed" : "text-white hover:bg-[#2a2e33]"
+            currentPage === totalPages ? "text-gray-500 cursor-not-allowed" : "dark:text-white dark:hover:bg-[#2a2e33] hover:bg-[#eaeaea]"
           }`}
           aria-label="Página siguiente"
         >

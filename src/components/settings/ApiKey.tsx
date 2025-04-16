@@ -44,7 +44,7 @@ const ApiKey = () => {
           onClick={() => {
             changeApiKey("");
           }}
-          className="text-sm text-red-500 hover:text-red-700 absolute right-5 aspect-square w-7 h-7 flex items-center justify-center opacity-0 group-hover:opacity-100 group-hover:bg-[#f0f0f0] rounded-lg transition-opacity duration-200 ease-in-out"
+          className="text-sm text-red-500 hover:text-red-700 dark:hover:text-red-600 absolute right-5 aspect-square w-7 h-7 flex items-center justify-center opacity-0 group-hover:opacity-100 group-hover:bg-[#f0f0f0] dark:group-hover:bg-main-dark rounded-lg transition-opacity duration-200 ease-in-out"
         >
           &times;
         </button> }

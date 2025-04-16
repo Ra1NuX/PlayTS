@@ -35,6 +35,7 @@ export const DependenciesPanel = () => {
         name="dependencies"
         id="dependencies"
         autoCorrect="off"
+        spellCheck="false"
         className="dark:bg-main-light dark:text-white shadow-md p-2 flex m-2 mx-auto w-full rounded-lg font-normal"
         onChange={searchFunction}
       />
