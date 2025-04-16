@@ -1,7 +1,7 @@
 {
   "name": "opents",
   "private": true,
-  "version": "0.2.30",
+  "version": "0.2.31",
   "description": "OpenTS",
   "author": {
     "name": "Ra1NuX",
@@ -9,7 +9,10 @@
   },
   "main": "./app/index.js",
   "electronmon": {
-    "patterns": ["!app/renderer/**", "!src/**"]
+    "patterns": [
+      "!app/renderer/**",
+      "!src/**"
+    ]
   },
   "scripts": {
     "dev": "vite",
