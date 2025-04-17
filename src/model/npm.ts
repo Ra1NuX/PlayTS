@@ -76,3 +76,7 @@ export interface NpmSearchResponse {
     deprecated?: boolean;
     insecure?: boolean;
   }
+
+  export interface InstalledPackages {
+    [name: string]: string;
+  }

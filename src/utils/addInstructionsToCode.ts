@@ -187,6 +187,9 @@ export function addInstructionsToCode(code: string) {
               return inspect(item, { showHidden: true, depth: null, maxArrayLength: 10000, colors: false, getters: true, showProxy: true });
             }
             if(typeof item === 'string') {
+              if(item.includes("'")) {
+                return '\\"'+item+'\\"'
+              }
               return "\\'"+item+"\\'"
             }
             return String(item)

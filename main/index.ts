@@ -7,16 +7,16 @@ import {
 } from "electron";
 import { autoUpdater } from "electron-updater";
 import express from "express";
+import i18next from "i18next";
 import path from "path";
 import log from "electron-log/main";
-import i18n from '../i18n.config'
+import i18nLoaded from "./i18n.config";
 
 log.initialize();
 console = log as unknown as Console;
 
 import { getURL } from "./tools/getUrl";
 import isDev from "./tools/isDev";
-
 
 if (!isDev) {
   const server = express();
@@ -34,8 +34,8 @@ let win: BrowserWindow;
 
 function createWindow() {
   win = new BrowserWindow({
-    width: 800,
-    height: 600,
+    width: 1140,
+    height: 635,
     minWidth: 800,
     minHeight: 600,
     titleBarStyle: "hidden",
@@ -58,22 +58,21 @@ function createWindow() {
   });
 
   autoUpdater.allowPrerelease = true;
-  console.log('Checking for updates...');
+  console.log("Checking for updates...");
   autoUpdater.checkForUpdatesAndNotify().catch(console.error);
 
   const url = getURL("/");
   win.loadURL(url);
-
-
 }
 
 app.whenReady().then(() => {
-  createWindow();
-
-  app.on("activate", () => {
-    if (BrowserWindow.getAllWindows().length === 0) {
-      createWindow();
-    }
+  i18nLoaded.then(() => {
+    createWindow();
+    app.on("activate", () => {
+      if (BrowserWindow.getAllWindows().length === 0) {
+        createWindow();
+      }
+    });
   });
 });
 
@@ -134,11 +133,10 @@ autoUpdater.on("update-downloaded", (info) => {
   console.log("Actualización descargada", info);
 
   const dialogOpts: MessageBoxOptions = {
-    type: "info",
-    buttons: [i18n.t("RESTART NOW"), i18n.t("RESTART AFTER")],
-    title: i18n.t("UPDATE AVAILABLE"),
-    message: i18n.t("UPDATE AVAILABLE "),
-    // detail: i18n.t("UPDATE_AVAILABLE_DETAIL"),
+    type: "question",
+    buttons: [i18next.t("RESTART_NOW"), i18next.t("RESTART_AFTER")],
+    title: i18next.t("UPDATE_AVAILABLE"),
+    message: i18next.t("RESTART_MESSAGE"),
   };
 
   dialog.showMessageBox(dialogOpts).then((returnValue) => {

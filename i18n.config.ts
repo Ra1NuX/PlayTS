@@ -17,7 +17,8 @@ i18n
     defaultNS: "common",
     backend: {
       loadPath: typeof window !== "undefined" ? "/locales/{{lng}}/{{ns}}.json" : "./renderer/locales/{{lng}}/{{ns}}.json",
-      addPath: "./renderer/locales/{{lng}}/{{ns}}.missing.json",
+      addPath: typeof window !== "undefined" ? "/locales/{{lng}}/{{ns}}.missing.json" : "./renderer/locales/{{lng}}/{{ns}}.missing.json",
+      
     },
     debug: true,
     saveMissing: true,

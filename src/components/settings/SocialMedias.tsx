@@ -8,7 +8,7 @@ const SocialMedias = () => {
     <div className="flex flex-row gap-5 justify-between">
       { t("SOCIAL_MEDIAS") }
       <article className="flex flex-row gap-2 justify-between dark:text-white text-main-light">
-        <a href="https://github.com/Ra1NuX/OpenTS" title="github" target="_blank" rel="noreferrer" className="flex items-center justify-center drop-shadow-md transition-transform hover:scale-[120%] hover:text-[#171515]">
+        <a href="https://github.com/Ra1NuX/PlayTS" title="github" target="_blank" rel="noreferrer" className="flex items-center justify-center drop-shadow-md transition-transform hover:scale-[120%] hover:text-[#171515]">
           <FaGithub size={25} />
         </a>
         <a href="https://www.linkedin.com/in/raimundo-martinez-nunez/" title="linkedin" target="_blank" rel="noreferrer" className="flex items-center justify-center drop-shadow-md transition-transform hover:scale-[120%] hover:text-[#0077B5]">

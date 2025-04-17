@@ -1,30 +1,40 @@
-import {
-  VscPackage,
-  VscSettingsGear,
-} from "react-icons/vsc";
-import MyModal from "./Modal";
-import Settings from "../Settings";
-import { Dispatch, SetStateAction, useEffect, useState } from "react";
-import { DependenciesPanel } from "./SidebarPannel";
-import { useTranslation } from "react-i18next";
-import useCompiler from "../hooks/useCompiler";
-import merge from "../tools/merge";
+import { forwardRef, MutableRefObject, useState } from "react";
+import { ImperativePanelHandle } from "react-resizable-panels";
 import { FaPause, FaPlay } from "react-icons/fa6";
+import { useTranslation } from "react-i18next";
+import { VscSettingsGear } from "react-icons/vsc";
 
-const Sidebar = () => {
-  const [open, setOpen] = useState(false);
-  const [desactivate, setDesactivate] = useState(false);
+import { DependenciesPanel } from "./SidebarPannel";
+import Settings from "../Settings";
+import MyModal from "./Modal";
+
+import merge from "../tools/merge";
+
+import useCompiler from "../hooks/useCompiler";
+import { BsStars } from "react-icons/bs";
+import IAChat from "./IAChat";
+import { BiSolidPackage } from "react-icons/bi";
+import useSettings from "../hooks/useSettings";
+
+const Sidebar = forwardRef<ImperativePanelHandle>((_, ref) => {
+  if (!ref || !("current" in ref) || !ref.current) return null;
+
   const [selected, setSelected] = useState<number | null>(null);
-  const { paused: p, setPaused: stop } = useCompiler();
+  const { paused, setPaused } = useCompiler();
+  const { settings } = useSettings()
 
-  useEffect(() => {
-    setDesactivate(true);
-    setTimeout(() => {
-      setDesactivate(false);
-    }, 200);
-  }, [open]);
+  const open = (
+    ref: MutableRefObject<ImperativePanelHandle | null>,
+    index: number
+  ) => {
+    if (!ref.current) return;
 
-  const [paused, setPaused] = useState(p);
+    if (index === selected && !ref.current.isCollapsed()) {
+      ref.current.collapse();
+      return;
+    }
+    ref.current.expand(100);
+  };
 
   const buttons = [
     {
@@ -44,17 +54,32 @@ const Sidebar = () => {
         "rounded-xl dark:hover:bg-white/10 hover:shadow-md border dark:border-white/5 group",
       onClick: () => {
         setPaused(!paused);
-        stop(!paused);
       },
     },
     {
-      icon: <VscPackage size={22} />,
+      icon: <BiSolidPackage size={22} />,
       title: "DEPENDENCIES",
-      onClick: (setOpen: Dispatch<SetStateAction<boolean>>, index: number) => {
-        setOpen((open: boolean) => !open);
+      onClick: (
+        ref: MutableRefObject<ImperativePanelHandle | null>,
+        index: number
+      ) => {
+        open(ref,index);
         setSelected(index);
       },
       panelItem: <DependenciesPanel />,
+    },
+    {
+      icon: <BsStars size={22} />,
+      title: "IA",
+      hidden: !settings.apiKey,
+      onClick: (
+        ref: MutableRefObject<ImperativePanelHandle | null>,
+        index: number
+      ) => {
+        open(ref, index);
+        setSelected(index);
+      },
+      panelItem: <IAChat />,
     },
   ];
 
@@ -63,14 +88,14 @@ const Sidebar = () => {
     <>
       <aside className="dark:bg-main-dark bg-[#f7f7f7] p-2 pt-4 md:flex flex-col hidden">
         <section className="flex-1 flex flex-col gap-2">
-          {buttons.map((button, index) => (
-            <button
-              disabled={desactivate}
+          {buttons.map((button, index) => {
+            if (button.hidden) return null;
+            return <button
               key={index}
               title={t(button.title)}
               onClick={() => {
                 if (button.onClick) {
-                  button.onClick(setOpen, index);
+                  button.onClick(ref, index);
                 }
               }}
               className={merge(
@@ -80,7 +105,7 @@ const Sidebar = () => {
             >
               {button.icon}
             </button>
-          ))}
+          })}
         </section>
         <section className="flex flex-col gap-2 ">
           <MyModal
@@ -93,14 +118,11 @@ const Sidebar = () => {
           />
         </section>
       </aside>
-      <aside
-        aria-current={!open}
-        className="aria-current:w-[0%] w-full max-w-72 transition-[width,padding] duration-100 dark:bg-main-dark bg-[#f7f7f7] aria-current:pr-0 py-2 pr-2 flex flex-col overflow-hidden"
-      >
+      <aside className="w-full transition-[width,padding] duration-100 dark:bg-main-dark bg-[#f7f7f7] aria-current:pr-0 py-2 pr-2 flex flex-col overflow-hidden">
         {buttons[selected!]?.panelItem}
       </aside>
     </>
   );
-};
+});
 
 export default Sidebar;
