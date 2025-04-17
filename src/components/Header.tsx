@@ -21,7 +21,7 @@ const Header = () => {
       <div className="md:w-4/12 w-full h-full leading-[30px] dark:text-[#f7f7f7] float-left pl-2 flex items-center gap-2 ">
         <img src="/icon.png" className="md:h-[25px] h-8 inline-block mt-1" />
         <p className="md:text-sm text-xl font-medium mt-0.5">
-          OpenTS <span className="font-light dark:text-[#f7f7f740] text-main-dark/60 italic"> Beta</span>
+          PlayTS <span className="font-light dark:text-[#f7f7f740] text-main-dark/60 italic"> Beta</span>
         </p>
       </div>
       {window.electron && <CloseButtons />}

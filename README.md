@@ -1,17 +1,17 @@
-# OpenTS
+# PlayTS
 
-[![Download OpenTS](https://img.shields.io/badge/Download-OpenTS-blue)](https://github.com/Ra1NuX/OpenTS/releases/latest) [![Donate](https://img.shields.io/badge/Donate-Support%20Us-green)](https://www.paypal.me/Ra1NuX)
+[![Download PlayTS](https://img.shields.io/badge/Download-PlayTS-blue)](https://github.com/Ra1NuX/PlayTS/releases/latest) [![Donate](https://img.shields.io/badge/Donate-Support%20Us-green)](https://www.paypal.me/Ra1NuXs)
 
-OpenTS is an open-source transpiler designed for efficient and versatile code transformation. Leveraging modern web and desktop technologies, OpenTS provides a seamless experience for converting and optimizing source code.
+PlayTS is an open-source transpiler designed for efficient and versatile code transformation. Leveraging modern web and desktop technologies, PlayTS provides a seamless experience for converting and optimizing source code.
 
 ## Description
 
-Developed using **React** and **Electron**, OpenTS offers a modern and intuitive interface while running natively on Windows, macOS, and Linux. The integration of **WebContainers** ensures a secure, isolated environment for code execution, enabling real-time testing and transpilation.
+Developed using **React** and **Electron**, PlayTS offers a modern and intuitive interface while running natively on Windows, macOS, and Linux. The integration of **WebContainers** ensures a secure, isolated environment for code execution, enabling real-time testing and transpilation.
 
 ## Features
 
 - **Modern, Responsive Interface:** Built with React for an intuitive and dynamic user experience.
-- **Cross-Platform Compatibility:** Powered by Electron, OpenTS runs seamlessly on Windows, macOS, and Linux.
+- **Cross-Platform Compatibility:** Powered by Electron, PlayTS runs seamlessly on Windows, macOS, and Linux.
 - **Secure Execution:** Utilizes WebContainers to safely isolate code execution.
 - **Efficient Transpilation:** Converts and optimizes source code to meet diverse development needs.
 - **Open Source & Extensible:** Encourages community contributions and provides a modular framework for future enhancements.
@@ -20,7 +20,7 @@ Developed using **React** and **Electron**, OpenTS offers a modern and intuitive
 
 ### Download the Application
 
-Click the download button above to obtain the latest release of OpenTS for your operating system.
+Click the download button above to obtain the latest release of PlayTS for your operating system.
 
 ### System Requirements
 
@@ -32,13 +32,13 @@ Click the download button above to obtain the latest release of OpenTS for your 
 1. Clone the repository:
 
    ```bash
-   git clone https://github.com/Ra1NuX/OpenTS.git
+   git clone https://github.com/Ra1NuX/PlayTS.git
    ```
 
 2. Navigate to the project directory:
 
    ```bash
-   cd OpenTS
+   cd PlayTS
    ```
 
 3. Install dependencies:
@@ -148,7 +148,7 @@ Once installed, run the application using the provided executable for your opera
 
 ## Contribution
 
-Contributions are welcome! To collaborate on OpenTS, follow these steps:
+Contributions are welcome! To collaborate on PlayTS, follow these steps:
 
 1. Fork the repository.
 2. Create a new branch for your feature or bug fix:
@@ -168,15 +168,15 @@ This project is licensed under the [MIT License](LICENSE). Feel free to use, mod
 
 ## Community & Support
 
-If you have any questions, suggestions, or need assistance, please open an [Issue](https://github.com/Ra1NuX/OpenTS/issues) on GitHub or join our community on Discord/Slack to connect with other users and contributors.
+If you have any questions, suggestions, or need assistance, please open an [Issue](https://github.com/Ra1NuX/PlayTS/issues) on GitHub or join our community on Discord/Slack to connect with other users and contributors.
 
 ---
 
-Thank you for using and contributing to OpenTS! Together, we are building a powerful tool that fosters innovation in software development.
+Thank you for using and contributing to PlayTS! Together, we are building a powerful tool that fosters innovation in software development.
 
 ## Donations
 
-If OpenTS has proven useful to you, please consider making a donation. Your support is vital in driving continued development and improvement of the project.
+If PlayTS has proven useful to you, please consider making a donation. Your support is vital in driving continued development and improvement of the project.
 
 [![Donate](https://img.shields.io/badge/Donate-Support%20Us-green)](https://www.paypal.me/Ra1NuXs)
 

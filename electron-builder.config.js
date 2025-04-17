@@ -3,9 +3,9 @@
  */
 
 const config = {
-  appId: "com.arco.opents",
+  appId: "com.arco.playts",
   generateUpdatesFilesForAllChannels: true,
-  productName: `OpenTS ${process.env.CHANNEL === "beta" ? "Beta" : ""}`,
+  productName: `PlayTS ${process.env.CHANNEL === "beta" ? "Beta" : ""}`,
   asar: true,
   extraResources: [
     {
@@ -20,7 +20,7 @@ const config = {
   publish: {
     provider: "github",
     owner: "ra1nux",
-    repo: "OpenTS",
+    repo: "PlayTS",
     releaseType: process.env.CHANNEL === "beta" ? "prerelease" : "release",
     publishAutoUpdate: true,
   },
