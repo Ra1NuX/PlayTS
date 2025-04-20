@@ -164,11 +164,13 @@ git checkout -b my-feature-branch
 3. Implement your changes while adhering to the project standards.
 4. Submit a Pull Request describing your modifications.
 
-For more details, please refer to the [CONTRIBUTING.md](CONTRIBUTING.md) file.
+For more details, please refer to the [CONTRIBUTING.md](./CONTRIBUTING.md) file.
 
-## License
+## 📄 License
 
-This project is licensed under the [MIT License](LICENSE). Feel free to use, modify, and distribute the code under the terms of this license.
+This project is distributed under a [Personal Use License](./LICENSE.md).
+
+You are free to use, study, and modify this software for personal and non-commercial purposes only. Redistribution or commercial use is not permitted without explicit permission from the author.
 
 ## Community & Support
 
