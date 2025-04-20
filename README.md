@@ -1,8 +1,8 @@
 <p align="center">
   <img src="https://github.com/Ra1NuX/PlayTS/blob/main/public/icon.png" alt="PlayTS logo" width="150"/>
+  <span style="font-size: 2rem; font-weight: bold; margin-left: 10px;">PlayTS</span>
 </p>
 
-<h1 align="center">PlayTS</h1>
 
 
 [![Download PlayTS](https://img.shields.io/badge/Download-PlayTS-blue)](https://github.com/Ra1NuX/PlayTS/releases/latest) [![Donate](https://img.shields.io/badge/Donate-Support%20Us-green)](https://www.paypal.me/Ra1NuXs)
