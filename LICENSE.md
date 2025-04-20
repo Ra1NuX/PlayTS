@@ -28,5 +28,5 @@ This software is provided "as is", without any warranty of any kind, express or 
 
 ---
 
-**Author:** [Your name or pseudonym]  
-**Date:** [Date of publication or last update]
+**Author:** Ra1NuX
+**Date:** 04/20/2025
