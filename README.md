@@ -179,7 +179,3 @@ Thank you for using and contributing to PlayTS! Together, we are building a powe
 If PlayTS has proven useful to you, please consider making a donation. Your support is vital in driving continued development and improvement of the project.
 
 [![Donate](https://img.shields.io/badge/Donate-Support%20Us-green)](https://www.paypal.me/Ra1NuXs)
-
-```
-
-```
