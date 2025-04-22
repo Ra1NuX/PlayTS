@@ -6,6 +6,8 @@
 
 [![Download PlayTS](https://img.shields.io/badge/Download-PlayTS-blue)](https://github.com/Ra1NuX/PlayTS/releases/latest) [![Donate](https://img.shields.io/badge/Donate-Support%20Us-green)](https://www.paypal.me/Ra1NuXs)
 
+![screenshot](./public/doc/readme_video.gif)
+
 PlayTS is an open-source transpiler designed for efficient and versatile code transformation. Leveraging modern web and desktop technologies, PlayTS provides a seamless experience for converting and optimizing source code.
 
 ## Description
