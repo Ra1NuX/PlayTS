@@ -1,16 +1,30 @@
 <p align="center">
-  <img src="https://github.com/Ra1NuX/PlayTS/blob/main/public/icon.png" alt="PlayTS logo" width="150"/>
+  <img src="./public/icon.png" alt="PlayTS logo" width="150"/>
 </p>
 
 <h1 align="center">PlayTS</h1>
 
-[![Download PlayTS](https://img.shields.io/badge/Download-PlayTS-blue)](https://github.com/Ra1NuX/PlayTS/releases/latest) [![Donate](https://img.shields.io/badge/Donate-Support%20Us-green)](https://www.paypal.me/Ra1NuXs)
+<h4 align="center">An open-source desktop app for executing and transpiling code.</h4>
+
+<p align="center">
+  <a href="https://www.paypal.me/Ra1NuXs">
+    <img src="https://img.shields.io/badge/Donate-Support%20Us-green">
+  </a>
+  <a href="https://github.com/Ra1NuX/PlayTS/releases/latest">
+    <img src="https://img.shields.io/badge/Download-PlayTS-blue">
+  </a>
+</p>
+
+<p align="center">
+  <img src="./public/doc/readme_video.gif">
+</p>
+
 
 PlayTS is an open-source transpiler designed for efficient and versatile code transformation. Leveraging modern web and desktop technologies, PlayTS provides a seamless experience for converting and optimizing source code.
 
 ## Description
 
-Developed using **React** and **Electron**, PlayTS offers a modern and intuitive interface while running natively on Windows, macOS, and Linux. The integration of **WebContainers** ensures a secure, isolated environment for code execution, enabling real-time testing and transpilation.
+Developed using <a href="https://react.dev/">React</a> and <a href="http://electron.atom.io" target="_blank">Electron</a>, PlayTS offers a modern and intuitive interface while running natively on Windows, macOS, and Linux. The integration of <a href="https://webcontainers.io/" target="_blank">WebContainers</a>  ensures a secure, isolated environment for code execution, enabling real-time testing and transpilation.
 
 ## Features
 
@@ -25,6 +39,9 @@ Developed using **React** and **Electron**, PlayTS offers a modern and intuitive
 ### Download the Application
 
 Click the download button above to obtain the latest release of PlayTS for your operating system.
+
+> [!Warning] 
+> Being an open source project without funding I can't afford to pay what a windows/mac certificate costs. That's why you will get a message that Windows/Mac does not trust.
 
 ### System Requirements
 
@@ -107,7 +124,6 @@ npm electron:dev
 
 </details>
 
-
 <details style="border-radius: 4px; margin-bottom: 1em;">
   <summary style="padding: 0.5em; cursor: pointer; font-weight: bold;">
     pnpm
@@ -143,8 +159,6 @@ bun electron:dev
 
   </div>
 </details>
-
-
 
 ## Usage
 
