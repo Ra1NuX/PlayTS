@@ -1,27 +1,30 @@
 import { forwardRef, MutableRefObject, useState } from "react";
-import { ImperativePanelHandle } from "react-resizable-panels";
-import { FaPause, FaPlay } from "react-icons/fa6";
 import { useTranslation } from "react-i18next";
+import { FaPause, FaPlay } from "react-icons/fa6";
 import { VscSettingsGear } from "react-icons/vsc";
+import { ImperativePanelHandle } from "react-resizable-panels";
 
-import { DependenciesPanel } from "./SidebarPannel";
 import Settings from "../Settings";
 import MyModal from "./Modal";
+import { DependenciesPanel } from "./SidebarPanel";
 
 import merge from "../tools/merge";
 
-import useCompiler from "../hooks/useCompiler";
-import { BsStars } from "react-icons/bs";
-import IAChat from "./IAChat";
 import { BiSolidPackage } from "react-icons/bi";
+import { BsBookmarkFill, BsStars } from "react-icons/bs";
+import useCompiler from "../hooks/useCompiler";
 import useSettings from "../hooks/useSettings";
+import Bookmarks from "./Bookmarks";
+import IAChat from "./IAChat";
 
 const Sidebar = forwardRef<ImperativePanelHandle>((_, ref) => {
-  if (!ref || !("current" in ref) || !ref.current) return null;
-
   const [selected, setSelected] = useState<number | null>(null);
   const { paused, setPaused } = useCompiler();
-  const { settings } = useSettings()
+  const { settings } = useSettings();
+  
+  const { t } = useTranslation();
+
+  if (!ref || !("current" in ref) || !ref.current) return null;
 
   const open = (
     ref: MutableRefObject<ImperativePanelHandle | null>,
@@ -63,7 +66,7 @@ const Sidebar = forwardRef<ImperativePanelHandle>((_, ref) => {
         ref: MutableRefObject<ImperativePanelHandle | null>,
         index: number
       ) => {
-        open(ref,index);
+        open(ref, index);
         setSelected(index);
       },
       panelItem: <DependenciesPanel />,
@@ -81,30 +84,45 @@ const Sidebar = forwardRef<ImperativePanelHandle>((_, ref) => {
       },
       panelItem: <IAChat />,
     },
+    {
+      icon: <BsBookmarkFill size={18} />,
+      title: "MARK",
+      onClick: (
+        ref: MutableRefObject<ImperativePanelHandle | null>,
+        index: number
+      ) => {
+        open(ref, index);
+        setSelected(index);
+      },
+      panelItem: <Bookmarks onCodeInjection={(code) => {
+        console.log('Inyectando código:', code);
+      }} />,
+    },
   ];
 
-  const { t } = useTranslation();
   return (
     <>
       <aside className="dark:bg-main-dark bg-[#f7f7f7] p-2 pt-4 md:flex flex-col hidden">
         <section className="flex-1 flex flex-col gap-2">
           {buttons.map((button, index) => {
             if (button.hidden) return null;
-            return <button
-              key={index}
-              title={t(button.title)}
-              onClick={() => {
-                if (button.onClick) {
-                  button.onClick(ref, index);
-                }
-              }}
-              className={merge(
-                "flex w-9 h-9 aspect-square disabled:cursor-pointer dark:hover:bg-white/5 hover:bg-main-dark/5 items-center gap-2 p-2 dark:text-white font-bold rounded-xl transition-colors",
-                button.className
-              )}
-            >
-              {button.icon}
-            </button>
+            return (
+              <button
+                key={index}
+                title={t(button.title)}
+                onClick={() => {
+                  if (button.onClick) {
+                    button.onClick(ref, index);
+                  }
+                }}
+                className={merge(
+                  "flex w-9 h-9 aspect-square disabled:cursor-pointer dark:hover:bg-white/5 hover:bg-main-dark/5 items-center gap-2 p-2 dark:text-white font-bold rounded-xl transition-colors",
+                  button.className
+                )}
+              >
+                {button.icon}
+              </button>
+            );
           })}
         </section>
         <section className="flex flex-col gap-2 ">

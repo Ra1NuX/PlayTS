@@ -17,11 +17,18 @@ import EditorComponent from "./components/EditorComponent";
 import Sidebar from "./components/Sidebar";
 import Header from "./components/Header";
 import useResizePanelSizes from "./hooks/useResizePanelSizes";
+import { useBookmarksStore, useBookmarks } from "./stores/bookmarksStore";
+import { useGlobalBookmarks } from "./hooks/useGlobalBookmarks";
 
 function App() {
   const { theme } = useTheme();
   const { result } = useCompiler();
   const { font, size } = useFont();
+  
+  useBookmarksStore();
+  
+  const bookmarks = useBookmarks();
+  useGlobalBookmarks({ bookmarks });
 
   const editorComponent = useRef<ImperativePanelHandle>(null);
   const outputComponent = useRef<ImperativePanelHandle>(null);

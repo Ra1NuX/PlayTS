@@ -6,6 +6,8 @@ import { useTheme } from "../hooks/useTheme";
 import useCompiler from "../hooks/useCompiler";
 import { useFont } from "../hooks/useFonts";
 import debounce from "../tools/debounce";
+import { useBookmarks } from "../stores/bookmarksStore";
+import { useMonacoTypes } from "../hooks/useMonacoTypes";
 
 const EditorComponent = () => {
   const { updateCode, code } = useCompiler();
@@ -13,6 +15,9 @@ const EditorComponent = () => {
   const { t } = useTranslation();
   const { theme } = useTheme();
   const monaco = useMonaco();
+  const bookmarks = useBookmarks();
+
+  useMonacoTypes({ bookmarks });
 
   const [defaultCode, setDefaultCode] = useState(code);
 
@@ -61,7 +66,7 @@ const EditorComponent = () => {
       target: monaco.languages.typescript.ScriptTarget.Latest,
       module: monaco.languages.typescript.ModuleKind.ESNext,
       moduleResolution: monaco.languages.typescript.ModuleResolutionKind.NodeJs,
-      lib: ["esnext", "dom"], // Si usas DOM
+      lib: ["esnext", "dom"],
       strict: true,
       allowNonTsExtensions: true,
       skipLibCheck: true,
@@ -82,19 +87,6 @@ const EditorComponent = () => {
 
   const handleEditorMount = useCallback((editor: any) => {
     editorRef.current = editor;
-    // editor.onDidScrollChange(() => {
-    //   const scrollTop = editor.getScrollTop();
-    //   const scrollHeight = editor.getScrollHeight();
-    //   const editorHeight = editor.getLayoutInfo().height;
-
-    //   if (rightContainerRef.current) {
-    //     const rightScrollHeight = rightContainerRef.current.scrollHeight;
-    //     const rightHeight = rightContainerRef.current.clientHeight;
-    //     const ratio = scrollTop / (scrollHeight - editorHeight);
-    //     const rightScrollTop = ratio * (rightScrollHeight - rightHeight);
-    //     rightContainerRef.current.scrollTop = rightScrollTop;
-    //   }
-    // });
   }, []);
 
   return (

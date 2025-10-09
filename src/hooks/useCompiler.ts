@@ -1,10 +1,8 @@
-// Basado en lo que hay comentado y ademas en el resto de hooks de este proyecto, puedes crearme este hook que se encargue de compilar el codigo y ademas de ejecutar el js resultante, para que al final me devuelva un array de objetos con la siguiente estructura:
-// Ten en cuennta que se debe usar en diferentes partes de la app y debe actualizarse en todos lados.
-
 import { useEffect, useState } from "react";
 
 import transpileTypeScript from "../tools/convertToJS";
 import runCode from "../utils/runCode";
+import { generateGlobalBookmarkCode } from "../utils/bookmarkInjection";
 
 interface ResultType {
   line: number;
@@ -19,6 +17,32 @@ const codeListeners = new Set<(code: string) => void>();
 let globalPaused = false;
 let globalResult: ResultType[] = [];
 export let globalCode = "";
+export let globalBookmarksCode = "";
+
+const initializeBookmarksFromStorage = () => {
+  try {
+    const stored = localStorage.getItem('bookmarks-storage');
+    if (stored) {
+      const parsed = JSON.parse(stored);
+      if (parsed.state?.bookmarks) {
+        const bookmarks = parsed.state.bookmarks.map((b: any) => ({
+          ...b,
+          createdAt: new Date(b.createdAt)
+        }));
+        
+        const activeBookmarks = bookmarks.filter((b: any) => b.isGloballyActive);
+        
+        if (activeBookmarks.length > 0) {
+          globalBookmarksCode = generateGlobalBookmarkCode(activeBookmarks);
+        }
+      }
+    }
+  } catch (error) {
+    console.error('Error inicializando bookmarks:', error);
+  }
+};
+
+initializeBookmarksFromStorage();
 
 const notifyAll = () => {
   listeners.forEach((listener) => listener(globalResult));
@@ -42,14 +66,21 @@ const setGlobalCode = (code: string) => {
   notifyAll();
 };
 
-const updateAndRunCode = async (code: string) => {
+export const setGlobalBookmarksCode = (code: string, shouldRerun = false) => {
+  globalBookmarksCode = code;
   
+  if (shouldRerun && !globalPaused && globalCode) {
+    updateAndRunCode(globalCode).catch(console.error);
+  }
+};
+
+const updateAndRunCode = async (code: string) => {
   setGlobalCode(code);
   if (globalPaused) return;
 
   try {
     const js = transpileTypeScript(code);
-    const result = await runCode(js);
+    const result = await runCode(js, globalBookmarksCode);
     setGlobalResult(result as ResultType[]);
   } catch (ex) {
     const { message, stack } = ex as Error;
@@ -62,7 +93,6 @@ const updateAndRunCode = async (code: string) => {
     ]);
   }
 };
-
 
 const useCompiler = () => {
   const [result, setResult] = useState<ResultType[]>([]);

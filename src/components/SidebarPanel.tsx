@@ -11,7 +11,6 @@ export const DependenciesPanel = () => {
 
   const { search, totalPages, setPage, info, isLoading, packages} = useDependencies();
 
-  console.log({packages})
   const debouncedSearch = useMemo(
     () =>
       debounce((value: string) => {

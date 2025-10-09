@@ -55,12 +55,16 @@ const ensureDependenciesInstalled = async (container: WebContainer) => {
   }
 };
 
-const runCode = async (code: string) => {
+const runCode = async (code: string, globalBookmarksCode: string = '') => {
   const container = await getWebContainer();
 
   await ensureDependenciesInstalled(container);
 
-  const iCode = addInstructionsToCode(code);
+  const codeWithBookmarks = globalBookmarksCode 
+    ? `${globalBookmarksCode}\n\n${code}`
+    : code;
+
+  const iCode = addInstructionsToCode(codeWithBookmarks);
 
   const dataScheme = z.object({
     line: z.number(),
@@ -78,35 +82,40 @@ const runCode = async (code: string) => {
     new WritableStream({
       write(data) {
         try {
-          if (!data.includes("{")) {
-            if (data.includes("Error")) {
+          if (!data || !data.trim() || !data.includes("{")) {
+            if (data && data.includes("Error")) {
               const error = data.split("Error: ")[1];
-              results.push({
-                line: -1,
-                time: 0,
-                text: error.split("\n")[0],
-              });
+              if (error && error.trim()) {
+                results.push({
+                  line: -1,
+                  time: 0,
+                  text: error.split("\n")[0],
+                });
+              }
             }
             return;
           }
           const cleanData = cleanAnsiAndSpecialChars(data);
           const parsedResult = JSON.parse(cleanData);
-          results.push(parsedResult);
+          
+          if (parsedResult && parsedResult.text !== undefined) {
+            results.push(parsedResult);
+          }
         } catch (e) {
           const { message, stack } = e as Error;
-          results.push({
-            line: -1,
-            time: 0,
-            text: message || stack || JSON.stringify(e),
-          });
+          if (message || stack) {
+            results.push({
+              line: -1,
+              time: 0,
+              text: message || stack || JSON.stringify(e),
+            });
+          }
         }
       },
     })
   );
 
   await runProcess.exit;
-  console.log(results);
-
   return results;
 };
 
