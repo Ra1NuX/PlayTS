@@ -102,56 +102,59 @@ const Bookmarks = ({ onCodeInjection }: BookmarksProps) => {
   };
 
   return (
-    <div className="w-full mx-auto space-y-3 dark:text-gray-300 text-main-dark">
+    <div className="w-full mx-auto space-y-3 dark:text-gray-300 text-main-dark overflow-hidden flex flex-col flex-1">
       <BookmarksHeader
         bookmarksCount={bookmarks.length}
         onAddClick={() => setShowAddForm(!showAddForm)}
         searchTerm={searchTerm}
         onSearchChange={setSearchTerm}
       />
+      <div className="overflow-auto flex flex-col flex-1 gap-2 pr-1 scrollbar-thin scrollbar-track-transparent scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-600 hover:scrollbar-thumb-gray-400 dark:hover:scrollbar-thumb-gray-500">
 
-      {showAddForm && (
-        <NewBookmarkForm
-          bookmark={newBookmark}
-          onUpdate={updateNewBookmark}
-          onUpdateTags={updateNewBookmarkTags}
-          onSave={handleSaveNewBookmark}
-          onCancel={() => setShowAddForm(false)}
-          formatTags={formatTags}
-        />
-      )}
+        {showAddForm && (
+          <NewBookmarkForm
+            bookmark={newBookmark}
+            onUpdate={updateNewBookmark}
+            onUpdateTags={updateNewBookmarkTags}
+            onSave={handleSaveNewBookmark}
+            onCancel={() => setShowAddForm(false)}
+            formatTags={formatTags}
+          />
+        )}
 
-      <div className="grid gap-3">
-        {filteredBookmarks.map((bookmark) => (
-          <div key={bookmark.id} className="dark:bg-main-light bg-white rounded-lg border border-gray-200 dark:border-main-dark overflow-hidden shadow-md hover:shadow-lg transition-shadow">
-            {editingId === bookmark.id ? (
-              <BookmarkEditForm
-                bookmark={editingBookmark!}
-                onSave={handleSaveEdit}
-                onCancel={handleCancelEdit}
-                onUpdate={updateEditingBookmark}
-                onUpdateTags={updateEditingBookmarkTags}
-                formatTags={formatTags}
-              />
-            ) : (
-              <BookmarkCard
-                bookmark={bookmark}
-                onToggleGlobal={handleToggleGlobal}
-                onCopy={handleCopy}
-                onEdit={handleEdit}
-                onUse={handleUse}
-              />
-            )}
-          </div>
-        ))}
+        {/* Contenedor de bookmarks con scroll profesional */}
+        <div className="max-h-[600px] overflow-y-visible  space-y-3 ">
+          {filteredBookmarks.map((bookmark) => (
+            <div key={bookmark.id} className="dark:bg-main-light bg-white rounded-lg border border-gray-200 dark:border-divider-dark overflow-hidden shadow-sm hover:shadow-md transition-all duration-200">
+              {editingId === bookmark.id ? (
+                <BookmarkEditForm
+                  bookmark={editingBookmark!}
+                  onSave={handleSaveEdit}
+                  onCancel={handleCancelEdit}
+                  onUpdate={updateEditingBookmark}
+                  onUpdateTags={updateEditingBookmarkTags}
+                  formatTags={formatTags}
+                />
+              ) : (
+                <BookmarkCard
+                  bookmark={bookmark}
+                  onToggleGlobal={handleToggleGlobal}
+                  onCopy={handleCopy}
+                  onEdit={handleEdit}
+                  onUse={handleUse}
+                />
+              )}
+            </div>
+          ))}
+        </div>
+
+        {filteredBookmarks.length === 0 && (
+          <EmptyState
+            searchTerm={searchTerm}
+            onAddClick={() => setShowAddForm(true)}
+          />
+        )}
       </div>
-
-      {filteredBookmarks.length === 0 && (
-        <EmptyState
-          searchTerm={searchTerm}
-          onAddClick={() => setShowAddForm(true)}
-        />
-      )}
     </div>
   );
 };

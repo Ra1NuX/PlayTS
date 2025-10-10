@@ -8,6 +8,7 @@ import { useFont } from "../hooks/useFonts";
 import debounce from "../tools/debounce";
 import { useBookmarks } from "../stores/bookmarksStore";
 import { useMonacoTypes } from "../hooks/useMonacoTypes";
+import useDependencies from "../hooks/useDependencies";
 
 const EditorComponent = () => {
   const { updateCode, code } = useCompiler();
@@ -16,8 +17,9 @@ const EditorComponent = () => {
   const { theme } = useTheme();
   const monaco = useMonaco();
   const bookmarks = useBookmarks();
+  const { packages } = useDependencies();
 
-  useMonacoTypes({ bookmarks });
+  useMonacoTypes({ bookmarks, installedPackages: packages });
 
   const [defaultCode, setDefaultCode] = useState(code);
 
@@ -42,6 +44,40 @@ const EditorComponent = () => {
       fontLigatures: true,
       fontVariations: true,
       fontFamily: font,
+      quickSuggestions: {
+        other: true,
+        comments: false,
+        strings: true,
+      },
+      suggestOnTriggerCharacters: true,
+      acceptSuggestionOnEnter: "on",
+      tabCompletion: "on",
+      wordBasedSuggestions: false,
+      suggest: {
+        showWords: false,
+        showMethods: true,
+        showFunctions: true,
+        showConstructors: true,
+        showFields: true,
+        showVariables: true,
+        showClasses: true,
+        showStructs: true,
+        showInterfaces: true,
+        showModules: true,
+        showProperties: true,
+        showEvents: true,
+        showOperators: true,
+        showUnits: true,
+        showValues: true,
+        showConstants: true,
+        showEnums: true,
+        showEnumMembers: true,
+        showKeywords: false,
+        showSnippets: false,
+      },
+      parameterHints: {
+        enabled: true,
+      },
     }),
     [font, size]
   );

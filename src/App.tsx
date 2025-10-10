@@ -36,7 +36,7 @@ function App() {
   const sidebarSection = useRef<ImperativePanelHandle>(null);
 
   const { width: minSize } = useResizePanelSizes("sidebar-main", {
-    width: 52,
+    width: 40,
     height: 32,
   });
   const { width: maxSize } = useResizePanelSizes("sidebar-main", {
@@ -83,14 +83,14 @@ function App() {
                 >
                   <Panel
                     minSize={20}
-                    className="rounded-md overflow-hidden dark:bg-main-light bg-[#eaeaea] p-2 rounded-r-none border-r-2 dark:border-r-main-dark border-r-[#f7f7f7]"
+                    className="overflow-hidden dark:bg-main-light bg-[#eaeaea] p-2 rounded-r-none border-r-2 dark:border-r-divider-dark border-r-[#f7f7f7]"
                   >
                     <EditorComponent />
                   </Panel>
                   <PanelResizeHandle />
                   <Panel
                     minSize={20}
-                    className="break-words group overflow-y-auto pr-1.5 font-semibold font-mono leading-none dark:bg-main-light bg-[#eaeaea] rounded-md rounded-l-none border-l-2 dark:border-l-main-dark border-l-[#f7f7f7] w-full flex flex-col p-2 px-4"
+                    className="break-words group overflow-y-auto pr-1.5 font-semibold font-mono leading-none dark:bg-main-light bg-[#eaeaea] rounded-l-none border-l-2 dark:border-l-divider-dark border-l-[#f7f7f7] w-full flex flex-col p-2 px-4"
                   >
                     <div className="overflow-auto">
                       {Array.isArray(filledArray)

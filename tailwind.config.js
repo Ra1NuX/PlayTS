@@ -9,8 +9,15 @@ export default {
       },
       colors: {
         main: {
-          dark: '#222831',
-          light: '#31363F'
+          dark: '#181818',
+          contrast: '#171717',
+          light: '#1c1c1e'
+        },
+        divider: {
+          dark: '#1f1f1f',
+        },
+        accent: {
+          dark: '#0D73FF',
         }
       }
     },

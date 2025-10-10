@@ -6,7 +6,7 @@ import { ImperativePanelHandle } from "react-resizable-panels";
 
 import Settings from "../Settings";
 import MyModal from "./Modal";
-import { DependenciesPanel } from "./SidebarPanel";
+import Dependencies from "./Dependencies";
 
 import merge from "../tools/merge";
 
@@ -42,25 +42,17 @@ const Sidebar = forwardRef<ImperativePanelHandle>((_, ref) => {
   const buttons = [
     {
       icon: paused ? (
-        <FaPlay
-          size={14}
-          className="ml-[3px] dark:fill-[#ffffffaf] fill-main-dark/80 group-hover:fill-green-600 transition-colors duration-200"
-        />
+        <FaPlay size={16} />
       ) : (
-        <FaPause
-          size={16}
-          className="ml-[1px] dark:fill-[#ffffffaf] fill-main-dark/80 group-hover:fill-red-500 transition-colors duration-200"
-        />
+        <FaPause size={16} />
       ),
       title: paused ? "PLAY" : "PAUSE",
-      className:
-        "rounded-xl dark:hover:bg-white/10 hover:shadow-md border dark:border-white/5 group",
       onClick: () => {
         setPaused(!paused);
       },
     },
     {
-      icon: <BiSolidPackage size={22} />,
+      icon: <BiSolidPackage size={20} />,
       title: "DEPENDENCIES",
       onClick: (
         ref: MutableRefObject<ImperativePanelHandle | null>,
@@ -69,10 +61,10 @@ const Sidebar = forwardRef<ImperativePanelHandle>((_, ref) => {
         open(ref, index);
         setSelected(index);
       },
-      panelItem: <DependenciesPanel />,
+      panelItem: <Dependencies />,
     },
     {
-      icon: <BsStars size={22} />,
+      icon: <BsStars size={20} />,
       title: "IA",
       hidden: !settings.apiKey,
       onClick: (
@@ -102,41 +94,54 @@ const Sidebar = forwardRef<ImperativePanelHandle>((_, ref) => {
 
   return (
     <>
-      <aside className="dark:bg-main-dark bg-[#f7f7f7] p-2 pt-4 md:flex flex-col hidden">
-        <section className="flex-1 flex flex-col gap-2">
+      <aside className="dark:bg-main-dark bg-[#f3f3f3] md:flex flex-col hidden border-r dark:border-divider-dark border-gray-300">
+        <section className="flex-1 flex flex-col items-center">
           {buttons.map((button, index) => {
             if (button.hidden) return null;
+            const isSelected = selected === index;
             return (
-              <button
-                key={index}
-                title={t(button.title)}
-                onClick={() => {
-                  if (button.onClick) {
-                    button.onClick(ref, index);
-                  }
-                }}
-                className={merge(
-                  "flex w-9 h-9 aspect-square disabled:cursor-pointer dark:hover:bg-white/5 hover:bg-main-dark/5 items-center gap-2 p-2 dark:text-white font-bold rounded-xl transition-colors",
-                  button.className
+              <div key={index} className="relative w-full flex justify-center">
+                {isSelected && (
+                  <div className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-10 bg-accent-dark/80 rounded-r-full z-10" />
                 )}
-              >
-                {button.icon}
-              </button>
+                <button
+                  title={t(button.title)}
+                  onClick={() => {
+                    if (button.onClick) {
+                      button.onClick(ref, index);
+                    }
+                  }}
+                  className={merge(
+                    "relative flex items-center justify-center w-10 h-10 my-1 transition-all duration-200",
+                    isSelected 
+                      ? "dark:text-white text-accent-dark" 
+                      : "dark:text-gray-400 text-gray-600 dark:hover:text-gray-200 hover:text-gray-800"
+                  )}
+                >
+                  <div className={
+                    isSelected 
+                      ? "flex items-center justify-center w-full h-full transition-colors dark:bg-divider-dark bg-gray-200/50" 
+                      : "flex items-center justify-center w-full h-full transition-colors"
+                  }>
+                    {button.icon}
+                  </div>
+                </button>
+              </div>
             );
           })}
         </section>
-        <section className="flex flex-col gap-2 ">
+        <section className="flex flex-col items-center border-t dark:border-divider-dark border-gray-300">
           <MyModal
             Button={
-              <button className="flex w-9 h-9 aspect-square dark:hover:bg-white/5 hover:bg-main-dark/10 items-center gap-2 p-2 dark:text-white font-bold rounded-xl">
-                <VscSettingsGear size={22} />
+              <button className="flex items-center justify-center w-10 h-10 dark:text-gray-400 text-gray-600 dark:hover:text-gray-200 hover:text-gray-800 transition-colors">
+                <VscSettingsGear size={20} />
               </button>
             }
             children={<Settings />}
           />
         </section>
       </aside>
-      <aside className="w-full transition-[width,padding] duration-100 dark:bg-main-dark bg-[#f7f7f7] aria-current:pr-0 py-2 pr-2 flex flex-col overflow-hidden">
+      <aside className="w-full transition-[width,padding] duration-100 dark:bg-main-dark bg-[#f7f7f7] aria-current:px-0 py-2 px-2 flex flex-col overflow-hidden">
         {buttons[selected!]?.panelItem}
       </aside>
     </>

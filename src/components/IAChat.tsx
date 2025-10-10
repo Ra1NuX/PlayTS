@@ -7,6 +7,7 @@ import useChat from "../hooks/useChat";
 import Code from "./chat/Code";
 import Bash from "./chat/Bash";
 import { useTranslation } from "react-i18next";
+import { BsArrowUp, BsArrowUpCircle, BsFillChatDotsFill } from "react-icons/bs";
 
 interface IAChatProps {
   open?: boolean;
@@ -55,32 +56,29 @@ const IAChat = ({ open }: IAChatProps) => {
           <Fragment key={index}>
             <div
               key={index}
-              className={`mb-2 ${
-                msg.role === "user" ? "text-right" : "text-left"
-              }`}
+              className={`mb-2 ${msg.role === "user" ? "text-right" : "text-left"
+                }`}
             >
               <div
-                className={`flex items-center gap-2 ${
-                  msg.role === "user" ? "justify-end" : "text-left"
-                }`}
+                className={`flex items-center gap-2 ${msg.role === "user" ? "justify-end" : "text-left"
+                  }`}
               >
                 <div
                   aria-invalid={msg.error}
-                  className={`aria-invalid:text-red-600 group text-left relative aria-invalid:bg-transparent aria-invalid:shadow-none inline-block p-2 shadow rounded-lg max-w-[90%] break-words whitespace-normal ${
-                    msg.role === "user"
+                  className={`aria-invalid:text-red-600 group text-left relative aria-invalid:bg-transparent aria-invalid:shadow-none inline-block p-2 border border-gray-200 dark:border-divider-dark rounded-lg max-w-[90%] break-words whitespace-normal ${msg.role === "user"
                       ? "bg-[#0078D4] text-white"
                       : "dark:bg-main-light bg-[#fff] dark:text-white"
-                  }`}
+                    }`}
                 >
                   <ReactMarkdown
                     remarkPlugins={[remarkBreaks]}
                     components={{
                       code({ children, className }) {
                         const match = /language-(\w+)/.exec(className || "");
-                        
+
                         const language = match ? match[1] : "";
 
-                        if(language.includes('bash') || language.includes('shell') || language.includes('sh') || !language) {
+                        if (language.includes('bash') || language.includes('shell') || language.includes('sh') || !language) {
                           return <Bash code={String(children).replace(/\n$/, "")} />;
                         }
 
@@ -110,23 +108,31 @@ const IAChat = ({ open }: IAChatProps) => {
         <div ref={messagesEndRef} />
       </div>
 
-      <div className="dark:bg-main-dark bg-[#f7f7f7] rounded-md">
-        <div className="flex flex-grow relative">
+      <div className="dark:bg-main-light bg-[#f7f7f7] border dark:border-divider-dark rounded-md mt-2">
+        <div className="flex flex-grow relative flex-col">
+          {/* <div className="flex items-center justify-end p-0.5">
+            <span className="font-medium  dark:text-white text-main-dark text-xs rounded-md px-2 py-1 ">
+              18.9%
+            </span>
+          </div> */}
           <textarea
-            rows={1}
+            rows={2}
             spellCheck="false"
             value={message}
             onChange={(e) => setMessage(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && handleSend(e)}
             placeholder={t("MESSAGE_PLACEHOLDER")}
-            className="field-content border-main-light/20 dark:bg-main-light max-h-64 w-full min-h-9 text-md p-1.5 px-3 pr-10 rounded dark:text-white font-normal text-main-dark focus:outline-none focus:border-[#0078D4]"
+            className="field-content dark:bg-main-light max-h-[10rem] w-full text-sm p-2 py-1 rounded dark:text-white font-normal text-main-dark focus:outline-none placeholder:text-gray-400/30 "
           />
-          <button
-            onClick={handleSend}
-            className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-white"
-          >
-            <BiSend className="h-5 w-5" />
-          </button>
+          <div className="flex items-center justify-end p-2">
+
+            <button
+              onClick={handleSend}
+              className="text-gray-400 hover:text-white"
+            >
+              <BsArrowUpCircle className="h-5 w-5" />
+            </button>
+          </div>
         </div>
       </div>
     </div>

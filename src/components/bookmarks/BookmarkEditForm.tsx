@@ -1,6 +1,7 @@
 import { BsCheck, BsX } from "react-icons/bs";
 import { Bookmark } from "../../utils/bookmarkUtils";
 import { MiniCodeEditor } from "./MiniCodeEditor";
+import { useTranslation } from "react-i18next";
 
 interface BookmarkEditFormProps {
   bookmark: Bookmark;
@@ -11,27 +12,29 @@ interface BookmarkEditFormProps {
   formatTags: (tags: string[]) => string;
 }
 
-export const BookmarkEditForm = ({ 
-  bookmark, 
-  onSave, 
-  onCancel, 
-  onUpdate, 
+export const BookmarkEditForm = ({
+  bookmark,
+  onSave,
+  onCancel,
+  onUpdate,
   onUpdateTags,
-  formatTags 
+  formatTags
 }: BookmarkEditFormProps) => {
+  const { t } = useTranslation();
+
   return (
     <div className="p-3">
       <div className="space-y-3">
         <div className="flex items-center justify-between">
-          <h3 className="text-sm font-semibold dark:text-white text-main-dark">Editando: {bookmark.name}</h3>
+          <h3 className="text-sm font-semibold dark:text-white text-main-dark">{t('EDITING')} {bookmark.name}</h3>
           <div className="flex items-center gap-1">
             <button
               onClick={onSave}
-              className="flex items-center gap-1 bg-[#d8e548] hover:bg-[#c4d13a] text-main-dark px-2 py-1 rounded text-xs transition-colors font-semibold"
+              className="flex items-center gap-1 bg-accent-dark hover:bg-[#0d9effb6] text-white px-2 py-1 rounded text-xs transition-colors font-semibold"
               title="Guardar"
             >
               <BsCheck className="h-3 w-3" />
-              <span className="hidden sm:inline">Guardar</span>
+              <span className="hidden sm:inline">{t('SAVE')}</span>
             </button>
             <button
               onClick={onCancel}
@@ -39,13 +42,13 @@ export const BookmarkEditForm = ({
               title="Cancelar"
             >
               <BsX className="h-3 w-3" />
-              <span className="hidden sm:inline">Cancelar</span>
+              <span className="hidden sm:inline">{t('CANCEL')}</span>
             </button>
           </div>
         </div>
         
         <div>
-          <label className="block text-xs font-medium mb-1 dark:text-gray-300 text-main-dark">Nombre</label>
+          <label className="block text-xs font-medium mb-1 dark:text-gray-300 text-main-dark">{t('NAME')}</label>
           <input
             type="text"
             value={bookmark.name}
@@ -56,14 +59,14 @@ export const BookmarkEditForm = ({
         
         <div className="grid grid-cols-2 gap-2">
           <div>
-            <label className="block text-xs font-medium mb-1 dark:text-gray-300 text-main-dark">Lenguaje</label>
+            <label className="block text-xs font-medium mb-1 dark:text-gray-300 text-main-dark">{t('LANGUAGE')}</label>
             <select
               value={bookmark.language}
               onChange={(e) => onUpdate({ language: e.target.value })}
               className="w-full px-2 py-1.5 border border-gray-300 dark:border-main-dark rounded-lg dark:bg-main-dark dark:text-white bg-white shadow-md font-normal text-sm"
             >
-              <option value="javascript">JS</option>
-              <option value="typescript">TS</option>
+              <option value="javascript">{t('JS')}</option>
+              <option value="typescript">{t('TS')}</option>
             </select>
           </div>
           <div className="flex items-center justify-center">
@@ -74,13 +77,13 @@ export const BookmarkEditForm = ({
                 onChange={(e) => onUpdate({ isGloballyActive: e.target.checked })}
                 className="rounded text-xs"
               />
-              <span className="text-xs dark:text-gray-300 text-main-dark">Global</span>
+              <span className="text-xs dark:text-gray-300 text-main-dark">{t('GLOBAL')}</span>
             </label>
           </div>
         </div>
         
         <div>
-          <label className="block text-xs font-medium mb-1 dark:text-gray-300 text-main-dark">Descripción</label>
+          <label className="block text-xs font-medium mb-1 dark:text-gray-300 text-main-dark">{t('DESCRIPTION')}</label>
           <input
             type="text"
             value={bookmark.description}
@@ -90,7 +93,7 @@ export const BookmarkEditForm = ({
         </div>
         
         <div>
-          <label className="block text-xs font-medium mb-1 dark:text-gray-300 text-main-dark">Código</label>
+          <label className="block text-xs font-medium mb-1 dark:text-gray-300 text-main-dark">{t('CODE')}</label>
           <MiniCodeEditor
             value={bookmark.code}
             onChange={(code) => onUpdate({ code })}
@@ -99,13 +102,13 @@ export const BookmarkEditForm = ({
         </div>
         
         <div>
-          <label className="block text-xs font-medium mb-1 dark:text-gray-300 text-main-dark">Tags</label>
+          <label className="block text-xs font-medium mb-1 dark:text-gray-300 text-main-dark">{t('TAGS')}</label>
           <input
             type="text"
             value={formatTags(bookmark.tags)}
             onChange={(e) => onUpdateTags(e.target.value)}
             className="w-full px-2 py-1.5 border border-gray-300 dark:border-main-dark rounded-lg dark:bg-main-dark dark:text-white bg-white shadow-md font-normal text-sm"
-            placeholder="react, hooks"
+            placeholder={t('TAGS_PLACEHOLDER')}
           />
         </div>
       </div>
