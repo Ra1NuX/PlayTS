@@ -16,7 +16,7 @@ const notifyAll = () => {
   listeners.forEach((listener) => listener(globalDependencies));
 };
 
-const setGlobalDependencies = (dependencies: InstalledPackages[]) => {
+const setGlobalDependencies = (dependencies: InstalledPackages) => {
   globalDependencies = dependencies;
   localStorage.setItem("dependencies", JSON.stringify(dependencies));
   notifyAll();
@@ -28,7 +28,7 @@ const useDependencies = () => {
   const [page, setPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [loadingPackages, setLoadingPackages] = useState<Set<string>>(new Set());
   const [packages, setPackages] =
     useState<InstalledPackages>(globalDependencies);
 
@@ -68,25 +68,43 @@ const useDependencies = () => {
   };
 
   const addPackage = async (pckg: string, version: string) => {
-    setLoading(true);
+    setLoadingPackages(prev => new Set(prev).add(pckg));
+    
+    const dependencies = { ...globalDependencies, [pckg]: version };
+    setGlobalDependencies(dependencies);
+    
     const isInstalled = await installPackage(pckg, version);
-    if (isInstalled) {
-      const dependencies = { ...globalDependencies, [pckg]: version };
-      setGlobalDependencies(dependencies);
+    if (!isInstalled) {
+      const revertedDeps = { ...dependencies };
+      delete revertedDeps[pckg];
+      setGlobalDependencies(revertedDeps);
     }
-    setLoading(false);
+    
+    setLoadingPackages(prev => {
+      const next = new Set(prev);
+      next.delete(pckg);
+      return next;
+    });
   };
 
   const removePackage = async (pckg: string) => {
-    setLoading(true);
+    setLoadingPackages(prev => new Set(prev).add(pckg));
+    
     const dependencies = { ...globalDependencies };
-
+    delete dependencies[pckg];
+    setGlobalDependencies(dependencies);
+    
     const ok = await uninstallPackage(pckg);
-    if (ok) {
-      delete dependencies[pckg];
-      setGlobalDependencies(dependencies);
+    if (!ok) {
+      const revertedDeps = { ...dependencies, [pckg]: globalDependencies[pckg] };
+      setGlobalDependencies(revertedDeps);
     }
-    setLoading(false);
+    
+    setLoadingPackages(prev => {
+      const next = new Set(prev);
+      next.delete(pckg);
+      return next;
+    });
   };
 
   return {
@@ -97,7 +115,7 @@ const useDependencies = () => {
     isLoading,
     packages,
     download: {
-      loading,
+      loadingPackages,
       addPackage,
       removePackage,
     },

@@ -20,11 +20,13 @@
 </p>
 
 
-PlayTS is an open-source transpiler designed for efficient and versatile code transformation. Leveraging modern web and desktop technologies, PlayTS provides a seamless experience for converting and optimizing source code.
+PlayTS is an open-source code playground and execution environment designed for efficient code development and testing. Leveraging modern web and desktop technologies, PlayTS provides a comprehensive platform for writing, executing, and organizing code with powerful bookmarking and package management features.
 
 ## Description
 
-Developed using <a href="https://react.dev/">React</a> and <a href="http://electron.atom.io" target="_blank">Electron</a>, PlayTS offers a modern and intuitive interface while running natively on Windows, macOS, and Linux. The integration of <a href="https://webcontainers.io/" target="_blank">WebContainers</a>  ensures a secure, isolated environment for code execution, enabling real-time testing and transpilation.
+Developed using <a href="https://react.dev/">React</a> and <a href="http://electron.atom.io" target="_blank">Electron</a>, PlayTS offers a modern and intuitive interface while running natively on Windows, macOS, and Linux. The integration of <a href="https://webcontainers.io/" target="_blank">WebContainers</a> ensures a secure, isolated environment for code execution, enabling real-time testing and transpilation.
+
+PlayTS is a comprehensive code playground that combines powerful execution capabilities with an intuitive bookmarking system, allowing developers to save, organize, and quickly access their favorite code snippets and functions.
 
 ## Features
 
@@ -32,7 +34,30 @@ Developed using <a href="https://react.dev/">React</a> and <a href="http://elect
 - **Cross-Platform Compatibility:** Powered by Electron, PlayTS runs seamlessly on Windows, macOS, and Linux.
 - **Secure Execution:** Utilizes WebContainers to safely isolate code execution.
 - **Efficient Transpilation:** Converts and optimizes source code to meet diverse development needs.
+- **Bookmark System:** Save, organize, and quickly access your favorite code snippets and functions.
+- **Global Bookmarks:** Mark functions as globally active to use them across all your code executions.
+- **Package Management:** Install and manage npm packages directly within the WebContainer environment.
+- **Multi-language Support:** Full internationalization support (English/Spanish) with easy extensibility.
 - **Open Source & Extensible:** Encourages community contributions and provides a modular framework for future enhancements.
+
+## 🚀 Roadmap
+
+### ✅ Recently Completed
+- **Bookmark System**: Complete bookmarking functionality with global bookmark support
+- **Package Management**: Full npm package installation and management within WebContainer
+- **Internationalization**: Multi-language support (English/Spanish)
+- **Professional UI**: Complete visual overhaul with consistent design system
+
+### 🔄 In Progress
+- **Bug Fixes**: Comprehensive testing and bug resolution across all features
+- **Environment Variables**: Configuration system for API keys and settings
+
+### 📋 Planned Features
+- **Code Templates**: Pre-built templates for common programming patterns
+- **Collaboration**: Real-time collaborative coding sessions
+- **Plugin System**: Extensible architecture for community-developed features
+- **Advanced Debugging**: Enhanced debugging tools and error analysis
+- **Code Sharing**: Share bookmarks and code snippets with the community
 
 ## Installation
 
@@ -162,7 +187,26 @@ bun electron:dev
 
 ## Usage
 
+### Getting Started
 Once installed, run the application using the provided executable for your operating system or start it in development mode with `npm start`. The interactive interface allows you to easily load and transpile your code.
+
+### Bookmark System
+PlayTS features a powerful bookmarking system that lets you:
+
+- **Save Code Snippets**: Store your favorite functions and code blocks for quick access
+- **Organize with Tags**: Categorize bookmarks with custom tags for better organization
+- **Global Bookmarks**: Mark functions as globally active to use them in all code executions
+- **Quick Access**: Use the sidebar to browse, search, and manage your bookmarks
+
+### Package Management
+- **Install Dependencies**: Add npm packages directly within the WebContainer environment
+- **Manage Versions**: Install specific versions of packages as needed
+- **Persistent Installation**: Packages remain available across sessions
+
+### Keyboard Shortcuts
+- `Ctrl + Enter` - Execute code
+- `Ctrl + C` - Copy code or text
+- `Shift + Enter` - Add new line (in chat input)
 
 ## Contribution
 

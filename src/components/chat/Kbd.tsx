@@ -30,7 +30,6 @@ const Kbd = ({ keys, onKeyPress }: KbdProps) => {
   };
 
   const checkIfCentered = () => {
-    console.log("checkIfCentered");
     if (!ref.current) return;
     const rect = ref.current.getBoundingClientRect();
     const containerHeight =
@@ -46,7 +45,6 @@ const Kbd = ({ keys, onKeyPress }: KbdProps) => {
     const centerY = containerTop + containerHeight / 2;
     const elementCenter = rect.top + rect.height / 2;
     const isNearCenter = Math.abs(elementCenter - centerY) < 100;
-    console.log({ isNearCenter });
     setActive(isNearCenter);
   };
 
@@ -100,15 +98,11 @@ const Kbd = ({ keys, onKeyPress }: KbdProps) => {
     if (!active || !onKeyPress) return;
 
     const handleKeyDown = (e: KeyboardEvent) => {
-      console.log({ key: e.key });
       pressedKeys.current.add(e.key);
-      console.log({ pressedKeys: Array.from(pressedKeys.current) });
 
       const allKeysPressed = keys.every((k) =>
         pressedKeys.current.has(normalizeKey(k))
       );
-
-      console.log({ allKeysPressed });
 
       if (allKeysPressed) {
         onKeyPress(keys);
@@ -151,7 +145,7 @@ const Kbd = ({ keys, onKeyPress }: KbdProps) => {
               {keys.map((key) => (
                 <kbd
                   key={key}
-                  className="dark:bg-gray-100/20 bg-white px-1.5 py-0.5 text-xs rounded shadow aria-checked:bg-[#ff79c597]/20 dark:aria-checked:bg-[#ff79c597]/20 "
+                  className="dark:bg-main-dark/50 bg-gray-100 px-2 py-1 text-xs rounded border dark:border-main-dark/30 border-gray-300 shadow-sm font-mono"
                 >
                   {ensureKeyCode(key)}
                 </kbd>
@@ -164,7 +158,7 @@ const Kbd = ({ keys, onKeyPress }: KbdProps) => {
           {keys.map((key) => (
             <kbd
               key={key}
-              className="dark:bg-gray-100/20 bg-white px-1.5 py-0.5 text-xs rounded shadow aria-checked:bg-[#ff79c597]/20 dark:aria-checked:bg-[#ff79c597]/20 "
+              className="dark:bg-main-dark/50 bg-gray-100 px-2 py-1 text-xs rounded border dark:border-main-dark/30 border-gray-300 shadow-sm font-mono"
             >
               {ensureKeyCode(key)}
             </kbd>
