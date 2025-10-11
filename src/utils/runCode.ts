@@ -1,5 +1,6 @@
 import { WebContainer, WebContainerProcess } from "@webcontainer/api";
 import { addInstructionsToCode } from "./addInstructionsToCode";
+import { isElectron } from "./environment";
 import z from 'zod';
 
 let webContainer: WebContainer | null = null;
@@ -14,6 +15,11 @@ const cleanAnsiAndSpecialChars = (str: string): string => {
 };
 
 const getWebContainer = (): Promise<WebContainer> => {
+  // NO inicializar WebContainer si estamos en Electron
+  if (isElectron()) {
+    throw new Error('WebContainer no debe inicializarse en Electron. Usar ICP en su lugar.');
+  }
+
   if (webContainer) {
     return Promise.resolve(webContainer);
   }

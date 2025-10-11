@@ -4,13 +4,14 @@ import {
   app,
   dialog,
   ipcMain,
+  protocol,
 } from "electron";
 import { autoUpdater } from "electron-updater";
-import express from "express";
 import i18next from "i18next";
 import path from "path";
 import log from "electron-log/main";
 import i18nLoaded from "./i18n.config";
+import { codeExecutor } from "./codeExecutor";
 
 log.initialize();
 console = log as unknown as Console;
@@ -18,17 +19,8 @@ console = log as unknown as Console;
 import { getURL } from "./tools/getUrl";
 import isDev from "./tools/isDev";
 
-if (!isDev) {
-  const server = express();
-  const port = 19293;
-  server.use(express.static(path.join(__dirname, "renderer")));
-  server.get("/", (_req, res) => {
-    res.sendFile(path.join(__dirname, "renderer", "index.html"));
-  });
-  server.listen(port, () => {
-    console.log(`Servidor HTTP ejecutándose en http://localhost:${port}`);
-  });
-}
+// En producción, no necesitamos servidor Express
+// El protocolo app:// maneja el acceso a archivos estáticos
 
 let win: BrowserWindow;
 
@@ -66,6 +58,16 @@ function createWindow() {
 }
 
 app.whenReady().then(() => {
+  // Configurar protocolo personalizado para producción
+  if (!isDev) {
+    protocol.registerSchemesAsPrivileged([{ scheme: 'app', privileges: { standard: true } }]);
+    protocol.handle('app', (request: Request) => {
+      const url = request.url.substr(6); // Remover 'app://'
+      const filePath = path.join(__dirname, 'renderer', url);
+      return { path: filePath } as unknown as any;
+    });
+  }
+  
   i18nLoaded.then(() => {
     createWindow();
     app.on("activate", () => {
@@ -102,6 +104,48 @@ ipcMain.on("app/close", () => {
 
 ipcMain.on("app/version", (event) => {
   event.returnValue = app.getVersion();
+});
+
+// ===== HANDLERS ICP PARA EJECUCIÓN DE CÓDIGO =====
+
+ipcMain.handle("code/execute", async (_event, options) => {
+  try {
+    console.log("📡 Recibida solicitud de ejecución de código via ICP");
+    return await codeExecutor.executeCode(options);
+  } catch (error) {
+    console.error("❌ Error en handler code/execute:", error);
+    throw error;
+  }
+});
+
+ipcMain.handle("package/install", async (_event, { name, version }) => {
+  try {
+    console.log(`📡 Recibida solicitud de instalación de paquete via ICP: ${name}@${version}`);
+    return await codeExecutor.installPackage(name, version);
+  } catch (error) {
+    console.error("❌ Error en handler package/install:", error);
+    throw error;
+  }
+});
+
+ipcMain.handle("package/uninstall", async (_event, { name }) => {
+  try {
+    console.log(`📡 Recibida solicitud de desinstalación de paquete via ICP: ${name}`);
+    return await codeExecutor.uninstallPackage(name);
+  } catch (error) {
+    console.error("❌ Error en handler package/uninstall:", error);
+    throw error;
+  }
+});
+
+ipcMain.handle("env/info", async (_event) => {
+  try {
+    console.log("📡 Recibida solicitud de información del entorno via ICP");
+    return codeExecutor.getEnvironmentInfo();
+  } catch (error) {
+    console.error("❌ Error en handler env/info:", error);
+    throw error;
+  }
 });
 
 autoUpdater.on("checking-for-update", () => {

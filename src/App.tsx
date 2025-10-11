@@ -11,7 +11,7 @@ import { useTheme } from "./hooks/useTheme";
 import { useFont } from "./hooks/useFonts";
 
 import { darkTheme, lightTheme } from "./utils/customTheme";
-import fillSpaces from "./utils/fillSpaces";
+import createAlignedOutput from "./utils/createAlignedOutput";
 
 import EditorComponent from "./components/EditorComponent";
 import Sidebar from "./components/Sidebar";
@@ -22,7 +22,7 @@ import { useGlobalBookmarks } from "./hooks/useGlobalBookmarks";
 
 function App() {
   const { theme } = useTheme();
-  const { result } = useCompiler();
+  const { result, code } = useCompiler();
   const { font, size } = useFont();
   
   useBookmarksStore();
@@ -30,9 +30,6 @@ function App() {
   const bookmarks = useBookmarks();
   useGlobalBookmarks({ bookmarks });
 
-  const editorComponent = useRef<ImperativePanelHandle>(null);
-  const outputComponent = useRef<ImperativePanelHandle>(null);
-  const footerSection = useRef<ImperativePanelHandle>(null);
   const sidebarSection = useRef<ImperativePanelHandle>(null);
 
   const { width: minSize } = useResizePanelSizes("sidebar-main", {
@@ -54,7 +51,16 @@ function App() {
     }
   }, []);
 
-  const filledArray = fillSpaces(result || []);
+  const filledArray = createAlignedOutput(result || [], code || "");
+
+  // Función para limpiar códigos ANSI y mejorar el formato
+  const cleanAndFormatText = (text: string): string => {
+    // Limpiar códigos ANSI
+    let cleanText = text.replace(/\x1b\[[0-9;]*m/g, '');
+    
+    // Mantener el formato original para que SyntaxHighlighter funcione correctamente
+    return cleanText;
+  };
 
   return (
     <main className="h-screen flex flex-col font-[roboto] font-bold text-main-dark">
@@ -97,6 +103,23 @@ function App() {
                         ? filledArray?.map((element, i) => {
                             if (element) {
                               const { text } = element;
+                              const cleanedText = cleanAndFormatText(text);
+                              
+                              // Si es una línea vacía, mostrar espacio invisible
+                              if (text === " ") {
+                                return (
+                                  <div
+                                    className="flex w-full rounded"
+                                    key={`empty-${element.line}-${i}`}
+                                    style={{ height: "27px" }} // Misma altura que SyntaxHighlighter
+                                  >
+                                    <div className="flex w-full justify-between font-mono">
+                                      <div style={{ height: "27px" }}></div>
+                                    </div>
+                                  </div>
+                                );
+                              }
+                              
                               return (
                                 <div
                                   className="flex w-full rounded"
@@ -132,7 +155,7 @@ function App() {
                                         lineHeight: "27px",
                                       }}
                                     >
-                                      {text}
+                                      {cleanedText}
                                     </SyntaxHighlighter>
                                   </div>
                                 </div>

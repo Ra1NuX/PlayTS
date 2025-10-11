@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 
 import transpileTypeScript from "../tools/convertToJS";
-import runCode from "../utils/runCode";
+import { executeCode } from "../utils/codeExecution";
+import { globalDependencies } from "./useDependencies";
 import { generateGlobalBookmarkCode } from "../utils/bookmarkInjection";
 
 interface ResultType {
@@ -80,7 +81,11 @@ const updateAndRunCode = async (code: string) => {
 
   try {
     const js = transpileTypeScript(code);
-    const result = await runCode(js, globalBookmarksCode);
+    const result = await executeCode({ 
+      code: js, 
+      globalBookmarksCode: globalBookmarksCode,
+      dependencies: globalDependencies
+    });
     setGlobalResult(result as ResultType[]);
   } catch (ex) {
     const { message, stack } = ex as Error;
