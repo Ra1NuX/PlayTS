@@ -13,7 +13,10 @@ const DownloadPackageButton = ({
   const { download, packages } = useDependencies();
   const { t } = useTranslation();
 
-  if (download.loading)
+  // Verificar si este paquete específico se está instalando
+  const isInstalling = download.loadingPackages.has(pckg);
+
+  if (isInstalling)
     return (
       <div className="bg-gray-300 shadow-md px-2 rounded text-main-dark flex items-center justify-center gap-2 p-1 font-normal text-sm leading-none">
         <FiLoader className="animate-spin duration-100" size={16} />{" "}

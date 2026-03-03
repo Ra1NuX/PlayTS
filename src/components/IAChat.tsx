@@ -1,13 +1,28 @@
 import { Fragment, KeyboardEvent, MouseEvent, useEffect, useRef } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkBreaks from "remark-breaks";
-import { BiSend } from "react-icons/bi";
-
 import useChat from "../hooks/useChat";
 import Code from "./chat/Code";
 import Bash from "./chat/Bash";
 import { useTranslation } from "react-i18next";
-import { BsArrowUp, BsArrowUpCircle, BsFillChatDotsFill } from "react-icons/bs";
+import { BsArrowUpCircle } from "react-icons/bs";
+import { parseUnclosedCodeFence } from "../utils/parseUnclosedCodeFence";
+import { normalizeStreamingMarkdown } from "../utils/normalizeStreamingMarkdown";
+
+function isBashLanguage(lang: string): boolean {
+  return /^(bash|shell|sh)$/i.test(lang);
+}
+
+function looksLikeMarkdown(content: string): boolean {
+  const t = content.trim();
+  return (
+    /(^|\n)#{1,6}\s/m.test(t) ||
+    /\*\*[^*]+\*\*/.test(t) ||
+    /__[^_]+__/.test(t) ||
+    /^\s*[-*]\s/m.test(t) ||
+    /^\s*\d+\.\s/m.test(t)
+  );
+}
 
 interface IAChatProps {
   open?: boolean;
@@ -52,59 +67,112 @@ const IAChat = ({ open }: IAChatProps) => {
         id="scroll-container"
         className="p-2 rounded-md dark:bg-main-dark bg-[#f7f7f7] font-normal flex flex-col flex-1 overflow-auto"
       >
-        {chatHistory.map((msg, index) => (
-          <Fragment key={index}>
-            <div
-              key={index}
-              className={`mb-2 ${msg.role === "user" ? "text-right" : "text-left"
-                }`}
-            >
+        {chatHistory.map((msg, index) => {
+          const unclosed = parseUnclosedCodeFence(msg.content);
+          let markdownSource = unclosed ? unclosed.markdownContent : msg.content;
+          const isLastAssistant =
+            index === chatHistory.length - 1 && msg.role === "assistant";
+          if (
+            isLastAssistant &&
+            (markdownSource.endsWith("**") || markdownSource.endsWith("_"))
+          ) {
+            markdownSource = normalizeStreamingMarkdown(markdownSource);
+          }
+          return (
+            <Fragment key={index}>
               <div
-                className={`flex items-center gap-2 ${msg.role === "user" ? "justify-end" : "text-left"
-                  }`}
+                className={`mb-2 ${msg.role === "user" ? "text-right" : "text-left"}`}
               >
                 <div
-                  aria-invalid={msg.error}
-                  className={`aria-invalid:text-red-600 group text-left relative aria-invalid:bg-transparent aria-invalid:shadow-none inline-block p-2 border border-gray-200 dark:border-divider-dark rounded-lg max-w-[90%] break-words whitespace-normal ${msg.role === "user"
-                      ? "bg-[#0078D4] text-white"
-                      : "dark:bg-main-light bg-[#fff] dark:text-white"
-                    }`}
+                  className={`flex items-center gap-2 ${msg.role === "user" ? "justify-end" : "text-left"}`}
                 >
-                  <ReactMarkdown
-                    remarkPlugins={[remarkBreaks]}
-                    components={{
-                      code({ children, className }) {
-                        const match = /language-(\w+)/.exec(className || "");
-
-                        const language = match ? match[1] : "";
-
-                        if (language.includes('bash') || language.includes('shell') || language.includes('sh') || !language) {
-                          return <Bash code={String(children).replace(/\n$/, "")} />;
-                        }
-
-                        if (match) {
+                  <div
+                    aria-invalid={msg.error}
+                    className={`aria-invalid:text-red-600 group text-left text-sm relative aria-invalid:bg-transparent aria-invalid:shadow-none inline-block break-words whitespace-normal ${msg.role === "user"
+                      ? "bg-main-light w-full text-white p-1.5 border border-gray-200 dark:border-divider-dark rounded-md"
+                      : "dark:text-white"
+                    }`}
+                  >
+                    <ReactMarkdown
+                      remarkPlugins={[remarkBreaks]}
+                      components={{
+                        code({ children, className, ...props }) {
+                          const hasLanguageClass =
+                            typeof className === "string" &&
+                            className.includes("language-");
+                          if (!hasLanguageClass) {
+                            return (
+                              <code
+                                className="dark:bg-main-dark/60 bg-gray-100 px-1 py-0.5 rounded font-mono text-xs"
+                                {...props}
+                              >
+                                {children}
+                              </code>
+                            );
+                          }
+                          const match = /language-(\w*)/.exec(className || "");
+                          const language = match ? match[1] : "";
+                          const codeStr = String(children).replace(/\n$/, "");
+                          if (isBashLanguage(language)) {
+                            return <Bash code={codeStr} />;
+                          }
+                          if (!language || language === "plaintext" || language === "text") {
+                            if (looksLikeMarkdown(codeStr)) {
+                              return (
+                                <div className="my-2 text-sm [&_h1]:text-lg [&_h2]:text-base [&_h3]:text-sm [&_h1]:font-semibold [&_h2]:font-semibold [&_h3]:font-semibold [&_ul]:list-disc [&_ol]:list-decimal [&_ul]:pl-5 [&_ol]:pl-5 [&_p]:my-1">
+                                  <ReactMarkdown remarkPlugins={[remarkBreaks]}>
+                                    {codeStr}
+                                  </ReactMarkdown>
+                                </div>
+                              );
+                            }
+                            return (
+                              <pre className="my-2 p-3 rounded border dark:border-divider-dark border-gray-200 dark:bg-main-dark/50 bg-gray-50 text-sm overflow-auto whitespace-pre-wrap font-normal">
+                                {codeStr}
+                              </pre>
+                            );
+                          }
                           return (
                             <Code
                               id={msg.id}
-                              code={String(children).replace(/\n$/, "")}
+                              code={codeStr}
                             />
                           );
-                        }
-                      },
-                    }}
-                  >
-                    {msg.content}
-                  </ReactMarkdown>
+                        },
+                      }}
+                    >
+                      {markdownSource}
+                    </ReactMarkdown>
+                    {unclosed && (
+                      <>
+                        {isBashLanguage(unclosed.language) ? (
+                          <Bash code={unclosed.codeContent} />
+                        ) : !unclosed.language || /^(plaintext|text)$/i.test(unclosed.language) ? (
+                          looksLikeMarkdown(unclosed.codeContent) ? (
+                            <div className="my-2 text-sm [&_h1]:text-lg [&_h2]:text-base [&_h3]:text-sm [&_h1]:font-semibold [&_h2]:font-semibold [&_h3]:font-semibold [&_ul]:list-disc [&_ol]:list-decimal [&_ul]:pl-5 [&_ol]:pl-5 [&_p]:my-1">
+                              <ReactMarkdown remarkPlugins={[remarkBreaks]}>
+                                {unclosed.codeContent}
+                              </ReactMarkdown>
+                            </div>
+                          ) : (
+                            <pre className="my-2 p-3 rounded border dark:border-divider-dark border-gray-200 dark:bg-main-dark/50 bg-gray-50 text-sm overflow-auto whitespace-pre-wrap font-normal">
+                              {unclosed.codeContent}
+                            </pre>
+                          )
+                        ) : (
+                          <Code
+                            code={unclosed.codeContent}
+                            id={isLastAssistant ? msg.id : undefined}
+                          />
+                        )}
+                      </>
+                    )}
+                  </div>
                 </div>
               </div>
-              {msg.code &&
-                index === chatHistory.length - 1 &&
-                msg.accepted == undefined && (
-                  <Code code={msg.code} id={msg.id} />
-                )}
-            </div>
-          </Fragment>
-        ))}
+            </Fragment>
+          );
+        })}
         <div ref={messagesEndRef} />
       </div>
 

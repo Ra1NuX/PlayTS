@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
-import useSettings, { AiModel } from "./useSettings";
-import { callOpenAI } from "../utils/callOpenAI";
+import { callAI } from "../utils/callAI";
 import i18next from "i18next";
 
 interface ChatProps {
@@ -16,13 +15,12 @@ const globalChatHistory: ChatProps[] = [];
 
 i18next.on("languageChanged", () => {
   if (globalChatHistory.length <= 1) {
-    console.log("language changed");
     globalChatHistory.length = 0;
     globalChatHistory.push({
       role: "assistant",
       content: i18next.t("STARTING_MESSAGE"),
     });
-    notifyAll(); // para que los listeners se actualicen
+    notifyAll();
   }
 });
 
@@ -33,7 +31,6 @@ const notifyAll = () => {
 };
 
 const useChat = () => {
-  const { settings } = useSettings();
   const [chatHistory, setChatHistory] =
     useState<ChatProps[]>(globalChatHistory);
 
@@ -49,25 +46,35 @@ const useChat = () => {
 
   const addMessage = async () => {
     if (!message.trim()) return;
+    const userContent = message.trim();
     setMessage("");
-    setChatHistory((prev) => [...prev, { role: "user", content: message }]);
+    setChatHistory((prev) => [...prev, { role: "user", content: userContent }]);
     setChatHistory((prev) => [...prev, { role: "assistant", content: "" }]);
-    switch (settings.aiModel) {
-      case AiModel.GPT_4O:
-      case AiModel.GPT_4O_MINI:
-      case AiModel.GPT_4_5_PREVIEW:
-      case AiModel.GPT_O1:
-      case AiModel.GPT_O3:
-        await callOpenAI(
-          [...chatHistory, { role: "user", content: `${message}` }],
-          (data) => {
+    const messagesForApi = [...chatHistory, { role: "user", content: userContent }];
+    console.log("[useChat] addMessage called", { userContentLength: userContent.length, historyLength: chatHistory.length, messagesForApiLength: messagesForApi.length });
+    try {
+      await callAI(
+        messagesForApi,
+        {
+          onData: (data) => {
+            console.log("[useChat] onData", { responseLength: data.response?.length ?? 0 });
             setChatHistory((prev) => [
               ...prev.slice(0, -1),
               { role: "assistant", content: data.response },
             ]);
           },
-          (data) => {
-            globalChatHistory.push({ role: "user", content: message });
+          onFinally: (data) => {
+            console.log("[useChat] onFinally", {
+              hasResponse: !!data.response,
+              error: data.error,
+              codeLength: data.code?.length ?? 0,
+              responsePreview: data.response?.slice(0, 200),
+              responseFullLength: data.response?.length,
+              codePreview: data.code?.slice(0, 100),
+            });
+            console.log("[useChat] final message (full response)", data.response);
+            console.log("[useChat] final message (code field)", data.code);
+            globalChatHistory.push({ role: "user", content: userContent });
             globalChatHistory.push({
               role: "assistant",
               content: data.response,
@@ -76,10 +83,12 @@ const useChat = () => {
               id: data.id,
             });
             notifyAll();
-          }
-        );
+          },
+        }
+      );
+    } catch (err) {
+      console.error("[useChat] callAI threw", err);
     }
-
   };
 
   const setCodeState = (id: string, accepted: boolean) => {

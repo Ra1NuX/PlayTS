@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { InstalledPackages, NpmSearchResponse } from "../model/npm";
-import { installPackage, uninstallPackage } from "../utils/runCode";
+import { installPackage, uninstallPackage } from "../utils/codeExecution";
 
 const querySize = 20;
 
@@ -73,11 +73,12 @@ const useDependencies = () => {
     const dependencies = { ...globalDependencies, [pckg]: version };
     setGlobalDependencies(dependencies);
     
-    const isInstalled = await installPackage(pckg, version);
-    if (!isInstalled) {
+    const result = await installPackage(pckg, version);
+    if (!result.success) {
       const revertedDeps = { ...dependencies };
       delete revertedDeps[pckg];
       setGlobalDependencies(revertedDeps);
+      console.error(`Error instalando ${pckg}:`, result.error);
     }
     
     setLoadingPackages(prev => {
@@ -94,10 +95,11 @@ const useDependencies = () => {
     delete dependencies[pckg];
     setGlobalDependencies(dependencies);
     
-    const ok = await uninstallPackage(pckg);
-    if (!ok) {
+    const result = await uninstallPackage(pckg);
+    if (!result.success) {
       const revertedDeps = { ...dependencies, [pckg]: globalDependencies[pckg] };
       setGlobalDependencies(revertedDeps);
+      console.error(`Error desinstalando ${pckg}:`, result.error);
     }
     
     setLoadingPackages(prev => {

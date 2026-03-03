@@ -83,8 +83,8 @@ Autocompletado en editor ✨
 ```
 src/components/
 ├── Bookmarks.tsx (contenedor principal)
+├── SidebarSection.tsx (layout reutilizable: título, búsqueda, contenido)
 └── bookmarks/
-    ├── BookmarksHeader.tsx
     ├── BookmarkCard.tsx
     ├── BookmarkEditForm.tsx
     ├── NewBookmarkForm.tsx

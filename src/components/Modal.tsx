@@ -28,21 +28,21 @@ export default function Modal({
         className="relative z-10 focus:outline-none"
         onClose={close}
       >
-        <div className="fixed inset-0 z-10 w-screen overflow-hidden bg-black/70">
+        <div className="fixed inset-0 z-10 w-screen overflow-hidden bg-black/50 backdrop-blur-sm">
           <AnimatePresence>
             <motion.div
-              className="flex min-h-full items-center justify-center"
-              exit={{ scale: 0 }}
-              initial={{ scale: 0.7, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
+              className="origin-center left-1/2 top-[10%] max-w-lg absolute"
+              exit={{ scale: 0, x: "-50%" }}
+              initial={{ scale: 0.99, opacity: 0.5, x: "-50%" }}
+              animate={{ scale: 1, opacity: 1, x: "-50%" }}
               transition={{
-                duration: 0.3,
+                duration: 0.1,
                 type: "spring",
                 stiffness: 300,
                 damping: 30,
               }}
             >
-              <DialogPanel className="max-w-lg min-h-fit rounded-md absolute left-1/2 top-1/3 -translate-x-1/2 dark:text-white dark:bg-main-light bg-[#eaeaea] backdrop-blur-2xl duration-300 ease-out data-[closed]:transform-[scale(95%)] data-[closed]:opacity-0 overflow-hidden">
+              <DialogPanel className="border border-divider dark:border-divider-dark min-h-fit rounded-lg  dark:text-white dark:bg-main-dark bg-[#f3f3f3] overflow-hidden">
                 {cloneElement(children, { close, open })}
               </DialogPanel>
             </motion.div>

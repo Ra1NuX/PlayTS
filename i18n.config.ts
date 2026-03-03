@@ -11,7 +11,7 @@ i18n
   .use(initReactI18next)
   .init({
     fallbackLng: "en",
-    supportedLngs: ["en", "es"],
+    supportedLngs: ["en", "es", "zh"],
     load: "languageOnly",
     ns: ["common", "desktop"],
     defaultNS: "common",
@@ -20,7 +20,7 @@ i18n
       addPath: typeof window !== "undefined" ? "/locales/{{lng}}/{{ns}}.missing.json" : "./renderer/locales/{{lng}}/{{ns}}.missing.json",
       
     },
-    debug: true,
+    debug: false,
     saveMissing: true,
     saveMissingTo: "current",
     detection: {

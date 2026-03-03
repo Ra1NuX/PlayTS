@@ -13,11 +13,16 @@ export default {
           contrast: '#171717',
           light: '#1c1c1e'
         },
+        hover: {
+          ancient: {
+            dark: '#1f5cb3',
+          }
+        },
         divider: {
           dark: '#1f1f1f',
         },
         accent: {
-          dark: '#0D73FF',
+          dark: '#2b73da',
         }
       }
     },

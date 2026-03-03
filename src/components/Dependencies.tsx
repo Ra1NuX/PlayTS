@@ -1,14 +1,16 @@
 import { useCallback, useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import debounce from "../tools/debounce";
 import useDependencies from "../hooks/useDependencies";
 import Pagination from "./Pagination";
-import { DependenciesHeader } from "./dependencies/DependenciesHeader";
+import { SidebarSection } from "./SidebarSection";
 import { PackageCard } from "./dependencies/PackageCard";
 import { InstalledPackageCard } from "./dependencies/InstalledPackageCard";
 import { EmptyState } from "./dependencies/EmptyState";
 import { LoadingSpinner } from "./dependencies/LoadingSpinner";
 
 const Dependencies = () => {
+  const { t } = useTranslation();
   const { 
     search, 
     totalPages, 
@@ -35,15 +37,12 @@ const Dependencies = () => {
   const hasSearchResults = info && info.objects.length > 0;
 
   return (
-    <div className="w-full h-full flex flex-col dark:text-gray-300 text-main-dark">
-      <div className="flex-shrink-0 space-y-3 mb-3">
-        <DependenciesHeader
-          installedCount={installedPackages.length}
-          onSearchChange={handleSearchChange}
-        />
-      </div>
-
-      <div className="flex-1 overflow-y-auto space-y-3 pr-1">
+    <SidebarSection
+      title={t("DEPENDENCIES")}
+      count={installedPackages.length}
+      searchPlaceholder={t("DEPS_SEARCH_PLACEHOLDER")}
+      onSearchChange={handleSearchChange}
+    >
         {info ? (
           <>
             {isLoading && <LoadingSpinner />}
@@ -55,17 +54,17 @@ const Dependencies = () => {
                     <div className="space-y-2">
                       <div className="flex items-center justify-between px-2">
                         <h2 className="text-xs font-semibold dark:text-gray-400 text-main-light/60 uppercase tracking-wide">
-                          Resultados de búsqueda
+                          {t("DEPS_SEARCH_RESULTS")}
                         </h2>
                         <span className="text-xs dark:text-gray-500 text-main-light/60">
-                          {info.objects.length} paquetes
+                          {t("DEPS_PACKAGES_COUNT", { count: info.objects.length })}
                         </span>
                       </div>
                       <div className="space-y-2">
                         {info.objects.map((element) => (
                           <div 
                             key={element.package.name}
-                            className="dark:bg-main-light bg-white rounded-lg border border-gray-200 dark:border-divider-dark overflow-hidden transition-all duration-200"
+                            className="dark:bg-main-light bg-white rounded border border-gray-200 dark:border-divider-dark overflow-hidden transition-all duration-200"
                           >
                             <PackageCard
                               name={element.package.name}
@@ -102,17 +101,17 @@ const Dependencies = () => {
               <div className="space-y-2">
                 <div className="flex items-center justify-between px-2">
                   <h2 className="text-xs font-semibold dark:text-gray-400 text-main-light/60 uppercase tracking-wide">
-                    Instalados
+                    {t("DEPS_INSTALLED")}
                   </h2>
                   <span className="text-xs dark:text-gray-500 text-main-light/60">
-                    {installedPackages.length} {installedPackages.length === 1 ? 'paquete' : 'paquetes'}
+                    {t("DEPS_PACKAGES_COUNT", { count: installedPackages.length })}
                   </span>
                 </div>
                 <div className="space-y-2">
                   {installedPackages.map(([name, version]) => (
                     <div 
                       key={name}
-                      className="dark:bg-main-light bg-white rounded-lg border border-gray-200 dark:border-divider-dark overflow-hidden transition-all duration-200"
+                      className="dark:bg-main-light bg-white rounded border border-gray-200 dark:border-divider-dark overflow-hidden transition-all duration-200"
                     >
                       <InstalledPackageCard
                         name={name}
@@ -129,8 +128,7 @@ const Dependencies = () => {
             )}
           </>
         )}
-      </div>
-    </div>
+    </SidebarSection>
   );
 };
 

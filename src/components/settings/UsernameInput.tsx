@@ -25,7 +25,7 @@ const UsernameInput = () => {
             handleChange(e);
           }, 500)();
         }}
-        className="font-[roboto] p-1 px-2 placeholder:text-center font-normal dark:bg-main-dark/50 bg-[#fafafa] dark:hover:bg-main-dark hover:bg-[#f0f0f0] border shadow-md dark:border-main-dark/20 pr-2 rounded-xl flex items-center justify-between w-full"
+        className="font-[roboto] p-1 px-2 placeholder:text-center font-normal dark:bg-main-contrast bg-[#fafafa] dark:hover:bg-main-dark hover:bg-[#f0f0f0] border shadow-md dark:border-divider-dark pr-2 rounded-xl flex items-center justify-between w-full"
       />
     </div>
   );

@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 
 import transpileTypeScript from "../tools/convertToJS";
-import runCode from "../utils/runCode";
+import { executeCode } from "../utils/codeExecution";
+import { globalDependencies } from "./useDependencies";
 import { generateGlobalBookmarkCode } from "../utils/bookmarkInjection";
 
 interface ResultType {
@@ -16,8 +17,39 @@ const codeListeners = new Set<(code: string) => void>();
 
 let globalPaused = false;
 let globalResult: ResultType[] = [];
-export let globalCode = "";
+export let globalCode = `// ¡Bienvenido a PlayTS!
+// Escribe tu código JavaScript/TypeScript aquí y ejecútalo
+
+console.log('¡Hola mundo desde PlayTS!');
+
+// Ejemplos de lo que puedes hacer:
+// - Ejecutar código JavaScript/TypeScript
+// - Instalar paquetes npm
+// - Usar bookmarks globales
+// - Ver resultados alineados con tu código
+
+// Prueba escribiendo algo aquí y presiona el botón de ejecutar`;
 export let globalBookmarksCode = "";
+export let globalEnvVars: Record<string, string> = {};
+
+const initializeEnvVarsFromStorage = () => {
+  try {
+    const stored = localStorage.getItem('env-vars-storage');
+    if (stored) {
+      const parsed = JSON.parse(stored);
+      if (parsed.state?.envVars) {
+        const active = parsed.state.envVars.filter((ev: { isActive: boolean }) => ev.isActive);
+        const record: Record<string, string> = {};
+        active.forEach((ev: { key: string; value: string }) => {
+          record[ev.key] = ev.value;
+        });
+        globalEnvVars = record;
+      }
+    }
+  } catch (error) {
+    console.error('Error initializing env vars:', error);
+  }
+};
 
 const initializeBookmarksFromStorage = () => {
   try {
@@ -42,6 +74,7 @@ const initializeBookmarksFromStorage = () => {
   }
 };
 
+initializeEnvVarsFromStorage();
 initializeBookmarksFromStorage();
 
 const notifyAll = () => {
@@ -68,7 +101,13 @@ const setGlobalCode = (code: string) => {
 
 export const setGlobalBookmarksCode = (code: string, shouldRerun = false) => {
   globalBookmarksCode = code;
-  
+  if (shouldRerun && !globalPaused && globalCode) {
+    updateAndRunCode(globalCode).catch(console.error);
+  }
+};
+
+export const setGlobalEnvVars = (envVars: Record<string, string>, shouldRerun = false) => {
+  globalEnvVars = envVars;
   if (shouldRerun && !globalPaused && globalCode) {
     updateAndRunCode(globalCode).catch(console.error);
   }
@@ -80,7 +119,13 @@ const updateAndRunCode = async (code: string) => {
 
   try {
     const js = transpileTypeScript(code);
-    const result = await runCode(js, globalBookmarksCode);
+    const result = await executeCode({
+      code: js,
+      globalBookmarksCode: globalBookmarksCode,
+      dependencies: globalDependencies,
+      envVars: globalEnvVars,
+    });
+    console.log({result})
     setGlobalResult(result as ResultType[]);
   } catch (ex) {
     const { message, stack } = ex as Error;

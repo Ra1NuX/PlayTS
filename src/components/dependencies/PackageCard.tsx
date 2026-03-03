@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { BsDownload, BsTrash, BsCheckCircleFill } from "react-icons/bs";
 import { BiPackage } from "react-icons/bi";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
@@ -21,12 +22,13 @@ export const PackageCard = ({
   onInstall, 
   onUninstall 
 }: PackageCardProps) => {
+  const { t } = useTranslation();
   return (
     <div className="group relative">
       <div className="p-3 space-y-3">
         <div className="flex items-start gap-3">
           <div className="flex-shrink-0 mt-0.5">
-            <div className={`w-10 h-10 rounded-lg flex items-center justify-center transition-colors ${
+            <div className={`w-10 h-10 rounded flex items-center justify-center transition-colors ${
               isInstalled 
                 ? 'bg-green-100 dark:bg-green-900/30' 
                 : 'bg-gray-100 dark:bg-main-dark'
@@ -70,29 +72,29 @@ export const PackageCard = ({
             <button
               onClick={() => onUninstall(name)}
               disabled={isLoading}
-              className="flex items-center gap-1.5 dark:bg-main-dark bg-gray-100 hover:bg-gray-200 dark:hover:bg-main-dark/80 disabled:opacity-50 disabled:cursor-not-allowed dark:text-gray-300 text-main-dark border border-gray-300 dark:border-main-dark rounded-lg px-3 py-1.5 text-xs transition-all font-normal"
-              title="Desinstalar paquete"
+              className="flex items-center gap-1.5 dark:bg-main-dark bg-gray-100 hover:bg-gray-200 dark:hover:bg-main-dark/80 disabled:opacity-50 disabled:cursor-not-allowed dark:text-gray-300 text-main-dark border border-gray-300 dark:border-main-dark rounded px-3 py-1.5 text-xs transition-all font-normal"
+              title={t("UNINSTALL_PACKAGE")}
             >
               {isLoading ? (
                 <AiOutlineLoading3Quarters className="h-3 w-3 animate-spin" />
               ) : (
                 <BsTrash className="h-3 w-3" />
               )}
-              <span>Desinstalar</span>
+              <span>{t("UNINSTALL")}</span>
             </button>
           ) : (
             <button
               onClick={() => onInstall(name, version)}
               disabled={isLoading}
-              className="flex items-center gap-1.5 bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-lg px-3 py-1.5 text-xs transition-all font-semibold shadow-sm hover:shadow"
-              title="Instalar paquete"
+              className="flex items-center gap-1.5 bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded px-3 py-1.5 text-xs transition-all font-semibold shadow-sm hover:shadow"
+              title={t("INSTALL_PACKAGE")}
             >
               {isLoading ? (
                 <AiOutlineLoading3Quarters className="h-3 w-3 animate-spin" />
               ) : (
                 <BsDownload className="h-3 w-3" />
               )}
-              <span>{isLoading ? 'Instalando...' : 'Instalar'}</span>
+              <span>{isLoading ? t("INSTALLING") : t("INSTALL")}</span>
             </button>
           )}
         </div>

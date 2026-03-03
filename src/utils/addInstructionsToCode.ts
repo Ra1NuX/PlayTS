@@ -45,8 +45,6 @@ export function addInstructionsToCode(code: string) {
           "ArrayExpression",
         ];
 
-        console.log(node.expression.type)
-
         const isConsole = isCallExpression(node.expression) && 
           node.expression.callee?.object?.name === "console";
 

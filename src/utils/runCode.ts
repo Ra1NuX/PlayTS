@@ -1,5 +1,6 @@
 import { WebContainer, WebContainerProcess } from "@webcontainer/api";
 import { addInstructionsToCode } from "./addInstructionsToCode";
+import { isElectron } from "./environment";
 import z from 'zod';
 
 let webContainer: WebContainer | null = null;
@@ -14,12 +15,17 @@ const cleanAnsiAndSpecialChars = (str: string): string => {
 };
 
 const getWebContainer = (): Promise<WebContainer> => {
+  if (isElectron()) {
+    throw new Error('WebContainer no debe inicializarse en Electron. Usar ICP en su lugar.');
+  }
+
   if (webContainer) {
     return Promise.resolve(webContainer);
   }
 
   if (!webContainerPromise) {
     webContainerPromise = WebContainer.boot().then(async (container) => {
+      const userDeps = JSON.parse(localStorage.getItem("dependencies") || "{}");
       await container.mount({
         "package.json": {
           file: {
@@ -31,7 +37,7 @@ const getWebContainer = (): Promise<WebContainer> => {
               scripts: {
                 start: "node index.js",
               },
-              dependencies: JSON.parse(localStorage.getItem("dependencies") || "{}"),
+              dependencies: userDeps,
             }),
           },
         },
@@ -223,3 +229,4 @@ export const uninstallPackage = async (name: string): Promise<boolean> => {
 };
 
 export default runCode;
+export { getWebContainer };
