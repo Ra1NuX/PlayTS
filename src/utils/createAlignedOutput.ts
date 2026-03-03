@@ -12,24 +12,20 @@ function createAlignedOutput(results: LineItem[], originalCode?: string): LineIt
   try {
     if (results.length === 0) return [];
 
-    // Calcular número máximo de líneas basado en el código ORIGINAL
-    let maxLines = 50;
-    if (originalCode) {
-      maxLines = Math.max(originalCode.split('\n').length, 50);
-    }
+    const codeLines = originalCode ? originalCode.split('\n').length : 0;
+    const outputLines = results.filter(result => result.line > 0).map(result => result.line);
+    const maxOutputLine = outputLines.length > 0 ? Math.max(...outputLines) : 0;
+    const maxLines = maxOutputLine > 0 ? maxOutputLine : Math.max(codeLines, 1);
 
-    // Crear un mapa de líneas para agrupar outputs por línea
     const lineMap = new Map<number, LineItem[]>();
-    
-    // Agrupar resultados por línea
+
     results.forEach(result => {
-      if (result.line > 0) { // Ignorar errores (línea -1)
+      if (result.line > 0) {
         if (!lineMap.has(result.line)) {
           lineMap.set(result.line, []);
         }
         lineMap.get(result.line)!.push(result);
       } else if (result.line === -1) {
-        // Los errores van al final
         if (!lineMap.has(maxLines + 1)) {
           lineMap.set(maxLines + 1, []);
         }
@@ -37,11 +33,9 @@ function createAlignedOutput(results: LineItem[], originalCode?: string): LineIt
       }
     });
 
-    // Crear array alineado
     const aligned: LineItem[] = [];
-    
+
     for (let lineNum = 1; lineNum <= maxLines; lineNum++) {
-      // Si hay outputs para esta línea, agregarlos
       if (lineMap.has(lineNum)) {
         const outputs = lineMap.get(lineNum)!;
         outputs.forEach(output => {
@@ -51,16 +45,14 @@ function createAlignedOutput(results: LineItem[], originalCode?: string): LineIt
           });
         });
       } else {
-        // Agregar línea vacía para mantener alineación
         aligned.push({
           line: lineNum,
-          text: " ", // Un espacio para mantener la altura de línea
+          text: " ",
           time: 0
         });
       }
     }
 
-    // Agregar errores al final si existen
     if (lineMap.has(maxLines + 1)) {
       const errors = lineMap.get(maxLines + 1)!;
       errors.forEach(error => {

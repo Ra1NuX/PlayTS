@@ -65,7 +65,7 @@ const IAChat = ({ open }: IAChatProps) => {
               >
                 <div
                   aria-invalid={msg.error}
-                  className={`aria-invalid:text-red-600 group text-left relative aria-invalid:bg-transparent aria-invalid:shadow-none inline-block p-2 border border-gray-200 dark:border-divider-dark rounded-lg max-w-[90%] break-words whitespace-normal ${msg.role === "user"
+                  className={`aria-invalid:text-red-600 group text-left relative aria-invalid:bg-transparent aria-invalid:shadow-none inline-block p-2 border border-gray-200 dark:border-divider-dark rounded max-w-[90%] break-words whitespace-normal ${msg.role === "user"
                       ? "bg-[#0078D4] text-white"
                       : "dark:bg-main-light bg-[#fff] dark:text-white"
                     }`}

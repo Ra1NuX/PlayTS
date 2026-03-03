@@ -7,6 +7,7 @@ import { ImperativePanelHandle } from "react-resizable-panels";
 import Settings from "../Settings";
 import MyModal from "./Modal";
 import Dependencies from "./Dependencies";
+import Tooltip from "./Tooltip";
 
 import merge from "../tools/merge";
 
@@ -65,7 +66,7 @@ const Sidebar = forwardRef<ImperativePanelHandle>((_, ref) => {
     },
     {
       icon: <BsStars size={20} />,
-      title: "IA",
+      title: "AI",
       hidden: !settings.apiKey,
       onClick: (
         ref: MutableRefObject<ImperativePanelHandle | null>,
@@ -78,7 +79,7 @@ const Sidebar = forwardRef<ImperativePanelHandle>((_, ref) => {
     },
     {
       icon: <BsBookmarkFill size={18} />,
-      title: "MARK",
+      title: "BOOKMARKS",
       onClick: (
         ref: MutableRefObject<ImperativePanelHandle | null>,
         index: number
@@ -87,7 +88,7 @@ const Sidebar = forwardRef<ImperativePanelHandle>((_, ref) => {
         setSelected(index);
       },
       panelItem: <Bookmarks onCodeInjection={(code) => {
-        console.log('Inyectando código:', code);
+        console.log(code);
       }} />,
     },
   ];
@@ -104,8 +105,8 @@ const Sidebar = forwardRef<ImperativePanelHandle>((_, ref) => {
                 {isSelected && (
                   <div className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-10 bg-accent-dark/80 rounded-r-full z-10" />
                 )}
+                <Tooltip content={t(button.title)} placement="right">
                 <button
-                  title={t(button.title)}
                   onClick={() => {
                     if (button.onClick) {
                       button.onClick(ref, index);
@@ -126,6 +127,7 @@ const Sidebar = forwardRef<ImperativePanelHandle>((_, ref) => {
                     {button.icon}
                   </div>
                 </button>
+                </Tooltip>
               </div>
             );
           })}
@@ -133,9 +135,11 @@ const Sidebar = forwardRef<ImperativePanelHandle>((_, ref) => {
         <section className="flex flex-col aspect-square items-center justify-center border-t dark:border-divider-dark border-gray-300">
           <MyModal
             Button={
-              <button className="flex items-center justify-center w-10 h-10 dark:text-gray-400 text-gray-600 dark:hover:text-gray-200 hover:text-gray-800 transition-colors">
-                <VscSettingsGear size={20} />
-              </button>
+              <Tooltip content={t("SETTINGS")} placement="right">
+                <button className="flex items-center justify-center w-10 h-10 dark:text-gray-400 text-gray-600 dark:hover:text-gray-200 hover:text-gray-800 transition-colors">
+                  <VscSettingsGear size={20} />
+                </button>
+              </Tooltip>
             }
             children={<Settings />}
           />

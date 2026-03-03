@@ -130,7 +130,7 @@ const Kbd = ({ keys, onKeyPress }: KbdProps) => {
         <AnimatePresence>
           {active && (
             <motion.div
-              className="flex gap-1 items-center"
+              className="flex gap-0.5 items-center"
               exit={{ scale: 0, transition: { duration: 0.2 } }}
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
@@ -145,7 +145,7 @@ const Kbd = ({ keys, onKeyPress }: KbdProps) => {
               {keys.map((key) => (
                 <kbd
                   key={key}
-                  className="dark:bg-main-dark/50 bg-gray-100 px-2 py-1 text-xs rounded border dark:border-main-dark/30 border-gray-300 shadow-sm font-mono"
+                  className="dark:bg-main-dark/50 bg-gray-100 px-1.5 py-0.5 text-[10px] rounded border dark:border-main-dark/30 border-gray-300 shadow-sm font-mono"
                 >
                   {ensureKeyCode(key)}
                 </kbd>
@@ -154,11 +154,11 @@ const Kbd = ({ keys, onKeyPress }: KbdProps) => {
           )}
         </AnimatePresence>
       ) : (
-        <div className="flex gap-1 items-center">
+        <div className="flex gap-0.5 items-center">
           {keys.map((key) => (
             <kbd
               key={key}
-              className="dark:bg-main-dark/50 bg-gray-100 px-2 py-1 text-xs rounded border dark:border-main-dark/30 border-gray-300 shadow-sm font-mono"
+              className="dark:bg-main-dark/50 bg-gray-100 px-1.5 py-0.5 text-[10px] rounded border dark:border-main-dark/30 border-gray-300 shadow-sm font-mono"
             >
               {ensureKeyCode(key)}
             </kbd>

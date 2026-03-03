@@ -16,6 +16,8 @@ import createAlignedOutput from "./utils/createAlignedOutput";
 import EditorComponent from "./components/EditorComponent";
 import Sidebar from "./components/Sidebar";
 import Header from "./components/Header";
+import CommandPalette from "./components/CommandPalette";
+import RegisterCommandPaletteActions from "./components/CommandPaletteActions";
 import useResizePanelSizes from "./hooks/useResizePanelSizes";
 import { useBookmarksStore, useBookmarks } from "./stores/bookmarksStore";
 import { useGlobalBookmarks } from "./hooks/useGlobalBookmarks";
@@ -64,6 +66,8 @@ function App() {
 
   return (
     <main className="h-screen flex flex-col font-[roboto] font-bold text-main-dark">
+      <CommandPalette />
+      <RegisterCommandPaletteActions />
       <Header />
       <section className="flex flex-row flex-1 w-full overflow-hidden dark:bg-main-dark bg-[#f7f7f7]">
         <PanelGroup direction="horizontal" id="sidebar-main">

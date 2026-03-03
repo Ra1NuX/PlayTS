@@ -1,19 +1,19 @@
 import ts from "typescript";
 
 function transpileTypeScript(tsCode: string): string {
-  
+  const codeWithLineMarkers = tsCode
+    .split("\n")
+    .map((line, index) => `/*__RUNTS_LINE_${index + 1}__*/${line}`)
+    .join("\n");
 
- // sustituye todos los saltos de linea por console.log() vacios
-
-  // tsCode = tsCode.replace(/\n/g, "\nconsole.log()\n");
-  
-  const result = ts.transpileModule(tsCode, {
+  const result = ts.transpileModule(codeWithLineMarkers, {
     compilerOptions: {
       module: ts.ModuleKind.ESNext,
       target: ts.ScriptTarget.ES2024,
       jsx: ts.JsxEmit.React,
       allowUmdGlobalAccess: true,
       newLine: ts.NewLineKind.LineFeed,
+      removeComments: false,
     },
   });
 

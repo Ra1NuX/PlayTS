@@ -1,30 +1,40 @@
-// Basado en los otrso archivos de la carpeta src/hooks creame el hook useSettings.ts
-
 import { useState, useEffect } from "react";
-
-export enum AiModel {
-  GPT_4O_MINI = "gpt-4o-mini",
-  GPT_4_5_PREVIEW = "gpt-4.5-preview",
-  GPT_4O = "gpt-4o",
-  GPT_O3 = "o3-mini",
-  GPT_O1 = "o1",
-}
+import type { AiProviderId } from "../constants/aiModels";
+import {
+  DEFAULT_AI_MODEL_ID,
+  DEFAULT_AI_PROVIDER,
+  parseLegacyAiModel,
+} from "../constants/aiModels";
 
 export interface GlobalSettings {
   apiKey: string;
-  aiModel: AiModel;
+  aiProvider: AiProviderId;
+  aiModelId: string;
   theme: string;
   font: string;
   size: number;
   name?: string | null;
   email?: string | null;
 }
+
+function loadAiFromStorage(): { aiProvider: AiProviderId; aiModelId: string } {
+  const stored = localStorage.getItem("aiModel");
+  const legacy = parseLegacyAiModel(stored);
+  if (legacy) return legacy;
+  const provider = (localStorage.getItem("aiProvider") as AiProviderId | null) || DEFAULT_AI_PROVIDER;
+  const modelId = localStorage.getItem("aiModelId") || DEFAULT_AI_MODEL_ID;
+  return { aiProvider: provider, aiModelId: modelId };
+}
+
+const initialAi = loadAiFromStorage();
+
 const defaultSettings: GlobalSettings = {
   apiKey: "",
   theme: "dark",
   font: "FiraCode",
   size: 14,
-  aiModel: AiModel.GPT_4O,
+  aiProvider: DEFAULT_AI_PROVIDER,
+  aiModelId: DEFAULT_AI_MODEL_ID,
 };
 
 export let globalSettings: GlobalSettings = {
@@ -37,8 +47,8 @@ export let globalSettings: GlobalSettings = {
   ),
   name: localStorage.getItem("name"),
   email: localStorage.getItem("email"),
-  aiModel:
-    (localStorage.getItem("aiModel") as AiModel) || defaultSettings.aiModel,
+  aiProvider: initialAi.aiProvider,
+  aiModelId: initialAi.aiModelId,
 };
 
 const listeners = new Set<(newSettings: GlobalSettings) => void>();
@@ -71,15 +81,11 @@ const changeSettings = (newSettings: Partial<GlobalSettings>) => {
   localStorage.setItem("globalSize", globalSettings.size.toString());
   localStorage.setItem("name", globalSettings.name || "");
   localStorage.setItem("email", globalSettings.email || "");
-  localStorage.setItem("aiModel", globalSettings.aiModel);
+  localStorage.setItem("aiProvider", globalSettings.aiProvider);
+  localStorage.setItem("aiModelId", globalSettings.aiModelId);
   notifyAll();
 };
 
-/**
- * Hook que devuelve la fuente y el tamaño actuales, además de funciones para cambiarlos.
- * Al cambiar alguno de estos valores se actualiza la variable global, se guarda en localStorage
- * y se notifica a todos los componentes que usan este hook.
- */
 export const useSettings = () => {
   const [settings, setSettings] = useState<GlobalSettings>(globalSettings);
 

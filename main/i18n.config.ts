@@ -16,7 +16,7 @@ export default i18next.use(Backend).init({
     loadPath: baseLocalesPath + "/{{lng}}/{{ns}}.json",
   },
   fallbackLng: "en",
-  supportedLngs: ["en", "es"],
+  supportedLngs: ["en", "es", "zh"],
   ns: ["common"],
   defaultNS: "common",
   debug: false,

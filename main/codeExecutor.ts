@@ -7,7 +7,6 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as os from 'os';
 import { addInstructionsToCode } from '../src/utils/addInstructionsToCode';
-import { createLineMapping, correctLineNumbers } from '../src/utils/lineMapping';
 
 // Interfaces
 export interface ExecutionResult {
@@ -98,17 +97,19 @@ class CodeExecutor {
         ? `${options.globalBookmarksCode}\n\n${options.code}`
         : options.code;
 
+      const userCodeStartLine = options.globalBookmarksCode
+        ? options.globalBookmarksCode.split('\n').length + 2
+        : 1;
+      const transpiledToOriginalLineMap = this.createTranspiledToOriginalLineMap(options.code);
+
       // Aplicar instrumentación como en WebContainers
       const instrumentedCode = addInstructionsToCode(fullCode);
       
-      // Crear mapeo de líneas para corregir la alineación
-      const lineMapping = createLineMapping(fullCode, instrumentedCode);
-
       // Escribir código instrumentado a archivo temporal
       fs.writeFileSync(this.indexJsPath, instrumentedCode);
 
       // Ejecutar código
-      const results = await this.runNodeProcess();
+      const results = await this.runNodeProcess(userCodeStartLine, transpiledToOriginalLineMap);
       
       console.log('✅ Código ejecutado exitosamente');
       return results;
@@ -179,12 +180,36 @@ class CodeExecutor {
     return text.replace(/\x1b\[[0-9;]*m/g, '');
   }
 
+  private createTranspiledToOriginalLineMap(transpiledCode: string): Map<number, number> {
+    const mapping = new Map<number, number>();
+    const lines = transpiledCode.split('\n');
+    let currentOriginalLine = 0;
+
+    for (let index = 0; index < lines.length; index++) {
+      const line = lines[index];
+      const markerMatch = line.match(/__RUNTS_LINE_(\d+)__/);
+      if (markerMatch && markerMatch[1]) {
+        currentOriginalLine = Number(markerMatch[1]);
+      }
+
+      if (currentOriginalLine > 0) {
+        mapping.set(index + 1, currentOriginalLine);
+      }
+    }
+
+    return mapping;
+  }
+
   /**
    * Ejecuta el proceso Node.js
    */
-  private async runNodeProcess(): Promise<ExecutionResult[]> {
+  private async runNodeProcess(
+    userCodeStartLine: number,
+    transpiledToOriginalLineMap: Map<number, number>
+  ): Promise<ExecutionResult[]> {
     return new Promise((resolve, reject) => {
       const results: ExecutionResult[] = [];
+      let stdoutBuffer = '';
       
       const child = spawn('node', ['index.js'], {
         cwd: this.tempDir,
@@ -193,24 +218,38 @@ class CodeExecutor {
 
       child.stdout.on('data', (data) => {
         const output = data.toString();
-        console.log('📤 Output:', output);
-        
-        try {
-          // Intentar parsear como JSON (formato esperado)
-          const parsed = JSON.parse(output);
-          console.log({parsed})
-          if (parsed.line !== undefined && parsed.text !== undefined && parsed.time !== undefined) {
-            // Guardar solo el objeto parseado, no el JSON string
-            results.push(parsed);
+
+        stdoutBuffer += output;
+        const outputLines = stdoutBuffer.split('\n');
+        stdoutBuffer = outputLines.pop() || '';
+
+        for (const rawLine of outputLines) {
+          const cleanLine = this.stripAnsiCodes(rawLine).trim();
+
+          if (!cleanLine) {
+            continue;
           }
-        } catch {
-          // Si no es JSON, crear resultado genérico manteniendo el formato original
-          const cleanText = this.stripAnsiCodes(output);
-          results.push({
-            line: 1,
-            text: cleanText.trim(),
-            time: 0
-          });
+
+          try {
+            const parsed = JSON.parse(cleanLine) as ExecutionResult;
+            if (parsed.line !== undefined && parsed.text !== undefined && parsed.time !== undefined) {
+              const userTranspiledLine = parsed.line >= userCodeStartLine
+                ? parsed.line - userCodeStartLine + 1
+                : parsed.line;
+              const mappedLine = transpiledToOriginalLineMap.get(userTranspiledLine) ?? userTranspiledLine;
+
+              results.push({
+                ...parsed,
+                line: mappedLine > 0 ? mappedLine : 1
+              });
+            }
+          } catch {
+            results.push({
+              line: 1,
+              text: cleanLine,
+              time: 0
+            });
+          }
         }
       });
 
@@ -226,6 +265,29 @@ class CodeExecutor {
 
       child.on('close', (code) => {
         if (code === 0) {
+          const pendingOutput = this.stripAnsiCodes(stdoutBuffer).trim();
+          if (pendingOutput) {
+            try {
+              const parsed = JSON.parse(pendingOutput) as ExecutionResult;
+              if (parsed.line !== undefined && parsed.text !== undefined && parsed.time !== undefined) {
+                const userTranspiledLine = parsed.line >= userCodeStartLine
+                  ? parsed.line - userCodeStartLine + 1
+                  : parsed.line;
+                const mappedLine = transpiledToOriginalLineMap.get(userTranspiledLine) ?? userTranspiledLine;
+
+                results.push({
+                  ...parsed,
+                  line: mappedLine > 0 ? mappedLine : 1
+                });
+              }
+            } catch {
+              results.push({
+                line: 1,
+                text: pendingOutput,
+                time: 0
+              });
+            }
+          }
           resolve(results);
         } else {
           reject(new Error(`Proceso terminó con código ${code}`));

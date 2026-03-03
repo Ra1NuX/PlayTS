@@ -4,12 +4,8 @@
  */
 
 import { getEnvironmentInfo } from './environment';
-import { WebContainer } from "@webcontainer/api";
 import { addInstructionsToCode } from "./addInstructionsToCode";
-
-// Variables globales para WebContainer (solo en web)
-let webContainer: WebContainer | null = null;
-let webContainerPromise: Promise<WebContainer> | null = null;
+import { getWebContainer } from "./runCode";
 
 // Interfaces para los diferentes métodos de ejecución
 export interface ExecutionResult {
@@ -172,50 +168,12 @@ const uninstallPackageViaICP = async (name: string): Promise<PackageOperationRes
 // ===== IMPLEMENTACIONES WEBCONTAINER =====
 
 /**
- * Obtiene instancia de WebContainer (solo para web)
- */
-const getWebContainerInstance = (): Promise<WebContainer> => {
-  if (webContainer) {
-    return Promise.resolve(webContainer);
-  }
-
-  if (!webContainerPromise) {
-    webContainerPromise = WebContainer.boot().then(async (container) => {
-      await container.mount({
-        "package.json": {
-          file: {
-            contents: JSON.stringify({
-              name: "example",
-              version: "1.0.0",
-              type: "module",
-              main: "index.js",
-              scripts: {
-                start: "node index.js",
-              },
-              dependencies: JSON.parse(localStorage.getItem("dependencies") || "{}"),
-            }),
-          },
-        },
-        "example.txt": {
-          file: { contents: '1\n2\n3\n4\n5' },
-        },
-      });
-
-      webContainer = container;
-      return container;
-    });
-  }
-
-  return webContainerPromise;
-};
-
-/**
  * Ejecuta código via WebContainers en Web
  */
 const executeCodeViaWebContainer = async (options: ExecutionOptions): Promise<ExecutionResult[]> => {
   console.log('🌐 Ejecutando código via WebContainers (Web)');
   
-  const container = await getWebContainerInstance();
+  const container = await getWebContainer();
   
   // Combinar código de bookmarks con código del usuario
   const fullCode = options.globalBookmarksCode 
@@ -285,7 +243,7 @@ const installPackageViaWebContainer = async (name: string, version: string): Pro
   console.log('🌐 Instalando paquete via WebContainers (Web)');
   
   try {
-    const container = await getWebContainerInstance();
+    const container = await getWebContainer();
     
     const currentDeps = JSON.parse(localStorage.getItem("dependencies") || "{}");
     currentDeps[name] = version;
@@ -332,7 +290,7 @@ const uninstallPackageViaWebContainer = async (name: string): Promise<PackageOpe
   console.log('🌐 Desinstalando paquete via WebContainers (Web)');
   
   try {
-    const container = await getWebContainerInstance();
+    const container = await getWebContainer();
     
     const currentDeps = JSON.parse(localStorage.getItem("dependencies") || "{}");
     delete currentDeps[name];

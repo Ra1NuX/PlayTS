@@ -30,7 +30,7 @@ const Code = ({ code, id }: CodeProps) => {
   return (
     <div className="my-3">
       {/* Contenedor principal del código */}
-      <div className="relative rounded-lg border dark:border-divider-dark border-gray-300 overflow-hidden shadow-md dark:bg-main-dark bg-white">
+      <div className="relative rounded border dark:border-divider-dark border-gray-300 overflow-hidden shadow-md dark:bg-main-dark bg-white">
         {/* Header con controles - más compacto */}
         <div className="px-3 py-2 dark:bg-main-light bg-gray-50 border-b dark:border-divider-dark border-gray-200">
           <div className="flex items-center justify-between">

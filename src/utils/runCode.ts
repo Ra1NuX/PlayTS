@@ -15,15 +15,9 @@ const cleanAnsiAndSpecialChars = (str: string): string => {
 };
 
 const getWebContainer = (): Promise<WebContainer> => {
-  console.log('🔍 Verificando entorno antes de inicializar WebContainer...');
-
-  // NO inicializar WebContainer si estamos en Electron
   if (isElectron()) {
-    console.log('🚫 Intentando inicializar WebContainer en Electron - BLOQUEADO');
     throw new Error('WebContainer no debe inicializarse en Electron. Usar ICP en su lugar.');
   }
-
-  console.log('✅ Inicializando WebContainer en entorno web');
 
   if (webContainer) {
     return Promise.resolve(webContainer);
@@ -234,3 +228,4 @@ export const uninstallPackage = async (name: string): Promise<boolean> => {
 };
 
 export default runCode;
+export { getWebContainer };

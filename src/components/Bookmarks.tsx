@@ -1,7 +1,8 @@
 import { useState } from 'react';
+import { useTranslation } from "react-i18next";
 import { Bookmark, NewBookmark, formatTags, parseTags } from "../utils/bookmarkUtils";
 import { useBookmarksWithInjection } from "../hooks/useBookmarksWithInjection";
-import { BookmarksHeader } from "./bookmarks/BookmarksHeader";
+import { SidebarSection } from "./SidebarSection";
 import { NewBookmarkForm } from "./bookmarks/NewBookmarkForm";
 import { BookmarkEditForm } from "./bookmarks/BookmarkEditForm";
 import { BookmarkCard } from "./bookmarks/BookmarkCard";
@@ -12,6 +13,7 @@ interface BookmarksProps {
 }
 
 const Bookmarks = ({ onCodeInjection }: BookmarksProps) => {
+  const { t } = useTranslation();
   const [searchTerm, setSearchTerm] = useState('');
   const [showAddForm, setShowAddForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -102,15 +104,22 @@ const Bookmarks = ({ onCodeInjection }: BookmarksProps) => {
   };
 
   return (
-    <div className="w-full mx-auto space-y-3 dark:text-gray-300 text-main-dark overflow-hidden flex flex-col flex-1">
-      <BookmarksHeader
-        bookmarksCount={bookmarks.length}
-        onAddClick={() => setShowAddForm(!showAddForm)}
-        searchTerm={searchTerm}
-        onSearchChange={setSearchTerm}
-      />
-      <div className="overflow-auto flex flex-col flex-1 gap-2 pr-1 scrollbar-thin scrollbar-track-transparent scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-600 hover:scrollbar-thumb-gray-400 dark:hover:scrollbar-thumb-gray-500">
-
+    <SidebarSection
+      title={t('BOOKMARKS')}
+      count={bookmarks.length}
+      searchPlaceholder={t('SEARCH')}
+      searchValue={searchTerm}
+      onSearchChange={setSearchTerm}
+      headerAction={
+        <button
+          onClick={() => setShowAddForm(!showAddForm)}
+          className="flex items-center gap-1 bg-accent-dark hover:bg-hover-ancient-dark text-white px-4 py-1 rounded transition-colors font-semibold text-sm flex-shrink-0"
+        >
+          <span className="hidden sm:inline">{t('NEW')}</span>
+        </button>
+      }
+    >
+      <div className="flex flex-col gap-2">
         {showAddForm && (
           <NewBookmarkForm
             bookmark={newBookmark}
@@ -122,10 +131,9 @@ const Bookmarks = ({ onCodeInjection }: BookmarksProps) => {
           />
         )}
 
-        {/* Contenedor de bookmarks con scroll profesional */}
-        <div className="max-h-[600px] overflow-y-visible  space-y-3 ">
+        <div className="space-y-3">
           {filteredBookmarks.map((bookmark) => (
-            <div key={bookmark.id} className="dark:bg-main-light bg-white rounded-lg border border-gray-200 dark:border-divider-dark overflow-hidden shadow-sm hover:shadow-md transition-all duration-200">
+            <div key={bookmark.id} className="dark:bg-main-light bg-white rounded border border-gray-200 dark:border-divider-dark overflow-hidden shadow-sm hover:shadow-md transition-all duration-200">
               {editingId === bookmark.id ? (
                 <BookmarkEditForm
                   bookmark={editingBookmark!}
@@ -155,7 +163,7 @@ const Bookmarks = ({ onCodeInjection }: BookmarksProps) => {
           />
         )}
       </div>
-    </div>
+    </SidebarSection>
   );
 };
 

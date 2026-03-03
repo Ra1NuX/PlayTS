@@ -1,11 +1,6 @@
 import { zodResponseFormat } from "openai/helpers/zod";
 import { z } from "zod";
-
-import { globalSettings } from "../hooks/useSettings";
-
 import { v4 as uuid } from "uuid";
-import { globalCode } from "../hooks/useCompiler";
-import { t } from "i18next";
 
 const schema = z.object({
   response: z.string(),
@@ -13,25 +8,28 @@ const schema = z.object({
   error: z.boolean(),
 });
 
-export async function callOpenAI(
-  messages: { role: string; content: string }[],
-  onData: (data: { response: string }) => void,
+export interface CallAIStreamCallbacks {
+  onData: (data: { response: string }) => void;
   onFinally: (data: {
     response: string;
     code: string;
     error: boolean;
     id: string | null;
-  }) => void
-) {
+  }) => void;
+}
 
+export async function callOpenAI(
+  modelId: string,
+  apiKey: string,
+  messages: { role: string; content: string }[],
+  systemContent: string,
+  callbacks: CallAIStreamCallbacks
+) {
+  const { onData, onFinally } = callbacks;
   const responseFormat = zodResponseFormat(schema, "correct");
 
   let retries = 3;
-  let response;
-
-  console.log({
-    messages,
-  });
+  let response: Response | undefined;
 
   do {
     try {
@@ -39,21 +37,12 @@ export async function callOpenAI(
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${globalSettings.apiKey}`,
+          Authorization: `Bearer ${apiKey}`,
         },
         body: JSON.stringify({
-          model: globalSettings.aiModel,
+          model: modelId,
           messages: [
-            {
-              role: "system",
-              content:
-                t("SYSTEM_CONTEXT") + ' ' + 
-                t("SYSTEM_MESSAGE_CONTEXT", {
-                  code: globalCode,
-                  name: globalSettings.name,
-                  email: globalSettings.email,
-                }),
-            },
+            { role: "system", content: systemContent },
             ...messages,
           ],
           stream: true,
@@ -63,7 +52,6 @@ export async function callOpenAI(
 
       if (!response?.ok) {
         retries--;
-        console.error("Error:", response.statusText);
         continue;
       }
 
@@ -72,7 +60,6 @@ export async function callOpenAI(
 
       const decoder = new TextDecoder("utf-8");
       let accumulatedResponse = "";
-
       let message = "";
 
       while (true) {
@@ -87,10 +74,7 @@ export async function callOpenAI(
         for (const line of lines) {
           const jsonStr = line.replace(/^data: /, "").trim();
           if (jsonStr === "[DONE]") {
-            console.log("✅ Stream completo");
-            onData({
-              response: accumulatedResponse,
-            });
+            onData({ response: accumulatedResponse });
             break;
           }
 
@@ -98,7 +82,6 @@ export async function callOpenAI(
             const parsed = JSON.parse(jsonStr);
             const delta = parsed.choices?.[0]?.delta?.content || "";
             message += delta;
-            console.log({ message });
             if (message.replaceAll(" ", "").includes('"response":"')) {
               const match = message.match(
                 /"response"\s*:\s*"((?:[^"\\]|\\.)*)/
@@ -107,20 +90,16 @@ export async function callOpenAI(
                 accumulatedResponse = match[1] || "";
               }
             }
-
-            onData({
-              response: accumulatedResponse,
-            });
-          } catch (err) {
-            console.error("Error parseando JSON del chunk:", err);
+            onData({ response: accumulatedResponse });
+          } catch {
+            continue;
           }
         }
       }
 
-      const { success } = schema.safeParse(JSON.parse(message));
+      const parsed = schema.safeParse(JSON.parse(message));
 
-      if (!success) {
-        console.error("Error parsing response:", message);
+      if (!parsed.success) {
         onFinally({
           response: "",
           code: "",
@@ -130,13 +109,7 @@ export async function callOpenAI(
         return;
       }
 
-      const {
-        response: finalResponse,
-        code: finalCode,
-        error,
-      } = schema.parse(JSON.parse(message));
-
-      console.log({});
+      const { response: finalResponse, code: finalCode, error } = parsed.data;
 
       onFinally({
         response: finalResponse,
@@ -145,8 +118,7 @@ export async function callOpenAI(
         id: uuid(),
       });
       return;
-    } catch (error) {
-      console.error("Error:", error);
+    } catch {
       onFinally({
         response: "",
         code: "",
