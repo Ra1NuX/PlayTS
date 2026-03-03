@@ -12,6 +12,10 @@ const config = {
       from: "public/locales",
       to: "locales",
     },
+    {
+      from: "node_modules/npm",
+      to: "runtime/npm",
+    },
   ],
   directories: {
     buildResources: "public",

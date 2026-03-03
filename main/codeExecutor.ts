@@ -26,6 +26,20 @@ export interface PackageOperationResult {
   error?: string;
 }
 
+interface CommandResult {
+  code: number | null;
+  stdout: string;
+  stderr: string;
+  spawnError: NodeJS.ErrnoException | null;
+}
+
+interface NpmExecutionPlan {
+  command: string;
+  baseArgs: string[];
+  runAsNode: boolean;
+  source: 'embedded' | 'system';
+}
+
 class CodeExecutor {
   private tempDir: string;
   private packageJsonPath: string;
@@ -229,11 +243,12 @@ class CodeExecutor {
     return new Promise((resolve, reject) => {
       const results: ExecutionResult[] = [];
       let stdoutBuffer = '';
-      
-      const child = spawn('node', ['index.js'], {
-        cwd: this.tempDir,
-        stdio: ['pipe', 'pipe', 'pipe']
-      });
+      const primaryCommand = process.versions.electron ? process.execPath : 'node';
+      const primaryArgs = process.versions.electron ? [this.indexJsPath] : ['index.js'];
+      const fallbackCommand = process.platform === 'win32' ? 'node.exe' : 'node';
+      const fallbackArgs = ['index.js'];
+      let child = this.spawnNodeProcess(primaryCommand, primaryArgs, false);
+      let attemptedFallback = false;
 
       child.stdout.on('data', (data) => {
         const output = data.toString();
@@ -314,7 +329,106 @@ class CodeExecutor {
       });
 
       child.on('error', (error) => {
-        reject(error);
+        const err = error as NodeJS.ErrnoException;
+        if (err.code === 'EINVAL' && !attemptedFallback) {
+          attemptedFallback = true;
+          child = this.spawnNodeProcess(fallbackCommand, fallbackArgs, true);
+          child.stdout.on('data', (data) => {
+            const output = data.toString();
+            stdoutBuffer += output;
+            const outputLines = stdoutBuffer.split('\n');
+            stdoutBuffer = outputLines.pop() || '';
+
+            for (const rawLine of outputLines) {
+              const cleanLine = this.stripAnsiCodes(rawLine).trim();
+              if (!cleanLine) {
+                continue;
+              }
+              try {
+                const parsed = JSON.parse(cleanLine) as ExecutionResult;
+                if (parsed.line !== undefined && parsed.text !== undefined && parsed.time !== undefined) {
+                  const userTranspiledLine = parsed.line >= userCodeStartLine
+                    ? parsed.line - userCodeStartLine + 1
+                    : parsed.line;
+                  const mappedLine = transpiledToOriginalLineMap.get(userTranspiledLine) ?? userTranspiledLine;
+                  results.push({
+                    ...parsed,
+                    line: mappedLine > 0 ? mappedLine : 1
+                  });
+                }
+              } catch {
+                results.push({
+                  line: 1,
+                  text: cleanLine,
+                  time: 0
+                });
+              }
+            }
+          });
+
+          child.stderr.on('data', (data) => {
+            const errorText = data.toString();
+            console.error('📤 Error:', errorText);
+            results.push({
+              line: -1,
+              text: this.stripAnsiCodes(errorText).trim(),
+              time: 0
+            });
+          });
+
+          child.on('close', (fallbackCode) => {
+            if (fallbackCode === 0) {
+              const pendingOutput = this.stripAnsiCodes(stdoutBuffer).trim();
+              if (pendingOutput) {
+                try {
+                  const parsed = JSON.parse(pendingOutput) as ExecutionResult;
+                  if (parsed.line !== undefined && parsed.text !== undefined && parsed.time !== undefined) {
+                    const userTranspiledLine = parsed.line >= userCodeStartLine
+                      ? parsed.line - userCodeStartLine + 1
+                      : parsed.line;
+                    const mappedLine = transpiledToOriginalLineMap.get(userTranspiledLine) ?? userTranspiledLine;
+                    results.push({
+                      ...parsed,
+                      line: mappedLine > 0 ? mappedLine : 1
+                    });
+                  }
+                } catch {
+                  results.push({
+                    line: 1,
+                    text: pendingOutput,
+                    time: 0
+                  });
+                }
+              }
+              resolve(results);
+              return;
+            }
+
+            reject(new Error(`Proceso terminó con código ${fallbackCode} (fallback node).`));
+          });
+
+          child.on('error', (fallbackError) => {
+            reject(this.buildSpawnError(
+              'node',
+              fallbackError as NodeJS.ErrnoException,
+              fallbackCommand,
+              fallbackArgs
+            ));
+          });
+          return;
+        }
+
+        if (err.code === 'ENOENT') {
+          reject(new Error('No fue posible iniciar el runtime de Node para ejecutar el código.'));
+          return;
+        }
+
+        if (err.code === 'EACCES') {
+          reject(new Error('Sin permisos para iniciar el runtime de Node en el directorio temporal.'));
+          return;
+        }
+
+        reject(this.buildSpawnError('node', err, primaryCommand, primaryArgs));
       });
     });
   }
@@ -323,24 +437,91 @@ class CodeExecutor {
     return process.platform === 'win32' ? 'npm.cmd' : 'npm';
   }
 
-  private async runNpmInstall(): Promise<void> {
-    return new Promise((resolve, reject) => {
-      const npmCmd = this.getNpmCommand();
-      const npmCacheDir = path.join(this.tempDir, '.npm-cache');
-      fs.mkdirSync(npmCacheDir, { recursive: true });
+  private getEmbeddedNpmCliPath(): string | null {
+    const candidates = [
+      path.join(process.resourcesPath, 'runtime', 'npm', 'bin', 'npm-cli.js'),
+      path.join(process.cwd(), 'node_modules', 'npm', 'bin', 'npm-cli.js')
+    ];
+    for (const candidate of candidates) {
+      if (fs.existsSync(candidate)) {
+        return candidate;
+      }
+    }
+    return null;
+  }
 
+  private getNpmExecutionPlans(): NpmExecutionPlan[] {
+    const plans: NpmExecutionPlan[] = [];
+    const embeddedCliPath = this.getEmbeddedNpmCliPath();
+    if (embeddedCliPath) {
+      plans.push({
+        command: process.execPath,
+        baseArgs: [embeddedCliPath],
+        runAsNode: true,
+        source: 'embedded'
+      });
+    }
+    plans.push({
+      command: this.getNpmCommand(),
+      baseArgs: [],
+      runAsNode: false,
+      source: 'system'
+    });
+    return plans;
+  }
+
+  private async runNpmInstall(): Promise<void> {
+    this.ensureTempDir();
+    const npmCacheDir = path.join(this.tempDir, '.npm-cache');
+    fs.mkdirSync(npmCacheDir, { recursive: true });
+    const installArgs = ['install', '--no-audit', '--no-fund'];
+    const attempts = this.getNpmExecutionPlans();
+
+    for (const plan of attempts) {
+      const args = [...plan.baseArgs, ...installArgs];
+      const result = await this.executeCommand(plan.command, args, false, npmCacheDir, plan.runAsNode);
+      if (result.code === 0) {
+        return;
+      }
+      if (result.spawnError && result.spawnError.code === 'EINVAL') {
+        const retryResult = await this.executeCommand(plan.command, args, true, npmCacheDir, plan.runAsNode);
+        if (retryResult.code === 0) {
+          return;
+        }
+        if (plan.source === 'system') {
+          throw this.buildInstallError(retryResult, plan.source);
+        }
+        continue;
+      }
+      if (plan.source === 'system') {
+        throw this.buildInstallError(result, plan.source);
+      }
+    }
+
+    throw new Error('No se pudo ejecutar npm con runtime embebido ni con npm del sistema.');
+  }
+
+  private executeCommand(
+    command: string,
+    args: string[],
+    shell: boolean,
+    npmCacheDir: string,
+    runAsNode: boolean
+  ): Promise<CommandResult> {
+    return new Promise((resolve) => {
       const stdoutChunks: string[] = [];
       const stderrChunks: string[] = [];
+      let spawnError: NodeJS.ErrnoException | null = null;
+      const env = this.buildSpawnEnv(npmCacheDir);
+      if (runAsNode) {
+        env.ELECTRON_RUN_AS_NODE = '1';
+      }
 
-      const child = spawn(npmCmd, ['install', '--no-audit', '--no-fund'], {
+      const child = spawn(command, args, {
         cwd: this.tempDir,
         stdio: ['pipe', 'pipe', 'pipe'],
-        shell: false,
-        env: {
-          ...process.env,
-          npm_config_cache: npmCacheDir,
-          npm_config_update_notifier: 'false'
-        }
+        shell,
+        env
       });
 
       child.stdout.on('data', (data) => {
@@ -355,22 +536,88 @@ class CodeExecutor {
         console.log('📦 npm install (stderr):', output);
       });
 
-      child.on('close', (code) => {
-        if (code === 0) {
-          resolve();
-        } else {
-          const stderrText = stderrChunks.join('').trim();
-          const stdoutText = stdoutChunks.join('').trim();
-          const lastStderrLines = stderrText.split('\n').slice(-20).join('\n').trim();
-          const lastStdoutLines = stdoutText.split('\n').slice(-20).join('\n').trim();
-          const details = lastStderrLines || lastStdoutLines || 'Sin salida de npm';
-          reject(new Error(`npm install terminó con código ${code}. Detalle: ${details}`));
-        }
+      child.on('error', (error) => {
+        spawnError = error as NodeJS.ErrnoException;
       });
 
-      child.on('error', (error) => {
-        reject(error);
+      child.on('close', (code) => {
+        resolve({
+          code,
+          stdout: stdoutChunks.join('').trim(),
+          stderr: stderrChunks.join('').trim(),
+          spawnError
+        });
       });
+    });
+  }
+
+  private buildSpawnEnv(npmCacheDir: string): NodeJS.ProcessEnv {
+    const env: NodeJS.ProcessEnv = {};
+    for (const [key, value] of Object.entries(process.env)) {
+      if (
+        typeof value === 'string' &&
+        key.length > 0 &&
+        !key.includes('\u0000') &&
+        !key.includes('=') &&
+        !value.includes('\u0000')
+      ) {
+        env[key] = value;
+      }
+    }
+    env.npm_config_cache = npmCacheDir;
+    env.npm_config_update_notifier = 'false';
+    return env;
+  }
+
+  private buildInstallError(result: CommandResult, source: 'embedded' | 'system'): Error {
+    if (source === 'embedded' && result.spawnError?.code === 'ENOENT') {
+      return new Error('No se encontró el runtime npm embebido dentro de la aplicación.');
+    }
+
+    if (result.spawnError?.code === 'ENOENT') {
+      return new Error('No se encontró npm en el sistema donde corre la app en producción.');
+    }
+
+    if (result.spawnError?.code === 'EACCES') {
+      return new Error('npm existe pero no tiene permisos de ejecución en este entorno.');
+    }
+
+    if (result.spawnError?.code === 'EINVAL') {
+      return new Error('El sistema rechazó los argumentos o el entorno al ejecutar npm (spawn EINVAL).');
+    }
+
+    const stderrLines = result.stderr.split('\n').slice(-20).join('\n').trim();
+    const stdoutLines = result.stdout.split('\n').slice(-20).join('\n').trim();
+    const details = stderrLines || stdoutLines || 'Sin salida de npm';
+    return new Error(`npm install terminó con código ${result.code}. Detalle: ${details}`);
+  }
+
+  private buildSpawnError(
+    processName: string,
+    error: NodeJS.ErrnoException,
+    command: string,
+    args: string[]
+  ): Error {
+    const code = error.code || 'UNKNOWN';
+    const syscall = error.syscall || 'spawn';
+    const spawnPath = (error as NodeJS.ErrnoException & { path?: string }).path || command;
+    const argText = args.join(' ');
+    return new Error(
+      `Falló ${processName} (${code}) en ${syscall}. command="${command}" args="${argText}" path="${spawnPath}" cwd="${this.tempDir}".`
+    );
+  }
+
+  private spawnNodeProcess(command: string, args: string[], shell: boolean) {
+    const npmCacheDir = path.join(this.tempDir, '.npm-cache');
+    const env = this.buildSpawnEnv(npmCacheDir);
+    if (process.versions.electron) {
+      env.ELECTRON_RUN_AS_NODE = '1';
+    }
+    return spawn(command, args, {
+      cwd: this.tempDir,
+      stdio: ['pipe', 'pipe', 'pipe'],
+      shell,
+      env
     });
   }
 

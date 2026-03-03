@@ -1,7 +1,7 @@
 {
   "name": "PlayTS",
   "private": true,
-  "version": "0.2.39",
+  "version": "0.2.40",
   "description": "PlayTS",
   "author": {
     "name": "Ra1NuX",
@@ -29,7 +29,7 @@
     "dist": "npm run build && electron-builder --config electron-builder.config.js -w",
     "dist:linux": "npm run build && electron-builder --config electron-builder.config.js -l",
     "fix-dist-permissions": "echo 'Si dist/ es de nobody/nogroup, ejecuta: sudo chown -R $(whoami):$(id -gn) dist/'",
-    "docker-build": "docker run --rm -ti --env-file <(env | grep -iE 'DEBUG|NODE_|ELECTRON_|YARN_|NPM_|CI|CIRCLE|TRAVIS_TAG|TRAVIS|TRAVIS_REPO_|TRAVIS_BUILD_|TRAVIS_BRANCH|TRAVIS_PULL_REQUEST_|APPVEYOR_|CSC_|GH_|GITHUB_|BT_|AWS_|STRIP|BUILD_') --env ELECTRON_CACHE='/root/.cache/electron' --env ELECTRON_BUILDER_CACHE='/root/.cache/electron-builder' -v ${PWD}:/project -v ${PWD##*/}-node-modules:/project/node_modules -v ~/.cache/electron:/root/.cache/electron "
+    "docker-build": "docker run --rm --env-file <(env | grep -iE 'DEBUG|NODE_|ELECTRON_|YARN_|NPM_|CI|CIRCLE|TRAVIS_TAG|TRAVIS|TRAVIS_REPO_|TRAVIS_BUILD_|TRAVIS_BRANCH|TRAVIS_PULL_REQUEST_|APPVEYOR_|CSC_|GH_|GITHUB_|BT_|AWS_|STRIP|BUILD_') --env ELECTRON_CACHE='/root/.cache/electron' --env ELECTRON_BUILDER_CACHE='/root/.cache/electron-builder' -v ${PWD}:/project -v ${PWD##*/}-node-modules:/project/node_modules -v ~/.cache/electron:/root/.cache/electron -v ~/.cache/electron-builder:/root/.cache/electron-builder -w /project electronuserland/builder:wine /bin/bash -lc \"npm install && npm run dist\""
   },
   "dependencies": {
     "@ai-sdk/openai": "^1.3.6",
@@ -55,6 +55,7 @@
     "jsdom": "^26.0.0",
     "kbar": "^0.1.0-beta.48",
     "motion": "^12.6.5",
+    "npm": "^11.11.0",
     "openai": "^4.91.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
