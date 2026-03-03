@@ -5,6 +5,7 @@ import {
   DEFAULT_AI_PROVIDER,
   parseLegacyAiModel,
 } from "../constants/aiModels";
+import { isOpenAIChatCompletionsModel } from "../utils/fetchAiModels";
 
 export interface GlobalSettings {
   apiKey: string;
@@ -20,10 +21,12 @@ export interface GlobalSettings {
 function loadAiFromStorage(): { aiProvider: AiProviderId; aiModelId: string } {
   const stored = localStorage.getItem("aiModel");
   const legacy = parseLegacyAiModel(stored);
-  if (legacy) return legacy;
-  const provider = (localStorage.getItem("aiProvider") as AiProviderId | null) || DEFAULT_AI_PROVIDER;
+  if (legacy && legacy.provider === "openai" && isOpenAIChatCompletionsModel(legacy.modelId))
+    return { aiProvider: DEFAULT_AI_PROVIDER, aiModelId: legacy.modelId };
+  if (legacy) return { aiProvider: DEFAULT_AI_PROVIDER, aiModelId: DEFAULT_AI_MODEL_ID };
   const modelId = localStorage.getItem("aiModelId") || DEFAULT_AI_MODEL_ID;
-  return { aiProvider: provider, aiModelId: modelId };
+  const safeModelId = isOpenAIChatCompletionsModel(modelId) ? modelId : DEFAULT_AI_MODEL_ID;
+  return { aiProvider: DEFAULT_AI_PROVIDER, aiModelId: safeModelId };
 }
 
 const initialAi = loadAiFromStorage();

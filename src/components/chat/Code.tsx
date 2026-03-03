@@ -1,4 +1,5 @@
 import SyntaxHighlighter from "react-syntax-highlighter";
+import { useTranslation } from "react-i18next";
 import useChat from "../../hooks/useChat";
 import useCompiler from "../../hooks/useCompiler";
 import Kbd from "./Kbd";
@@ -12,6 +13,7 @@ interface CodeProps {
 }
 
 const Code = ({ code, id }: CodeProps) => {
+  const { t } = useTranslation();
   const { updateCode } = useCompiler();
   const { setCodeState } = useChat();
   const { theme } = useTheme();
@@ -29,31 +31,29 @@ const Code = ({ code, id }: CodeProps) => {
 
   return (
     <div className="my-3">
-      {/* Contenedor principal del código */}
-      <div className="relative rounded border dark:border-divider-dark border-gray-300 overflow-hidden shadow-md dark:bg-main-dark bg-white">
-        {/* Header con controles - más compacto */}
+      <div className="group relative rounded border dark:border-divider-dark border-gray-300 overflow-hidden shadow-md dark:bg-main-dark bg-white">
         <div className="px-3 py-2 dark:bg-main-light bg-gray-50 border-b dark:border-divider-dark border-gray-200">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2 min-w-0">
               <BsCode className="h-4 w-4 dark:text-accent-dark text-accent-dark flex-shrink-0" />
-              <span className="text-sm font-medium dark:text-white text-main-dark truncate">Bloque de Código</span>
+              <span className="text-sm font-medium dark:text-white text-main-dark truncate">{t("CHAT_CODE_BLOCK")}</span>
             </div>
             {id && (
-              <div className="flex items-center gap-1 flex-shrink-0">
+              <div className="flex items-center gap-1 flex-shrink-0 opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto transition-opacity duration-200">
                 <button
                   onClick={handleEnter}
                   className="flex items-center justify-center w-8 h-6 rounded dark:bg-accent-dark bg-accent-dark hover:bg-[#0d73ffb6] dark:hover:bg-[#0d73ffb6] text-white transition-all text-xs font-mono"
-                  title="Ejecutar código (Enter)"
+                  title={t("CHAT_CODE_RUN_TITLE")}
                 >
-                  <Kbd keys={["Enter"]} onKeyPress={handleEnter} />
+                  <Kbd keys={["Enter"]} onKeyPress={handleEnter} forceVisible />
                 </button>
                 <span className="dark:text-gray-400 text-gray-400 text-xs">|</span>
                 <button
                   onClick={handleCopy}
                   className="flex items-center justify-center min-w-8 h-6 rounded dark:bg-main-dark bg-gray-100 hover:bg-gray-200 dark:hover:bg-main-dark/80 dark:text-gray-300 text-main-dark border dark:border-main-dark border-gray-300 transition-all text-xs font-mono"
-                  title="Copiar código (Ctrl+C)"
+                  title={t("CHAT_CODE_COPY_TITLE")}
                 >
-                  <Kbd keys={["Control", "C"]} onKeyPress={handleCopy} />
+                  <Kbd keys={["Control", "C"]} onKeyPress={handleCopy} forceVisible />
                 </button>
               </div>
             )}

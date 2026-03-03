@@ -21,6 +21,8 @@ import RegisterCommandPaletteActions from "./components/CommandPaletteActions";
 import useResizePanelSizes from "./hooks/useResizePanelSizes";
 import { useBookmarksStore, useBookmarks } from "./stores/bookmarksStore";
 import { useGlobalBookmarks } from "./hooks/useGlobalBookmarks";
+import { useEnvVarsStore, useEnvVars } from "./stores/envVarsStore";
+import { useGlobalEnvVars } from "./hooks/useGlobalEnvVars";
 
 function App() {
   const { theme } = useTheme();
@@ -28,9 +30,13 @@ function App() {
   const { font, size } = useFont();
   
   useBookmarksStore();
-  
+  useEnvVarsStore();
+
   const bookmarks = useBookmarks();
   useGlobalBookmarks({ bookmarks });
+
+  const envVars = useEnvVars();
+  useGlobalEnvVars({ envVars });
 
   const sidebarSection = useRef<ImperativePanelHandle>(null);
 
@@ -127,7 +133,7 @@ function App() {
                                   <div
                                     className="flex w-full rounded"
                                     key={`empty-${element.line}-${i}`}
-                                    style={{ height: "27px", fontFamily: font, fontSize: `${size}px` }} // Misma altura que SyntaxHighlighter
+                                    style={{ height: "27px", fontFamily: `"${font}"`, fontSize: `${size}px` }} // Misma altura que SyntaxHighlighter
                                   >
                                     <div className="flex w-full justify-between font-mono">
                                       <div style={{ height: "27px" }}></div>
@@ -179,7 +185,7 @@ function App() {
                             }
                           })
                         ) : (
-                          <div className="flex items-center justify-center h-full text-gray-500 p-4" style={{ fontFamily: font, fontSize: `${size}px` }}>
+                          <div className="flex items-center justify-center h-full text-gray-500 p-4" style={{ fontFamily: `"${font}"`, fontSize: `${size}px` }}>
                             <div className="text-center">
                               <div className="text-lg mb-2">🚀 Listo para ejecutar código</div>
                               <div className="text-sm opacity-80">

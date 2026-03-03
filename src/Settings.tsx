@@ -1,7 +1,10 @@
-import { Tab, TabGroup, TabList, TabPanel, TabPanels } from "@headlessui/react";
+import { useTranslation } from "react-i18next";
 import { BiSolidHelpCircle } from "react-icons/bi";
-import { FaPalette } from "react-icons/fa";
+import { FaPalette, FaUserEdit } from "react-icons/fa";
+import { BsStars } from "react-icons/bs";
 
+import useSettings from "./hooks/useSettings";
+import { SidebarSection } from "./components/SidebarSection";
 import SwitchTheme from "./components/settings/SwitchTheme";
 import LanguageSelector from "./components/settings/LanguageSelector";
 import SocialMedias from "./components/settings/SocialMedias";
@@ -9,84 +12,78 @@ import FontSelector from "./components/settings/FontSelector";
 import FontSizeSelector from "./components/settings/FontSizeSelector";
 import AppInfo from "./components/settings/AppInfo";
 import ApiKey from "./components/settings/ApiKey";
-import { BsStars } from "react-icons/bs";
-import { FaUserEdit } from "react-icons/fa";
 import AIModelSelector from "./components/settings/AIModelSelector";
 import UsernameInput from "./components/settings/UsernameInput";
 import EmailInput from "./components/settings/EmailInput";
-import { useTranslation } from "react-i18next";
 
-interface SettingsProps {
-  open?: () => void;
-  close?: () => void;
-}
-
-const Settings = ({ close = Function, }: SettingsProps) => {
-
+const Settings = () => {
   const { t } = useTranslation();
+  const { settings } = useSettings();
 
   return (
-    <main className="flex flex-col font-[roboto] font-medium text-main-dark dark:text-white">
-      <TabGroup>
-        <nav className="flex justify-between">
-          <TabList className="flex border-b border-divider dark:border-divider-dark">
-            <Tab className="flex gap-2 items-center justify-center px-4 p-0.5 focus:outline-none data-[selected]:bg-white/10 data-[hover]:bg-white/5 data-[selected]:data-[hover]:bg-white/10 data-[focus]:outline-1 data-[focus]:outline-white">
-              <FaUserEdit className="w-4 h-4" />
+    <SidebarSection title={t("SETTINGS")}>
+      <div className="flex flex-col gap-6 pb-4">
+        <div className="flex flex-col gap-3">
+          <div className="flex items-center gap-2 px-1">
+            <FaUserEdit className="w-3.5 h-3.5 dark:text-gray-400 text-gray-500" />
+            <h2 className="text-xs font-semibold dark:text-gray-400 text-main-light/60 uppercase tracking-wide">
               {t("GENERAL")}
-            </Tab>
-            <Tab className="flex gap-2 items-center justify-center px-4 p-1 focus:outline-none data-[selected]:bg-white/10 data-[hover]:bg-white/5 data-[selected]:data-[hover]:bg-white/10 data-[focus]:outline-1 data-[focus]:outline-white">
-              <FaPalette className="w-4 h-4" />
-              {t("APPARENCE")}
-            </Tab>
-            <Tab className="flex gap-2 items-center justify-center px-4 p-1 focus:outline-none data-[selected]:bg-white/10 data-[hover]:bg-white/5 data-[selected]:data-[hover]:bg-white/10 data-[focus]:outline-1 data-[focus]:outline-white">
-              <BsStars className="w-4 h-4" />
-              {t("AI")}
-            </Tab>
-            <Tab className="flex gap-2 items-center justify-center px-4 p-1 focus:outline-none data-[selected]:bg-white/10 data-[hover]:bg-white/5 data-[selected]:data-[hover]:bg-white/10 data-[focus]:outline-1 data-[focus]:outline-white">
-              <BiSolidHelpCircle className="w-4 h-4" />
-              {t("ABOUT")}
-            </Tab>
-          </TabList>
-          {/* <button
-            onClick={() => close()}
-            className="flex justify-center aspect-square w-9 h-9 ml-1.5 items-center rounded hover:bg-[#ff0000dd] dark:hover:bg-[#ff0000dd] hover:text-white"
-          >
-            <span className="text-2xl font-extralight mb-1.5">&times;</span>
-          </button> */}
-        </nav>
-        <TabPanels className="p-4">
-          <TabPanel className="flex flex-col gap-2">
+            </h2>
+          </div>
+          <div className="flex flex-col gap-2">
             <UsernameInput />
             <EmailInput />
-            {/* <div className="flex justify-between items-center pt-2">
-              <button className="hover:bg-red-500 text-white font-bold py-2 px-4  transition-colors duration-200 ease-in-out">
-                <span>Reset Settings</span>
-              </button>
-            </div> */}
-          </TabPanel>
-          <TabPanel className="flex flex-col gap-2 ">
+          </div>
+        </div>
+
+        <div className="w-full h-px dark:bg-divider-dark bg-gray-200" />
+
+        <div className="flex flex-col gap-3">
+          <div className="flex items-center gap-2 px-1">
+            <FaPalette className="w-3.5 h-3.5 dark:text-gray-400 text-gray-500" />
+            <h2 className="text-xs font-semibold dark:text-gray-400 text-main-light/60 uppercase tracking-wide">
+              {t("APPARENCE")}
+            </h2>
+          </div>
+          <div className="flex flex-col gap-2">
             <SwitchTheme />
             <FontSelector />
             <FontSizeSelector />
             <LanguageSelector />
-          </TabPanel>
-          <TabPanel className="flex flex-col gap-2 ">
-            <AIModelSelector />
+          </div>
+        </div>
+
+        <div className="w-full h-px dark:bg-divider-dark bg-gray-200" />
+
+        <div className="flex flex-col gap-3">
+          <div className="flex items-center gap-2 px-1">
+            <BsStars className="w-3.5 h-3.5 dark:text-gray-400 text-gray-500" />
+            <h2 className="text-xs font-semibold dark:text-gray-400 text-main-light/60 uppercase tracking-wide">
+              {t("AI_OPENAI")}
+            </h2>
+          </div>
+          <div className="flex flex-col gap-2">
             <ApiKey />
-          </TabPanel>
-          <TabPanel className="flex flex-col gap-2 ">
+            {settings.apiKey ? <AIModelSelector /> : null}
+          </div>
+        </div>
+
+        <div className="w-full h-px dark:bg-divider-dark bg-gray-200" />
+
+        <div className="flex flex-col gap-3">
+          <div className="flex items-center gap-2 px-1">
+            <BiSolidHelpCircle className="w-3.5 h-3.5 dark:text-gray-400 text-gray-500" />
+            <h2 className="text-xs font-semibold dark:text-gray-400 text-main-light/60 uppercase tracking-wide">
+              {t("ABOUT")}
+            </h2>
+          </div>
+          <div className="flex flex-col gap-2">
             <AppInfo />
             <SocialMedias />
-          </TabPanel>
-        </TabPanels>
-
-        {/* <div className="w-full h-0.5 dark:bg-white/5 bg-main-light/10 !my-4 rounded-full shadow-md" />
-        
-        <div className="w-full h-0.5 dark:bg-white/5 bg-main-light/10 !my-4 rounded-full shadow-md" />
-        
-        <div className="w-full h-0.5 dark:bg-white/5 bg-main-light/10 !my-4 rounded-full shadow-md" /> */}
-      </TabGroup>
-    </main>
+          </div>
+        </div>
+      </div>
+    </SidebarSection>
   );
 };
 

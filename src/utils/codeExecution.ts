@@ -18,6 +18,7 @@ export interface ExecutionOptions {
   code: string;
   globalBookmarksCode?: string;
   dependencies?: Record<string, string>;
+  envVars?: Record<string, string>;
 }
 
 export interface PackageOperationResult {
@@ -100,26 +101,43 @@ export const uninstallPackage = async (name: string): Promise<PackageOperationRe
   }
 };
 
+// ===== HELPERS DE CONSTRUCCIÓN DE CÓDIGO =====
+
+const buildEnvVarsInjection = (envVars: Record<string, string>): string => {
+  if (!envVars || Object.keys(envVars).length === 0) return '';
+  return Object.entries(envVars)
+    .map(([key, value]) => `process.env[${JSON.stringify(key)}] = ${JSON.stringify(value)};`)
+    .join('\n') + '\n';
+};
+
+const buildFullCode = (options: ExecutionOptions): string => {
+  const envInjection = buildEnvVarsInjection(options.envVars ?? {});
+  const bookmarks = options.globalBookmarksCode ?? '';
+  const parts = [envInjection, bookmarks, options.code].filter(Boolean);
+  return parts.join('\n\n');
+};
+
 // ===== IMPLEMENTACIONES ICP (REAL) =====
 
-/**
- * Ejecuta código via ICP en Electron
- */
 const executeCodeViaICP = async (options: ExecutionOptions): Promise<ExecutionResult[]> => {
   console.log('📡 Ejecutando código via ICP (Electron)');
-  
-  // Verificar si estamos en Electron y tenemos la API disponible
+
+  const patchedOptions: ExecutionOptions = {
+    ...options,
+    code: buildFullCode(options),
+    globalBookmarksCode: '',
+  };
+
   if (typeof window !== 'undefined' && (window as any).electron) {
     try {
-      return await (window as any).electron.executeCode(options);
+      return await (window as any).electron.executeCode(patchedOptions);
     } catch (error) {
       console.error('❌ Error en API de Electron:', error);
       throw new Error(`Error en API de Electron: ${error instanceof Error ? error.message : 'Error desconocido'}`);
     }
   } else {
     console.warn('⚠️ API de Electron no disponible, usando WebContainers como fallback');
-    // Fallback a WebContainers si la API de Electron no está disponible
-    return await executeCodeViaWebContainer(options);
+    return await executeCodeViaWebContainer(patchedOptions);
   }
 };
 
@@ -167,22 +185,19 @@ const uninstallPackageViaICP = async (name: string): Promise<PackageOperationRes
 
 // ===== IMPLEMENTACIONES WEBCONTAINER =====
 
-/**
- * Ejecuta código via WebContainers en Web
- */
 const executeCodeViaWebContainer = async (options: ExecutionOptions): Promise<ExecutionResult[]> => {
-  console.log('🌐 Ejecutando código via WebContainers (Web)');
-  
   const container = await getWebContainer();
-  
-  // Combinar código de bookmarks con código del usuario
-  const fullCode = options.globalBookmarksCode 
+
+  const codeToProcess = options.globalBookmarksCode
     ? `${options.globalBookmarksCode}\n\n${options.code}`
     : options.code;
 
-  const iCode = addInstructionsToCode(fullCode);
-  
-  await container.fs.writeFile("index.js", iCode);
+  const iCode = addInstructionsToCode(codeToProcess);
+
+  const envInjection = buildEnvVarsInjection(options.envVars ?? {});
+  const finalCode = envInjection ? `${envInjection}\n${iCode}` : iCode;
+
+  await container.fs.writeFile("index.js", finalCode);
   
   const results: ExecutionResult[] = [];
   

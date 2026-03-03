@@ -6,7 +6,7 @@ interface GlobalSettings {
 }
 
 const defaultSettings: GlobalSettings = {
-  font: "FiraCode",
+  font: "Fira Code",
   size: 14,
 };
 

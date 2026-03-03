@@ -29,7 +29,7 @@ const Header = () => {
     <>
       <nav
         ref={header}
-        className="h-10 dark:bg-main-contrast bg-[#f7f7f7] drag z-10 px-2 grid grid-cols-[1fr_auto_1fr] items-center gap-2 border-b border-gray-300 dark:border-divider-dark"
+        className="h-10 dark:bg-main-contrast bg-[#f7f7f7] drag z-10 px-2 grid grid-cols-[1fr_auto_1fr] items-center gap-2 box-content border-b border-gray-300 dark:border-divider-dark"
       >
         <div className="min-w-0 flex items-center gap-2">
           <img src="/icon.png" className="h-6 shrink-0" alt="" />

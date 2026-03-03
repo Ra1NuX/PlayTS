@@ -52,7 +52,7 @@ const AIModelSelector = () => {
       {t("MODEL")}
       <Listbox value={selectedOption} onChange={handleChange}>
         <ListboxButton className="font-[roboto] font-normal dark:bg-main-dark/50 bg-[#fafafa] dark:hover:bg-main-dark hover:bg-[#f0f0f0] border shadow-md dark:border-main-dark/20 p-1 pr-2 rounded-xl flex justify-center min-w-[140px] text-center">
-          {loading.openai || loading.google ? (
+          {loading ? (
             <span className="opacity-70">...</span>
           ) : (
             selectedOption.name

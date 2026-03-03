@@ -8,11 +8,7 @@ import { BookmarkEditForm } from "./bookmarks/BookmarkEditForm";
 import { BookmarkCard } from "./bookmarks/BookmarkCard";
 import { EmptyState } from "./bookmarks/EmptyState";
 
-interface BookmarksProps {
-  onCodeInjection?: (code: string) => void;
-}
-
-const Bookmarks = ({ onCodeInjection }: BookmarksProps) => {
+const Bookmarks = () => {
   const { t } = useTranslation();
   const [searchTerm, setSearchTerm] = useState('');
   const [showAddForm, setShowAddForm] = useState(false);
@@ -32,6 +28,7 @@ const Bookmarks = ({ onCodeInjection }: BookmarksProps) => {
     handleSaveBookmark,
     handleToggleGlobal,
     handleUpdateBookmark,
+    handleDeleteBookmark,
     filterBookmarksBySearch,
   } = useBookmarksWithInjection();
 
@@ -70,6 +67,14 @@ const Bookmarks = ({ onCodeInjection }: BookmarksProps) => {
     setEditingBookmark(null);
   };
 
+  const handleDelete = (id: string) => {
+    handleDeleteBookmark(id);
+    if (editingId === id) {
+      setEditingId(null);
+      setEditingBookmark(null);
+    }
+  };
+
   const handleCopy = async (code: string, name: string) => {
     try {
       await navigator.clipboard.writeText(code);
@@ -77,14 +82,6 @@ const Bookmarks = ({ onCodeInjection }: BookmarksProps) => {
     } catch (err) {
       console.error('Error al copiar:', err);
     }
-  };
-
-  const handleUse = (name: string) => {
-    const bookmark = bookmarks.find(bm => bm.name === name);
-    if (bookmark && onCodeInjection) {
-      onCodeInjection(bookmark.code);
-    }
-    console.log(`Usando bookmark: ${name}`);
   };
 
   const updateNewBookmark = (updates: Partial<NewBookmark>) => {
@@ -149,7 +146,7 @@ const Bookmarks = ({ onCodeInjection }: BookmarksProps) => {
                   onToggleGlobal={handleToggleGlobal}
                   onCopy={handleCopy}
                   onEdit={handleEdit}
-                  onUse={handleUse}
+                  onDelete={handleDelete}
                 />
               )}
             </div>

@@ -1,14 +1,16 @@
+import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 import { Switch } from "@headlessui/react";
-import { BsCode, BsCopy, BsPencil, BsPlay } from "react-icons/bs";
+import { BsCode, BsCopy, BsPencil, BsThreeDotsVertical, BsTrash } from "react-icons/bs";
 import { Bookmark } from "../../utils/bookmarkUtils";
 import { useTranslation } from "react-i18next";
+import merge from "../../tools/merge";
 
 interface BookmarkCardProps {
   bookmark: Bookmark;
   onToggleGlobal: (id: string) => void;
   onCopy: (code: string, name: string) => void;
   onEdit: (bookmark: Bookmark) => void;
-  onUse: (name: string) => void;
+  onDelete: (id: string) => void;
 }
 
 export const BookmarkCard = ({
@@ -16,7 +18,7 @@ export const BookmarkCard = ({
   onToggleGlobal,
   onCopy,
   onEdit,
-  onUse
+  onDelete,
 }: BookmarkCardProps) => {
   const { t } = useTranslation();
 
@@ -29,15 +31,10 @@ export const BookmarkCard = ({
             <span className="bg-accent-dark text-xs text-white font-medium px-1.5 py-0.5 rounded-full flex-shrink-0">
               {bookmark.language}
             </span>
-            {bookmark.isGloballyActive && (
-              <span className="bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 text-xs font-medium px-1.5 py-0.5 rounded-full flex-shrink-0">
-{t('ACTIVE')}
-              </span>
-            )}
           </div>
           <p className="dark:text-white text-main-light/60 text-xs line-clamp-2">{bookmark.description}</p>
         </div>
-        <div className="flex items-center gap-2 flex-shrink-0">
+        <div className="flex items-center gap-1 flex-shrink-0">
           <Switch
             checked={bookmark.isGloballyActive}
             onChange={() => onToggleGlobal(bookmark.id)}
@@ -51,10 +48,70 @@ export const BookmarkCard = ({
               } inline-block h-3 w-3 rounded-full bg-white transition-all`}
             />
           </Switch>
+
+          <Menu as="div" className="relative">
+            <MenuButton className="flex items-center justify-center w-6 h-6 rounded dark:text-gray-400 text-gray-500 dark:hover:text-gray-200 hover:text-gray-700 transition-colors">
+              <BsThreeDotsVertical className="h-3.5 w-3.5" />
+            </MenuButton>
+
+            <MenuItems anchor="bottom end" className="z-50 w-44 dark:bg-main-light bg-white border border-gray-200 dark:border-divider-dark rounded shadow-lg focus:outline-none">
+              <div className="py-1">
+                <MenuItem>
+                  {({ active }) => (
+                    <button
+                      onClick={() => onCopy(bookmark.code, bookmark.name)}
+                      className={merge(
+                        'flex items-center gap-2 w-full px-3 py-1.5 text-xs transition-colors',
+                        active
+                          ? 'dark:bg-main-dark bg-gray-100 dark:text-white text-main-dark'
+                          : 'dark:text-gray-300 text-gray-600'
+                      )}
+                    >
+                      <BsCopy className="h-3.5 w-3.5" />
+                      {t('COPY')}
+                    </button>
+                  )}
+                </MenuItem>
+
+                <MenuItem>
+                  {({ active }) => (
+                    <button
+                      onClick={() => onEdit(bookmark)}
+                      className={merge(
+                        'flex items-center gap-2 w-full px-3 py-1.5 text-xs transition-colors',
+                        active
+                          ? 'dark:bg-main-dark bg-gray-100 dark:text-white text-main-dark'
+                          : 'dark:text-gray-300 text-gray-600'
+                      )}
+                    >
+                      <BsPencil className="h-3.5 w-3.5" />
+                      {t('EDIT')}
+                    </button>
+                  )}
+                </MenuItem>
+
+                <MenuItem>
+                  {({ active }) => (
+                    <button
+                      onClick={() => onDelete(bookmark.id)}
+                      className={merge(
+                        'flex items-center gap-2 w-full px-3 py-1.5 text-xs transition-colors',
+                        active
+                          ? 'bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400'
+                          : 'text-red-500 dark:text-red-400'
+                      )}
+                    >
+                      <BsTrash className="h-3.5 w-3.5" />
+                      {t('DELETE')}
+                    </button>
+                  )}
+                </MenuItem>
+              </div>
+            </MenuItems>
+          </Menu>
         </div>
       </div>
 
-      {/* Tags */}
       <div className="flex gap-1 mb-2 flex-wrap">
         {bookmark.tags.slice(0, 3).map((tag) => (
           <span
@@ -69,7 +126,6 @@ export const BookmarkCard = ({
         )}
       </div>
 
-      {/* Code Preview - Compact */}
       <div className="mb-2">
         <div className="bg-gray-50 dark:bg-main-dark rounded p-2 text-xs font-mono overflow-hidden">
           <div className="line-clamp-3 text-gray-700 dark:text-white">
@@ -78,41 +134,11 @@ export const BookmarkCard = ({
         </div>
       </div>
 
-      {/* Actions */}
-      <div className="flex items-center justify-between pt-2 border-t border-gray-200 dark:border-main-dark">
+      <div className="flex items-center pt-2 border-t border-gray-200 dark:border-main-dark">
         <div className="flex items-center gap-1 text-xs dark:text-gray-300 text-gray-500">
           <BsCode className="h-3 w-3" />
           <span className="hidden sm:inline">{bookmark.createdAt.toLocaleDateString()}</span>
           <span className="sm:hidden">{bookmark.createdAt.toLocaleDateString().slice(0, 5)}</span>
-        </div>
-
-        <div className="flex items-center gap-1">
-          <button
-            onClick={() => onCopy(bookmark.code, bookmark.name)}
-            className="flex items-center gap-1 dark:bg-main-dark bg-gray-100 hover:bg-gray-200 dark:hover:bg-main-dark/80 dark:text-white text-main-dark border border-gray-300 dark:border-main-dark rounded px-2 py-1 text-xs transition-colors font-normal"
-            title="Copiar"
-          >
-            <BsCopy className="h-3 w-3" />
-            <span className="hidden sm:inline">{t('COPY')}</span>
-          </button>
-
-          <button
-            onClick={() => onEdit(bookmark)}
-            className="flex items-center gap-1 dark:bg-main-dark bg-gray-100 hover:bg-gray-200 dark:hover:bg-main-dark/80 dark:text-white text-main-dark border border-gray-300 dark:border-main-dark rounded px-2 py-1 text-xs transition-colors font-normal"
-            title="Editar"
-          >
-            <BsPencil className="h-3 w-3" />
-            <span className="hidden sm:inline">{t('EDIT')}</span>
-          </button>
-
-          <button
-            onClick={() => onUse(bookmark.name)}
-            className="flex items-center gap-1 bg-accent-dark hover:bg-hover-ancient-dark text-white border border-accent-dark rounded px-2 py-1 text-xs transition-colors font-semibold"
-            title="Usar"
-          >
-            <BsPlay className="h-3 w-3" />
-            <span className="hidden sm:inline">{t('USE')}</span>
-          </button>
         </div>
       </div>
     </div>

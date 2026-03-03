@@ -13,31 +13,16 @@ export interface AiProviderOption {
 }
 
 const OPENAI_FALLBACK: AiModelOption[] = [
+  { id: "gpt-5.2", name: "GPT-5.2", provider: "openai" },
+  { id: "gpt-5.1", name: "GPT-5.1", provider: "openai" },
   { id: "gpt-4o", name: "GPT-4o", provider: "openai" },
   { id: "gpt-4o-mini", name: "GPT-4o Mini", provider: "openai" },
   { id: "o1", name: "O1", provider: "openai" },
   { id: "o3-mini", name: "O3 Mini", provider: "openai" },
 ];
 
-const GOOGLE_FALLBACK: AiModelOption[] = [
-  { id: "gemini-2.5-pro", name: "Gemini 2.5 Pro", provider: "google" },
-  { id: "gemini-2.5-flash", name: "Gemini 2.5 Flash", provider: "google" },
-  { id: "gemini-2.0-flash", name: "Gemini 2.0 Flash", provider: "google" },
-  { id: "gemini-1.5-pro", name: "Gemini 1.5 Pro", provider: "google" },
-  { id: "gemini-1.5-flash", name: "Gemini 1.5 Flash", provider: "google" },
-];
-
-const ANTHROPIC_FALLBACK: AiModelOption[] = [
-  { id: "claude-sonnet-4-20250514", name: "Claude Sonnet 4", provider: "anthropic" },
-  { id: "claude-3-5-sonnet-20241022", name: "Claude 3.5 Sonnet", provider: "anthropic" },
-  { id: "claude-3-5-haiku-20241022", name: "Claude 3.5 Haiku", provider: "anthropic" },
-  { id: "claude-3-opus-20240229", name: "Claude 3 Opus", provider: "anthropic" },
-];
-
 export const FALLBACK_PROVIDERS: AiProviderOption[] = [
   { id: "openai", name: "OpenAI", models: OPENAI_FALLBACK },
-  { id: "google", name: "Google (Gemini)", models: GOOGLE_FALLBACK },
-  { id: "anthropic", name: "Anthropic (Claude)", models: ANTHROPIC_FALLBACK },
 ];
 
 export const DEFAULT_AI_PROVIDER: AiProviderId = "openai";

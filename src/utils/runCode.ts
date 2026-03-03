@@ -25,6 +25,7 @@ const getWebContainer = (): Promise<WebContainer> => {
 
   if (!webContainerPromise) {
     webContainerPromise = WebContainer.boot().then(async (container) => {
+      const userDeps = JSON.parse(localStorage.getItem("dependencies") || "{}");
       await container.mount({
         "package.json": {
           file: {
@@ -36,7 +37,7 @@ const getWebContainer = (): Promise<WebContainer> => {
               scripts: {
                 start: "node index.js",
               },
-              dependencies: JSON.parse(localStorage.getItem("dependencies") || "{}"),
+              dependencies: userDeps,
             }),
           },
         },

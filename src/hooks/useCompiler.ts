@@ -30,6 +30,26 @@ console.log('¡Hola mundo desde PlayTS!');
 
 // Prueba escribiendo algo aquí y presiona el botón de ejecutar`;
 export let globalBookmarksCode = "";
+export let globalEnvVars: Record<string, string> = {};
+
+const initializeEnvVarsFromStorage = () => {
+  try {
+    const stored = localStorage.getItem('env-vars-storage');
+    if (stored) {
+      const parsed = JSON.parse(stored);
+      if (parsed.state?.envVars) {
+        const active = parsed.state.envVars.filter((ev: { isActive: boolean }) => ev.isActive);
+        const record: Record<string, string> = {};
+        active.forEach((ev: { key: string; value: string }) => {
+          record[ev.key] = ev.value;
+        });
+        globalEnvVars = record;
+      }
+    }
+  } catch (error) {
+    console.error('Error initializing env vars:', error);
+  }
+};
 
 const initializeBookmarksFromStorage = () => {
   try {
@@ -54,6 +74,7 @@ const initializeBookmarksFromStorage = () => {
   }
 };
 
+initializeEnvVarsFromStorage();
 initializeBookmarksFromStorage();
 
 const notifyAll = () => {
@@ -80,7 +101,13 @@ const setGlobalCode = (code: string) => {
 
 export const setGlobalBookmarksCode = (code: string, shouldRerun = false) => {
   globalBookmarksCode = code;
-  
+  if (shouldRerun && !globalPaused && globalCode) {
+    updateAndRunCode(globalCode).catch(console.error);
+  }
+};
+
+export const setGlobalEnvVars = (envVars: Record<string, string>, shouldRerun = false) => {
+  globalEnvVars = envVars;
   if (shouldRerun && !globalPaused && globalCode) {
     updateAndRunCode(globalCode).catch(console.error);
   }
@@ -92,10 +119,11 @@ const updateAndRunCode = async (code: string) => {
 
   try {
     const js = transpileTypeScript(code);
-    const result = await executeCode({ 
-      code: js, 
+    const result = await executeCode({
+      code: js,
       globalBookmarksCode: globalBookmarksCode,
-      dependencies: globalDependencies
+      dependencies: globalDependencies,
+      envVars: globalEnvVars,
     });
     console.log({result})
     setGlobalResult(result as ResultType[]);
