@@ -127,6 +127,7 @@ app.whenReady().then(async () => {
         else if (ext === '.json') mimeType = 'application/json; charset=utf-8';
         else if (ext === '.png') mimeType = 'image/png';
         else if (ext === '.jpg' || ext === '.jpeg') mimeType = 'image/jpeg';
+        else if (ext === '.svg') mimeType = 'image/svg+xml';
 
         // Crear un ArrayBuffer estándar para evitar problemas con SharedArrayBuffer
         const arrayBuffer = new ArrayBuffer(fileContent.length);
