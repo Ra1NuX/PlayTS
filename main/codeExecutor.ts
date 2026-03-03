@@ -300,14 +300,17 @@ class CodeExecutor {
     });
   }
 
-  /**
-   * Ejecuta npm install
-   */
+  private getNpmCommand(): string {
+    return process.platform === 'win32' ? 'npm.cmd' : 'npm';
+  }
+
   private async runNpmInstall(): Promise<void> {
     return new Promise((resolve, reject) => {
-      const child = spawn('npm', ['install'], {
+      const npmCmd = this.getNpmCommand();
+      const child = spawn(npmCmd, ['install'], {
         cwd: this.tempDir,
-        stdio: ['pipe', 'pipe', 'pipe']
+        stdio: ['pipe', 'pipe', 'pipe'],
+        shell: true
       });
 
       child.stdout.on('data', (data) => {
