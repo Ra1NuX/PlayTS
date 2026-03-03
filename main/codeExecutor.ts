@@ -33,8 +33,7 @@ class CodeExecutor {
   private dependencies: Record<string, string> = {};
 
   constructor() {
-    // Crear directorio temporal para ejecución de código
-    this.tempDir = path.join(os.tmpdir(), 'runts-execution');
+    this.tempDir = path.join(os.tmpdir(), 'runts-execution', this.getExecutionUserSegment());
     this.packageJsonPath = path.join(this.tempDir, 'package.json');
     this.indexJsPath = path.join(this.tempDir, 'index.js');
     
@@ -42,10 +41,30 @@ class CodeExecutor {
     this.loadDependencies();
   }
 
+  private getExecutionUserSegment(): string {
+    if (typeof process.getuid === 'function') {
+      return String(process.getuid());
+    }
+
+    if (process.env.USERNAME) {
+      return process.env.USERNAME;
+    }
+
+    if (process.env.USER) {
+      return process.env.USER;
+    }
+
+    return 'default';
+  }
+
   private ensureTempDir(): void {
     if (!fs.existsSync(this.tempDir)) {
       fs.mkdirSync(this.tempDir, { recursive: true });
     }
+
+    const writeProbePath = path.join(this.tempDir, '.write-probe');
+    fs.writeFileSync(writeProbePath, 'ok');
+    fs.unlinkSync(writeProbePath);
   }
 
   private loadDependencies(): void {
@@ -307,25 +326,45 @@ class CodeExecutor {
   private async runNpmInstall(): Promise<void> {
     return new Promise((resolve, reject) => {
       const npmCmd = this.getNpmCommand();
-      const child = spawn(npmCmd, ['install'], {
+      const npmCacheDir = path.join(this.tempDir, '.npm-cache');
+      fs.mkdirSync(npmCacheDir, { recursive: true });
+
+      const stdoutChunks: string[] = [];
+      const stderrChunks: string[] = [];
+
+      const child = spawn(npmCmd, ['install', '--no-audit', '--no-fund'], {
         cwd: this.tempDir,
         stdio: ['pipe', 'pipe', 'pipe'],
-        shell: true
+        shell: false,
+        env: {
+          ...process.env,
+          npm_config_cache: npmCacheDir,
+          npm_config_update_notifier: 'false'
+        }
       });
 
       child.stdout.on('data', (data) => {
-        console.log('📦 npm install:', data.toString());
+        const output = data.toString();
+        stdoutChunks.push(output);
+        console.log('📦 npm install:', output);
       });
 
       child.stderr.on('data', (data) => {
-        console.log('📦 npm install (stderr):', data.toString());
+        const output = data.toString();
+        stderrChunks.push(output);
+        console.log('📦 npm install (stderr):', output);
       });
 
       child.on('close', (code) => {
         if (code === 0) {
           resolve();
         } else {
-          reject(new Error(`npm install terminó con código ${code}`));
+          const stderrText = stderrChunks.join('').trim();
+          const stdoutText = stdoutChunks.join('').trim();
+          const lastStderrLines = stderrText.split('\n').slice(-20).join('\n').trim();
+          const lastStdoutLines = stdoutText.split('\n').slice(-20).join('\n').trim();
+          const details = lastStderrLines || lastStdoutLines || 'Sin salida de npm';
+          reject(new Error(`npm install terminó con código ${code}. Detalle: ${details}`));
         }
       });
 
