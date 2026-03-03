@@ -34,11 +34,17 @@ export interface PackageOperationResult {
  */
 export const executeCode = async (options: ExecutionOptions): Promise<ExecutionResult[]> => {
   const env = getEnvironmentInfo();
-  
+
   console.log(`🚀 Ejecutando código usando: ${env.executionMethod}`);
-  
+  console.log('🔍 Información del entorno:', {
+    isElectron: env.isElectron,
+    isWeb: env.isWeb,
+    platform: env.platform,
+    executionMethod: env.executionMethod,
+    capabilities: env.capabilities
+  });
+
   if (env.executionMethod === 'icp') {
-    // TODO: Implementar ejecución via ICP
     console.log('📡 Ejecutando via ICP (Electron)');
     return await executeCodeViaICP(options);
   } else {
@@ -64,7 +70,8 @@ export const installPackage = async (name: string, version: string): Promise<Pac
     // Usar WebContainers para web
     console.log('🌐 Instalando via WebContainers (Web)');
     try {
-      const success = await installPackageWebContainer(name, version);
+      const { installPackage } = await import('./runCode');
+      const success = await installPackage(name, version);
       return { success };
     } catch (error) {
       return { success: false, error: error instanceof Error ? error.message : 'Error desconocido' };
@@ -88,7 +95,8 @@ export const uninstallPackage = async (name: string): Promise<PackageOperationRe
     // Usar WebContainers para web
     console.log('🌐 Desinstalando via WebContainers (Web)');
     try {
-      const success = await uninstallPackageWebContainer(name);
+      const { uninstallPackage } = await import('./runCode');
+      const success = await uninstallPackage(name);
       return { success };
     } catch (error) {
       return { success: false, error: error instanceof Error ? error.message : 'Error desconocido' };
@@ -105,7 +113,6 @@ const executeCodeViaICP = async (options: ExecutionOptions): Promise<ExecutionRe
   console.log('📡 Ejecutando código via ICP (Electron)');
   
   // Verificar si estamos en Electron y tenemos la API disponible
-  console.log(window.electron)
   if (typeof window !== 'undefined' && (window as any).electron) {
     try {
       return await (window as any).electron.executeCode(options);

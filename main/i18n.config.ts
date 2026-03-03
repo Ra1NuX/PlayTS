@@ -19,5 +19,5 @@ export default i18next.use(Backend).init({
   supportedLngs: ["en", "es"],
   ns: ["common"],
   defaultNS: "common",
-  debug: isDev,
+  debug: false,
 })

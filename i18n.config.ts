@@ -20,7 +20,7 @@ i18n
       addPath: typeof window !== "undefined" ? "/locales/{{lng}}/{{ns}}.missing.json" : "./renderer/locales/{{lng}}/{{ns}}.missing.json",
       
     },
-    debug: true,
+    debug: false,
     saveMissing: true,
     saveMissingTo: "current",
     detection: {

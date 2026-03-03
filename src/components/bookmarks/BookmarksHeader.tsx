@@ -28,9 +28,9 @@ export const BookmarksHeader = ({
         </div>
         <button
           onClick={onAddClick}
-          className="flex items-center gap-1 bg-accent-dark hover:bg-[#0d9effb6] text-white px-2 py-1 rounded-lg transition-colors font-semibold text-sm flex-shrink-0"
+          className="flex items-center gap-1 bg-accent-dark hover:bg-hover-ancient-dark text-white px-5 py-1.5 rounded transition-colors font-semibold text-sm flex-shrink-0"
         >
-          <BsPlus className="h-3 w-3" />
+          {/* <BsPlus className="h-3 w-3" /> */}
           <span className="hidden sm:inline">{t('NEW')}</span>
         </button>
       </div>

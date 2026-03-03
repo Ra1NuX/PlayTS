@@ -30,7 +30,7 @@ export const BookmarkEditForm = ({
           <div className="flex items-center gap-1">
             <button
               onClick={onSave}
-              className="flex items-center gap-1 bg-accent-dark hover:bg-[#0d9effb6] text-white px-2 py-1 rounded text-xs transition-colors font-semibold"
+              className="flex items-center gap-1 bg-accent-dark hover:bg-hover-ancient-dark text-white px-2 py-1 rounded text-xs transition-colors font-semibold"
               title="Guardar"
             >
               <BsCheck className="h-3 w-3" />

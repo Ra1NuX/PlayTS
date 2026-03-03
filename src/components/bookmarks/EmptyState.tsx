@@ -24,7 +24,7 @@ export const EmptyState = ({ searchTerm, onAddClick }: EmptyStateProps) => {
       {!searchTerm && (
         <button
           onClick={onAddClick}
-          className="bg-accent-dark hover:bg-[#0d9effb6] text-main-dark px-4 py-2 rounded-lg transition-colors font-semibold text-sm"
+          className="bg-accent-dark hover:bg-hover-ancient-dark text-main-dark dark:text-white px-4 py-2 rounded-lg transition-colors font-semibold text-sm"
         >
 {t('CREATE_FIRST_BOOKMARK')}
         </button>

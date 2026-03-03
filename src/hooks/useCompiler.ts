@@ -17,7 +17,18 @@ const codeListeners = new Set<(code: string) => void>();
 
 let globalPaused = false;
 let globalResult: ResultType[] = [];
-export let globalCode = "";
+export let globalCode = `// ¡Bienvenido a PlayTS!
+// Escribe tu código JavaScript/TypeScript aquí y ejecútalo
+
+console.log('¡Hola mundo desde PlayTS!');
+
+// Ejemplos de lo que puedes hacer:
+// - Ejecutar código JavaScript/TypeScript
+// - Instalar paquetes npm
+// - Usar bookmarks globales
+// - Ver resultados alineados con tu código
+
+// Prueba escribiendo algo aquí y presiona el botón de ejecutar`;
 export let globalBookmarksCode = "";
 
 const initializeBookmarksFromStorage = () => {
@@ -86,6 +97,7 @@ const updateAndRunCode = async (code: string) => {
       globalBookmarksCode: globalBookmarksCode,
       dependencies: globalDependencies
     });
+    console.log({result})
     setGlobalResult(result as ResultType[]);
   } catch (ex) {
     const { message, stack } = ex as Error;

@@ -94,7 +94,7 @@ const Sidebar = forwardRef<ImperativePanelHandle>((_, ref) => {
 
   return (
     <>
-      <aside className="dark:bg-main-dark bg-[#f3f3f3] md:flex flex-col hidden border-r dark:border-divider-dark border-gray-300">
+      <aside className="dark:bg-main-dark bg-[#f3f3f3] w-12 min-w-12 max-w-12 shrink-0 md:flex flex-col hidden border-r dark:border-divider-dark border-gray-300">
         <section className="flex-1 flex flex-col items-center">
           {buttons.map((button, index) => {
             if (button.hidden) return null;
@@ -112,7 +112,7 @@ const Sidebar = forwardRef<ImperativePanelHandle>((_, ref) => {
                     }
                   }}
                   className={merge(
-                    "relative flex items-center justify-center w-10 h-10 my-1 transition-all duration-200",
+                    "relative flex items-center justify-center w-12 h-12 my-1 transition-all duration-200",
                     isSelected 
                       ? "dark:text-white text-accent-dark" 
                       : "dark:text-gray-400 text-gray-600 dark:hover:text-gray-200 hover:text-gray-800"
@@ -130,7 +130,7 @@ const Sidebar = forwardRef<ImperativePanelHandle>((_, ref) => {
             );
           })}
         </section>
-        <section className="flex flex-col items-center border-t dark:border-divider-dark border-gray-300">
+        <section className="flex flex-col aspect-square items-center justify-center border-t dark:border-divider-dark border-gray-300">
           <MyModal
             Button={
               <button className="flex items-center justify-center w-10 h-10 dark:text-gray-400 text-gray-600 dark:hover:text-gray-200 hover:text-gray-800 transition-colors">

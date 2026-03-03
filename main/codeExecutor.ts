@@ -110,11 +110,8 @@ class CodeExecutor {
       // Ejecutar código
       const results = await this.runNodeProcess();
       
-      // Corregir números de línea usando el mapeo
-      const correctedResults = correctLineNumbers(results, lineMapping);
-      
       console.log('✅ Código ejecutado exitosamente');
-      return correctedResults;
+      return results;
     } catch (error) {
       console.error('❌ Error ejecutando código:', error);
       return [{
@@ -201,6 +198,7 @@ class CodeExecutor {
         try {
           // Intentar parsear como JSON (formato esperado)
           const parsed = JSON.parse(output);
+          console.log({parsed})
           if (parsed.line !== undefined && parsed.text !== undefined && parsed.time !== undefined) {
             // Guardar solo el objeto parseado, no el JSON string
             results.push(parsed);

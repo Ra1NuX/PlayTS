@@ -33,7 +33,7 @@ function App() {
   const sidebarSection = useRef<ImperativePanelHandle>(null);
 
   const { width: minSize } = useResizePanelSizes("sidebar-main", {
-    width: 40,
+    width: 48,
     height: 32,
   });
   const { width: maxSize } = useResizePanelSizes("sidebar-main", {
@@ -68,7 +68,7 @@ function App() {
       <section className="flex flex-row flex-1 w-full overflow-hidden dark:bg-main-dark bg-[#f7f7f7]">
         <PanelGroup direction="horizontal" id="sidebar-main">
           <Panel
-            minSize={minSize ? minSize + 15 : 0}
+            minSize={minSize ? minSize : 0}
             maxSize={maxSize}
             collapsedSize={minSize}
             defaultSize={maxSize}
@@ -99,19 +99,31 @@ function App() {
                     className="break-words group overflow-y-auto pr-1.5 font-semibold font-mono leading-none dark:bg-main-light bg-[#eaeaea] rounded-l-none border-l-2 dark:border-l-divider-dark border-l-[#f7f7f7] w-full flex flex-col p-2 px-4"
                   >
                     <div className="overflow-auto">
-                      {Array.isArray(filledArray)
-                        ? filledArray?.map((element, i) => {
+                      {Array.isArray(filledArray) && (filledArray.some(item => item && item.text && item.text.trim() !== " ") || result?.length > 0) ? (
+                        filledArray?.map((element, i) => {
                             if (element) {
                               const { text } = element;
                               const cleanedText = cleanAndFormatText(text);
                               
-                              // Si es una línea vacía, mostrar espacio invisible
+                              // Si es una línea vacía, mostrar espacio invisible SOLO si hay contenido antes o después
                               if (text === " ") {
+                                // Verificar si hay contenido real en el array (antes o después de esta línea)
+                                const hasContentBefore = filledArray.slice(0, i).some(item =>
+                                  item && item.text && item.text.trim() !== " "
+                                );
+                                const hasContentAfter = filledArray.slice(i + 1).some(item =>
+                                  item && item.text && item.text.trim() !== " "
+                                );
+
+                                if (!hasContentBefore && !hasContentAfter) {
+                                  return null; // No mostrar líneas vacías aisladas
+                                }
+
                                 return (
                                   <div
                                     className="flex w-full rounded"
                                     key={`empty-${element.line}-${i}`}
-                                    style={{ height: "27px" }} // Misma altura que SyntaxHighlighter
+                                    style={{ height: "27px", fontFamily: font, fontSize: `${size}px` }} // Misma altura que SyntaxHighlighter
                                   >
                                     <div className="flex w-full justify-between font-mono">
                                       <div style={{ height: "27px" }}></div>
@@ -162,7 +174,16 @@ function App() {
                               );
                             }
                           })
-                        : JSON.stringify(filledArray)}
+                        ) : (
+                          <div className="flex items-center justify-center h-full text-gray-500 p-4" style={{ fontFamily: font, fontSize: `${size}px` }}>
+                            <div className="text-center">
+                              <div className="text-lg mb-2">🚀 Listo para ejecutar código</div>
+                              <div className="text-sm opacity-80">
+                                Escribe código JavaScript/TypeScript y ejecútalo para ver los resultados aquí
+                              </div>
+                            </div>
+                          </div>
+                        )}
                     </div>
                   </Panel>
                 </PanelGroup>

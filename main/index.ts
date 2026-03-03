@@ -9,6 +9,7 @@ import {
 import { autoUpdater } from "electron-updater";
 import i18next from "i18next";
 import path from "path";
+import fs from "fs/promises";
 import log from "electron-log/main";
 import i18nLoaded from "./i18n.config";
 import { codeExecutor } from "./codeExecutor";
@@ -19,8 +20,20 @@ console = log as unknown as Console;
 import { getURL } from "./tools/getUrl";
 import isDev from "./tools/isDev";
 
-// En producción, no necesitamos servidor Express
-// El protocolo app:// maneja el acceso a archivos estáticos
+if (!isDev) {
+  protocol.registerSchemesAsPrivileged([
+    {
+      scheme: 'app',
+      privileges: {
+        standard: true,
+        secure: true,
+        allowServiceWorkers: true,
+        supportFetchAPI: true,
+        corsEnabled: true
+      }
+    }
+  ]);
+}
 
 let win: BrowserWindow;
 
@@ -54,27 +67,103 @@ function createWindow() {
   autoUpdater.checkForUpdatesAndNotify().catch(console.error);
 
   const url = getURL("/");
+  console.log('Cargando URL:', url);
   win.loadURL(url);
 }
 
-app.whenReady().then(() => {
-  // Configurar protocolo personalizado para producción
+app.whenReady().then(async () => {
   if (!isDev) {
-    protocol.registerSchemesAsPrivileged([{ scheme: 'app', privileges: { standard: true } }]);
-    protocol.handle('app', (request: Request) => {
-      const url = request.url.substr(6); // Remover 'app://'
-      const filePath = path.join(__dirname, 'renderer', url);
-      return { path: filePath } as unknown as any;
-    });
-  }
-  
-  i18nLoaded.then(() => {
-    createWindow();
-    app.on("activate", () => {
-      if (BrowserWindow.getAllWindows().length === 0) {
-        createWindow();
+    const rendererRoot = path.join(__dirname, "renderer");
+
+    protocol.handle('app', async (request) => {
+      try {
+        const requestUrl = request.url;
+
+        if (requestUrl.includes('fonts.googleapis.com') || requestUrl.includes('fonts.gstatic.com')) {
+          console.log(`🔗 Permitiendo carga externa de fuentes: ${requestUrl}`);
+          return new Response('External fonts not allowed in production', {
+            status: 403,
+            headers: { 'Content-Type': 'text/plain' }
+          });
+        }
+
+        const url = new URL(requestUrl);
+        let pathname = url.pathname;
+
+        // Convertir app://-/ a ruta de archivo
+        if (pathname.startsWith('/-/')) {
+          pathname = pathname.substring(3); // Remover '/-'
+        }
+
+        // Normalizar rutas
+        if (pathname === '/' || pathname === '') {
+          pathname = '/index.html';
+        }
+
+        const filePath = path.join(rendererRoot, pathname);
+
+        console.log(`📡 Protocolo app:// solicitando: ${requestUrl} → ${filePath}`);
+
+        // Verificar que el archivo existe
+        try {
+          await fs.access(filePath);
+        } catch {
+          console.error(`❌ Archivo no encontrado: ${filePath}`);
+          return new Response('Not Found', {
+            status: 404,
+            headers: { 'Content-Type': 'text/plain' }
+          });
+        }
+
+        const fileContent = await fs.readFile(filePath);
+
+        // Determinar MIME type
+        const ext = path.extname(filePath).toLowerCase();
+        let mimeType = 'application/octet-stream';
+
+        if (ext === '.html') mimeType = 'text/html; charset=utf-8';
+        else if (ext === '.js' || ext === '.mjs') mimeType = 'application/javascript; charset=utf-8';
+        else if (ext === '.css') mimeType = 'text/css; charset=utf-8';
+        else if (ext === '.json') mimeType = 'application/json; charset=utf-8';
+        else if (ext === '.png') mimeType = 'image/png';
+        else if (ext === '.jpg' || ext === '.jpeg') mimeType = 'image/jpeg';
+
+        // Crear un ArrayBuffer estándar para evitar problemas con SharedArrayBuffer
+        const arrayBuffer = new ArrayBuffer(fileContent.length);
+        const view = new Uint8Array(arrayBuffer);
+        view.set(fileContent);
+
+        return new Response(arrayBuffer, {
+          status: 200,
+          headers: {
+            'Content-Type': mimeType,
+            // Headers necesarios para SharedArrayBuffer en WebContainers
+            'Cross-Origin-Opener-Policy': 'same-origin',
+            'Cross-Origin-Embedder-Policy': 'require-corp'
+          }
+        });
+
+      } catch (error) {
+        console.error('❌ Error en protocolo app://:', error);
+        return new Response('Internal Server Error', {
+          status: 500,
+          headers: { 'Content-Type': 'text/plain' }
+        });
       }
     });
+
+    console.log('✅ Protocolo app:// registrado correctamente con protocol.handle');
+  }
+
+  // Esperar a que el protocolo esté registrado antes de crear la ventana
+  await i18nLoaded;
+
+  createWindow();
+
+  app.on("activate", () => {
+    if (BrowserWindow.getAllWindows().length === 0) {
+      createWindow();
+    }
   });
 });
 
@@ -106,7 +195,6 @@ ipcMain.on("app/version", (event) => {
   event.returnValue = app.getVersion();
 });
 
-// ===== HANDLERS ICP PARA EJECUCIÓN DE CÓDIGO =====
 
 ipcMain.handle("code/execute", async (_event, options) => {
   try {

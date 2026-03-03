@@ -107,7 +107,7 @@ export const BookmarkCard = ({
 
           <button
             onClick={() => onUse(bookmark.name)}
-            className="flex items-center gap-1 bg-accent-dark hover:bg-[#0d9effb6] text-white border border-accent-dark rounded px-2 py-1 text-xs transition-colors font-semibold"
+            className="flex items-center gap-1 bg-accent-dark hover:bg-hover-ancient-dark text-white border border-accent-dark rounded px-2 py-1 text-xs transition-colors font-semibold"
             title="Usar"
           >
             <BsPlay className="h-3 w-3" />

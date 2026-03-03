@@ -92,7 +92,7 @@ export const NewBookmarkForm = ({
         <div className="flex gap-2">
           <button
             onClick={onSave}
-            className="bg-accent-dark hover:bg-[#0d9effb6] text-main-dark px-3 py-1.5 rounded-lg transition-colors font-semibold text-sm flex-1"
+            className="bg-accent-dark hover:bg-hover-ancient-dark text-main-dark px-3 py-1.5 rounded-lg transition-colors font-semibold text-sm flex-1"
           >
 {t('SAVE')}
           </button>
