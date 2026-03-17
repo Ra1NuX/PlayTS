@@ -40,9 +40,6 @@ export function createWindow(): void {
   });
 
   autoUpdater.allowPrerelease = true;
-  console.log("Checking for updates...");
-  autoUpdater.checkForUpdates().catch(console.error);
-  setupPeriodicUpdateCheck();
 
   // Open all target="_blank" links in the system browser
   win.webContents.setWindowOpenHandler(({ url }) => {
@@ -53,4 +50,11 @@ export function createWindow(): void {
   const loadUrl = getURL("/");
   console.log('Cargando URL:', loadUrl);
   win.loadURL(loadUrl);
+
+  // Check for updates after the renderer is ready to receive IPC
+  win.webContents.on('did-finish-load', () => {
+    console.log("Checking for updates...");
+    autoUpdater.checkForUpdates().catch(console.error);
+    setupPeriodicUpdateCheck();
+  });
 }
