@@ -26,14 +26,14 @@ jobs:
       - name: Instalar dependencias
         run: bun install
 
-      - name: Build & Publish Beta (Windows)
+      - name: Build & Publish Prod (Windows)
         run: |
           bun run build && bunx electron-builder --config electron-builder.config.js -w --publish always
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          VITE_CLERK_PUBLISHABLE_KEY: ${{ secrets.VITE_CLERK_PUBLISHABLE_KEY }}
-          VITE_API_URL: ${{ secrets.VITE_API_URL }}
-          VITE_LANDING_URL: ${{ secrets.VITE_LANDING_URL }}
+          VITE_CLERK_PUBLISHABLE_KEY: ${{ vars.VITE_CLERK_PUBLISHABLE_KEY }}
+          VITE_API_URL: ${{ vars.VITE_API_URL }}
+          VITE_LANDING_URL: ${{ vars.VITE_LANDING_URL }}
   build-prod-linux:
     environment: production
     runs-on: ubuntu-latest
@@ -55,14 +55,14 @@ jobs:
       - name: Install dependencies
         run: bun install
 
-      - name: Build & Publish Beta (Linux)
+      - name: Build & Publish Prod (Linux)
         run: |
           bun run build && bunx electron-builder --config electron-builder.config.js -l --publish always
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          VITE_CLERK_PUBLISHABLE_KEY: ${{ secrets.VITE_CLERK_PUBLISHABLE_KEY }}
-          VITE_API_URL: ${{ secrets.VITE_API_URL }}
-          VITE_LANDING_URL: ${{ secrets.VITE_LANDING_URL }}
+          VITE_CLERK_PUBLISHABLE_KEY: ${{ vars.VITE_CLERK_PUBLISHABLE_KEY }}
+          VITE_API_URL: ${{ vars.VITE_API_URL }}
+          VITE_LANDING_URL: ${{ vars.VITE_LANDING_URL }}
   build-prod-mac:
     environment: production
     runs-on: macos-latest
@@ -84,11 +84,11 @@ jobs:
       - name: Install dependencies
         run: bun install
 
-      - name: Build & Publish Beta (Mac)
+      - name: Build & Publish Prod (Mac)
         run: |
           bun run build && bunx electron-builder --config electron-builder.config.js -m --publish always
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          VITE_CLERK_PUBLISHABLE_KEY: ${{ secrets.VITE_CLERK_PUBLISHABLE_KEY }}
-          VITE_API_URL: ${{ secrets.VITE_API_URL }}
-          VITE_LANDING_URL: ${{ secrets.VITE_LANDING_URL }}
+          VITE_CLERK_PUBLISHABLE_KEY: ${{ vars.VITE_CLERK_PUBLISHABLE_KEY }}
+          VITE_API_URL: ${{ vars.VITE_API_URL }}
+          VITE_LANDING_URL: ${{ vars.VITE_LANDING_URL }}
