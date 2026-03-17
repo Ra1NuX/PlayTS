@@ -30,6 +30,9 @@ jobs:
           bun run build && bunx electron-builder --config electron-builder.config.js -w --publish always
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          VITE_CLERK_PUBLISHABLE_KEY: ${{ secrets.VITE_CLERK_PUBLISHABLE_KEY }}
+          VITE_API_URL: ${{ secrets.VITE_API_URL }}
+          VITE_LANDING_URL: ${{ secrets.VITE_LANDING_URL }}
   build-prod-linux:
     runs-on: ubuntu-latest
     permissions:
@@ -55,6 +58,9 @@ jobs:
           bun run build && bunx electron-builder --config electron-builder.config.js -l --publish always
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          VITE_CLERK_PUBLISHABLE_KEY: ${{ secrets.VITE_CLERK_PUBLISHABLE_KEY }}
+          VITE_API_URL: ${{ secrets.VITE_API_URL }}
+          VITE_LANDING_URL: ${{ secrets.VITE_LANDING_URL }}
   build-prod-mac:
     runs-on: macos-latest
     permissions:
@@ -80,3 +86,6 @@ jobs:
           bun run build && bunx electron-builder --config electron-builder.config.js -m --publish always
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          VITE_CLERK_PUBLISHABLE_KEY: ${{ secrets.VITE_CLERK_PUBLISHABLE_KEY }}
+          VITE_API_URL: ${{ secrets.VITE_API_URL }}
+          VITE_LANDING_URL: ${{ secrets.VITE_LANDING_URL }}
