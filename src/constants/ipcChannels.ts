@@ -16,4 +16,7 @@ export const IPC_CHANNELS = {
   AUTH_OAUTH_COMPLETE: 'auth/oauth-complete',
   AUTH_TOKEN_REFRESHED: 'auth:token-refreshed',
   TOGGLE_TITLEBAR: 'toggle-titlebar',
+  UPDATE_AVAILABLE: 'update/available',
+  UPDATE_DOWNLOADED: 'update/downloaded',
+  UPDATE_INSTALL: 'update/install',
 } as const;

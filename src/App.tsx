@@ -22,6 +22,8 @@ import { useGlobalBookmarks } from "./hooks/useGlobalBookmarks";
 import { useEnvVarsStore, useEnvVars } from "./stores/envVarsStore";
 import { useGlobalEnvVars } from "./hooks/useGlobalEnvVars";
 import { useCloudSync } from "./hooks/useCloudSync";
+import { useUpdateListener } from "./hooks/useUpdateListener";
+import UpdateToast from "./components/UpdateToast";
 
 function App() {
   const { theme } = useTheme();
@@ -38,6 +40,7 @@ function App() {
   useGlobalEnvVars({ envVars });
 
   useCloudSync();
+  useUpdateListener();
 
   const sidebarSection = useRef<ImperativePanelHandle>(null);
 
@@ -114,6 +117,7 @@ function App() {
           </Panel>
         </PanelGroup>
       </section>
+      <UpdateToast />
     </main>
   );
 }

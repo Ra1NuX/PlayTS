@@ -118,5 +118,10 @@
   "CONNECTED_ACCOUNTS": "已连接",
   "PLAN_FEATURES": "计划功能",
   "CLOUD_SYNC": "云同步",
-  "AI_PROXY": "AI 代理"
+  "AI_PROXY": "AI 代理",
+  "DISMISS": "关闭",
+  "VERSION_UPDATE": "版本更新",
+  "UPDATE_VERSION_AVAILABLE": "新版本 {{version}} 已可用",
+  "UPDATE_BTN": "更新",
+  "DOWNLOAD_BTN": "下载"
 }

@@ -37,7 +37,14 @@ export function getElectronClerkInstance(publishableKey: string): Clerk {
     requestInit.url?.searchParams.append('_is_native', '1');
     const jwt = await IPCTokenCache.getToken();
     console.log('✅ Clerk onBeforeRequest | JWT:', jwt ? 'YES' : 'EMPTY');
-    (requestInit.headers as Headers).set('authorization', jwt || '');
+    if (jwt) {
+      try {
+        (requestInit.headers as Headers).set('authorization', jwt);
+      } catch {
+        console.warn('⚠️ Cached JWT contains invalid characters, clearing token');
+        IPCTokenCache.clearToken();
+      }
+    }
   });
 
   __internal_clerk.__internal_onAfterResponse(async (_: any, response: any) => {

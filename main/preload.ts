@@ -46,6 +46,18 @@ export const api = {
     ipcRenderer.removeAllListeners(IPC_CHANNELS.AUTH_TOKEN_REFRESHED),
   clerkLogout: () =>
     ipcRenderer.send(IPC_CHANNELS.AUTH_CLERK_LOGOUT),
+
+  // Auto-update
+  onUpdateAvailable: (callback: (info: { version: string }) => void) =>
+    ipcRenderer.on(IPC_CHANNELS.UPDATE_AVAILABLE, (_event, info) => callback(info)),
+  onUpdateDownloaded: (callback: (info: { version: string }) => void) =>
+    ipcRenderer.on(IPC_CHANNELS.UPDATE_DOWNLOADED, (_event, info) => callback(info)),
+  removeUpdateListeners: () => {
+    ipcRenderer.removeAllListeners(IPC_CHANNELS.UPDATE_AVAILABLE);
+    ipcRenderer.removeAllListeners(IPC_CHANNELS.UPDATE_DOWNLOADED);
+  },
+  installUpdate: () =>
+    ipcRenderer.send(IPC_CHANNELS.UPDATE_INSTALL),
 };
 
 contextBridge.exposeInMainWorld("electron", api);

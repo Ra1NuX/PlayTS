@@ -118,5 +118,10 @@
     "CONNECTED_ACCOUNTS": "Conectadas",
     "PLAN_FEATURES": "Funciones del plan",
     "CLOUD_SYNC": "Sincronización en la nube",
-    "AI_PROXY": "Proxy de IA"
+    "AI_PROXY": "Proxy de IA",
+    "DISMISS": "Descartar",
+    "VERSION_UPDATE": "Actualización disponible",
+    "UPDATE_VERSION_AVAILABLE": "Nueva versión {{version}} está disponible",
+    "UPDATE_BTN": "Actualizar",
+    "DOWNLOAD_BTN": "Descargar"
 }

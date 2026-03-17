@@ -33,12 +33,25 @@ export function loadTokenFromDisk(): string | null {
   try {
     if (!fs.existsSync(TOKEN_FILE)) return null;
     const data = fs.readFileSync(TOKEN_FILE);
+    let token: string;
     if (safeStorage.isEncryptionAvailable()) {
-      return safeStorage.decryptString(data);
+      token = safeStorage.decryptString(data);
+    } else {
+      token = data.toString('utf-8');
     }
-    return data.toString('utf-8');
+    // A valid JWT is only ASCII (base64url + dots). If decryption produced
+    // characters outside ISO-8859-1 (code > 255), the token is corrupted
+    // (e.g. encryption keys changed after an app update). Discard it.
+    if (/[^\x00-\xFF]/.test(token)) {
+      console.warn('⚠️ Clerk token on disk contains non-ISO-8859-1 characters, discarding');
+      fs.unlinkSync(TOKEN_FILE);
+      return null;
+    }
+    return token;
   } catch (err) {
     console.error('Failed to load token from disk:', err);
+    // Clean up corrupted file
+    try { fs.unlinkSync(TOKEN_FILE); } catch {}
     return null;
   }
 }

@@ -3,6 +3,7 @@
  */
 
 import { app, ipcMain, shell } from 'electron';
+import { autoUpdater } from 'electron-updater';
 import { codeExecutor } from './codeExecutor';
 import { getWin } from './windowManager';
 import { getClerkToken, setClerkToken, saveTokenToDisk } from './clerkAuthManager';
@@ -67,6 +68,11 @@ export function registerIpcHandlers(): void {
     if (!res.ok) throw new Error(`Failed to request sign-in token: ${res.status}`);
     const { token } = await res.json();
     return token;
+  });
+
+  // ── Update ─────────────────────────────────────────────────────────────
+  ipcMain.on(IPC_CHANNELS.UPDATE_INSTALL, () => {
+    autoUpdater.quitAndInstall(true, true);
   });
 
   // ── Code execution ──────────────────────────────────────────────────────

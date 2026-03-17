@@ -6,6 +6,7 @@ import { BrowserWindow, shell } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import path from 'path';
 import { getURL } from './tools/getUrl';
+import { setupPeriodicUpdateCheck } from './autoUpdateManager';
 import { IPC_CHANNELS } from '../src/constants/ipcChannels';
 
 let win: BrowserWindow;
@@ -40,7 +41,8 @@ export function createWindow(): void {
 
   autoUpdater.allowPrerelease = true;
   console.log("Checking for updates...");
-  autoUpdater.checkForUpdatesAndNotify().catch(console.error);
+  autoUpdater.checkForUpdates().catch(console.error);
+  setupPeriodicUpdateCheck();
 
   // Open all target="_blank" links in the system browser
   win.webContents.setWindowOpenHandler(({ url }) => {
