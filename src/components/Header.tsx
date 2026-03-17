@@ -30,9 +30,9 @@ const Header = () => {
     <>
       <nav
         ref={header}
-        className="h-10 dark:bg-main-contrast bg-[#f7f7f7] drag z-[100] relative px-1 pl-2 grid grid-cols-[1fr_1fr_auto] items-center gap-12 box-content border-b border-gray-300 dark:border-divider-dark"
+        className="h-10 dark:bg-main-contrast bg-[#f7f7f7] drag z-[100] relative px-1 pl-2 flex flex-row items-center gap-12 box-content border-b border-gray-300 dark:border-divider-dark"
       >
-        <div className="flex items-center gap-2 min-w-[120px]">
+        <div className="flex items-center gap-2 w-fit">
           <img src="/icon.png" className="h-6 shrink-0" alt="" />
           <p className="text-sm font-medium truncate dark:text-[#f7f7f7]">
             PlayTS{" "}
@@ -41,10 +41,10 @@ const Header = () => {
             </span>
           </p>
         </div>
-        <div className="flex justify-end w-full flex-1 flex-shrink-0">
+        <div className="flex justify-center w-full flex-1 flex-shrink-0">
           <button
             onClick={() => query.toggle()}
-            className="no-drag flex items-center text-xs w-full font-normal text-[#737373] h-8 gap-2 dark:bg-main-light bg-gray-100 dark:hover:bg-[#2f2f2fca] dark:hover:border-main px-2 rounded-lg box-border border border-gray-300 dark:border-divider-dark whitespace-nowrap"
+            className="no-drag flex items-center translate-x-16 max-w-[520px] text-xs w-full font-normal text-[#737373] h-8 gap-2 dark:bg-main-light bg-gray-100 dark:hover:bg-[#2f2f2fca] dark:hover:border-main px-2 rounded-lg box-border border border-gray-300 dark:border-divider-dark whitespace-nowrap"
           >
             <Search className="h-3 w-3 shrink-0" />
             <div className="flex-1 text-left">{t("HEADER_SEARCH_COMMAND")}</div>
