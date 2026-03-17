@@ -1,5 +1,5 @@
 import { ReactNode } from "react";
-import { BsSearch } from "react-icons/bs";
+import { Search } from "lucide-react";
 
 interface SidebarSectionProps {
   title: string;
@@ -24,15 +24,15 @@ export const SidebarSection = ({
   const isControlled = searchValue !== undefined;
 
   return (
-    <div className="w-full h-full flex flex-col dark:text-gray-300 text-main-dark">
-      <div className="flex-shrink-0 space-y-3 mb-3">
+    <div className="w-full h-full flex flex-col dark:text-gray-100 text-gray-900">
+      <div className="flex-shrink-0 px-1 pb-3 border-b dark:border-[#2a2a2a] border-gray-100 mb-3">
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2 min-w-0 flex-1">
-            <h1 className="text-lg ml-1.5 font-bold truncate dark:text-white text-main-dark">
+            <h1 className="text-base font-semibold truncate dark:text-gray-100 text-gray-900">
               {title}
             </h1>
             {count !== undefined && (
-              <span className="text-xs text-white font-light dark:bg-main-light bg-main-dark rounded-full px-1.5 py-0.5 flex-shrink-0">
+              <span className="text-[11px] px-2 py-0.5 rounded-full dark:bg-[#2a2a2a] bg-gray-100 dark:text-gray-300 text-gray-600 font-medium flex-shrink-0">
                 {count}
               </span>
             )}
@@ -42,19 +42,19 @@ export const SidebarSection = ({
 
         {showSearch && (
           <div className="relative">
-            <BsSearch className="absolute left-2 top-1/2 transform -translate-y-1/2 dark:text-gray-300 text-gray-500 h-3 w-3" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 dark:text-gray-500 text-gray-400" />
             <input
               type="search"
               placeholder={searchPlaceholder}
               {...(isControlled ? { value: searchValue } : {})}
               onChange={(e) => onSearchChange(e.target.value)}
-              className="w-full pl-7 pr-3 py-1.5 border border-gray-300 dark:border-divider-dark rounded dark:bg-main-light dark:text-white dark:placeholder-gray-300 bg-white placeholder-gray-500 font-normal text-sm"
+              className="h-9 pl-9 pr-3 text-sm rounded-lg border dark:bg-[#111] bg-gray-50 dark:border-[#2a2a2a] border-gray-200 dark:text-gray-100 dark:placeholder-gray-500 placeholder-gray-400 focus:ring-2 focus:ring-accent-dark/30 focus:border-accent-dark outline-none transition-colors w-full"
             />
           </div>
         )}
       </div>
 
-      <div className="flex-1 overflow-y-auto space-y-3 ">
+      <div className="flex-1 overflow-y-auto space-y-3">
         {children}
       </div>
     </div>

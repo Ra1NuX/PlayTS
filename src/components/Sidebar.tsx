@@ -1,31 +1,44 @@
-import { forwardRef, MutableRefObject, useState } from "react";
+import { forwardRef, MutableRefObject, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { FaPause, FaPlay } from "react-icons/fa6";
-import { VscSettingsGear } from "react-icons/vsc";
 import { ImperativePanelHandle } from "react-resizable-panels";
+import { Play, Pause, Package, Sparkles, Bookmark, KeyRound, Settings as SettingsIcon } from "lucide-react";
 
 import Settings from "../Settings";
 import Dependencies from "./Dependencies";
 import Tooltip from "./Tooltip";
 
 import merge from "../tools/merge";
-
-import { BiSolidPackage } from "react-icons/bi";
-import { BsBookmarkFill, BsStars, BsKey } from "react-icons/bs";
 import useCompiler from "../hooks/useCompiler";
 import useSettings from "../hooks/useSettings";
 import Bookmarks from "./Bookmarks";
 import IAChat from "./IAChat";
 import EnvVars from "./EnvVars";
+import { useSidebarStore } from "../stores/sidebarStore";
+import { useEntitlementStore } from "../stores/entitlementStore";
 
 type Selected = number | "settings" | null;
 
-const Sidebar = forwardRef<ImperativePanelHandle>((_, ref) => {
+const Sidebar = forwardRef<ImperativePanelHandle | null>((_, ref) => {
   const [selected, setSelected] = useState<Selected>(null);
   const { paused, setPaused } = useCompiler();
   const { settings } = useSettings();
-
+  const { requestedPanel, clearRequest } = useSidebarStore();
+  const hasAiProxy = useEntitlementStore((s) => s.features.ai_proxy);
+  const [isCollapsed, setIsCollapsed] = useState(false);
+  
   const { t } = useTranslation();
+
+  useEffect(() => {
+    if (requestedPanel === undefined) return;
+    if (!ref || !("current" in ref) || !ref.current) return;
+
+    const panelRef = ref;
+    if (panelRef.current) {
+      panelRef.current.expand(100);
+    }
+    setSelected(requestedPanel);
+    clearRequest();
+  }, [requestedPanel, ref, clearRequest]);
 
   if (!ref || !("current" in ref) || !ref.current) return null;
 
@@ -37,21 +50,23 @@ const Sidebar = forwardRef<ImperativePanelHandle>((_, ref) => {
 
     if (key === selected && !panelRef.current.isCollapsed()) {
       panelRef.current.collapse();
+      setIsCollapsed(true);
       return;
     }
     panelRef.current.expand(100);
+    setIsCollapsed(false);
   };
 
   const buttons = [
     {
-      icon: paused ? <FaPlay size={16} /> : <FaPause size={16} />,
+      icon: paused ? <Play size={18} /> : <Pause size={18} />,
       title: paused ? "PLAY" : "PAUSE",
       onClick: () => {
         setPaused(!paused);
       },
     },
     {
-      icon: <BiSolidPackage size={20} />,
+      icon: <Package size={18} />,
       title: "DEPENDENCIES",
       onClick: (
         panelRef: MutableRefObject<ImperativePanelHandle | null>,
@@ -63,9 +78,9 @@ const Sidebar = forwardRef<ImperativePanelHandle>((_, ref) => {
       panelItem: <Dependencies />,
     },
     {
-      icon: <BsStars size={20} />,
+      icon: <Sparkles size={18} />,
       title: "AI",
-      hidden: !settings.apiKey,
+      hidden: !settings.apiKey && !hasAiProxy,
       onClick: (
         panelRef: MutableRefObject<ImperativePanelHandle | null>,
         index: number
@@ -76,7 +91,7 @@ const Sidebar = forwardRef<ImperativePanelHandle>((_, ref) => {
       panelItem: <IAChat />,
     },
     {
-      icon: <BsBookmarkFill size={18} />,
+      icon: <Bookmark size={18} />,
       title: "BOOKMARKS",
       onClick: (
         panelRef: MutableRefObject<ImperativePanelHandle | null>,
@@ -88,7 +103,7 @@ const Sidebar = forwardRef<ImperativePanelHandle>((_, ref) => {
       panelItem: <Bookmarks />,
     },
     {
-      icon: <BsKey size={18} />,
+      icon: <KeyRound size={18} />,
       title: "ENV_VARS",
       onClick: (
         panelRef: MutableRefObject<ImperativePanelHandle | null>,
@@ -102,7 +117,7 @@ const Sidebar = forwardRef<ImperativePanelHandle>((_, ref) => {
   ];
 
   const handleSettingsClick = () => {
-    openPanel(ref as MutableRefObject<ImperativePanelHandle | null>, "settings");
+    openPanel(ref, "settings");
     setSelected("settings");
   };
 
@@ -111,7 +126,7 @@ const Sidebar = forwardRef<ImperativePanelHandle>((_, ref) => {
     : buttons[selected as number]?.panelItem;
 
   return (
-    <>
+    <div className="flex flex-row h-full overflow-hidden flex-1">
       <aside className="dark:bg-main-dark bg-[#f3f3f3] w-12 min-w-12 max-w-12 shrink-0 md:flex flex-col hidden border-r dark:border-divider-dark border-gray-300">
         <section className="flex-1 flex flex-col items-center">
           {buttons.map((button, index) => {
@@ -119,25 +134,25 @@ const Sidebar = forwardRef<ImperativePanelHandle>((_, ref) => {
             const isSelected = selected === index;
             return (
               <div key={index} className="relative w-full flex justify-center">
-                {isSelected && (
+                {isSelected && !isCollapsed && (
                   <div className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-10 bg-accent-dark/80 rounded-r-full z-10" />
                 )}
                 <Tooltip content={t(button.title)} placement="right">
                   <button
                     onClick={() => {
                       if (button.onClick) {
-                        button.onClick(ref as MutableRefObject<ImperativePanelHandle | null>, index);
+                        button.onClick(ref, index);
                       }
                     }}
                     className={merge(
                       "relative flex items-center justify-center w-12 h-12 my-1 transition-all duration-200",
-                      isSelected
+                      isSelected && !isCollapsed
                         ? "dark:text-white text-accent-dark"
                         : "dark:text-gray-400 text-gray-600 dark:hover:text-gray-200 hover:text-gray-800"
                     )}
                   >
                     <div className={
-                      isSelected
+                      (isSelected && !isCollapsed)
                         ? "flex items-center justify-center w-full h-full transition-colors dark:bg-divider-dark bg-gray-200/50"
                         : "flex items-center justify-center w-full h-full transition-colors"
                     }>
@@ -160,15 +175,15 @@ const Sidebar = forwardRef<ImperativePanelHandle>((_, ref) => {
                   : "dark:text-gray-400 text-gray-600 dark:hover:text-gray-200 hover:text-gray-800"
               )}
             >
-              <VscSettingsGear size={20} />
+              <SettingsIcon size={18} />
             </button>
           </Tooltip>
         </section>
       </aside>
-      <aside className="w-full transition-[width,padding] duration-100 dark:bg-main-dark bg-[#f7f7f7] aria-current:px-0 py-2 px-2 flex flex-col overflow-hidden">
+      <aside className="w-full h-full min-h-0 transition-[width,padding] duration-100 dark:bg-main-dark bg-[#f7f7f7] aria-current:px-0 py-2 px-2 flex flex-col overflow-hidden border-r dark:border-r-divider-dark border-r-gray-300">
         {panelContent}
       </aside>
-    </>
+    </div>
   );
 });
 

@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { Menu, MenuButton, MenuItem, MenuItems, Switch } from '@headlessui/react';
-import { BsEye, BsThreeDotsVertical, BsPencil, BsTrash } from 'react-icons/bs';
+import { Eye, MoreVertical, Pencil, Trash2 } from 'lucide-react';
 import { EnvVar } from '../../model/envVar';
 import { useTranslation } from 'react-i18next';
 import merge from '../../tools/merge';
@@ -31,28 +31,31 @@ export const EnvVarCard = ({ envVar, onDelete, onEdit, onToggleActive }: EnvVarC
     };
   }, []);
 
-  const maskedValue = '•'.repeat(Math.min(envVar.value.length, 12));
+  const maskedValue = '\u2022'.repeat(Math.min(envVar.value.length, 12));
 
   return (
-    <div className="p-3">
+    <div className="p-4">
       <div className="flex items-center justify-between gap-2">
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 flex-wrap">
-            <span className="text-xs font-mono font-semibold dark:text-accent-dark text-accent-dark truncate">
+            <span className="text-xs font-mono text-accent-dark font-medium truncate">
               {envVar.key}
             </span>
           </div>
 
           <div className="flex items-center gap-1.5 mt-1">
-            <span className="text-xs font-mono dark:text-gray-300 text-gray-600 truncate">
+            <span className={merge(
+              "text-xs font-mono truncate",
+              revealed ? "dark:text-gray-100 text-gray-900" : "font-mono dark:text-gray-500 text-gray-400"
+            )}>
               {revealed ? envVar.value : maskedValue}
             </span>
             <button
               onClick={handleReveal}
-              className="flex-shrink-0 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors"
+              className="flex-shrink-0 dark:text-gray-500 text-gray-400 hover:dark:text-gray-300 hover:text-gray-600 transition-colors cursor-pointer"
               title={t('ENV_VAR_REVEAL')}
             >
-              <BsEye className="h-3 w-3" />
+              <Eye className="h-3 w-3" />
             </button>
           </div>
         </div>
@@ -62,8 +65,8 @@ export const EnvVarCard = ({ envVar, onDelete, onEdit, onToggleActive }: EnvVarC
             checked={envVar.isActive}
             onChange={() => onToggleActive(envVar.id)}
             className={`${
-              envVar.isActive ? 'bg-accent-dark' : 'bg-gray-200 dark:bg-main-dark'
-            } relative inline-flex flex-col px-0.5 items-center h-4 w-7 justify-center rounded-full transition-colors focus:outline-none focus:ring-1 focus:ring-accent-dark focus:ring-offset-1`}
+              envVar.isActive ? 'bg-accent-dark' : 'bg-gray-200 dark:bg-[#2a2a2a]'
+            } relative inline-flex flex-col px-0.5 items-center h-4 w-7 justify-center rounded-full transition-colors cursor-pointer focus:outline-none focus:ring-2 focus:ring-accent-dark/30`}
           >
             <span
               className={`${
@@ -73,24 +76,24 @@ export const EnvVarCard = ({ envVar, onDelete, onEdit, onToggleActive }: EnvVarC
           </Switch>
 
           <Menu as="div" className="relative">
-            <MenuButton className="flex items-center justify-center w-6 h-6 rounded dark:text-gray-400 text-gray-500 dark:hover:text-gray-200 hover:text-gray-700 transition-colors">
-              <BsThreeDotsVertical className="h-3.5 w-3.5" />
+            <MenuButton className="flex items-center justify-center w-6 h-6 rounded-lg dark:text-gray-400 text-gray-500 hover:bg-gray-100 dark:hover:bg-[#2a2a2a] transition-colors cursor-pointer">
+              <MoreVertical className="h-3.5 w-3.5" />
             </MenuButton>
 
-            <MenuItems anchor="bottom end" className="z-50 w-44 dark:bg-main-light bg-white border border-gray-200 dark:border-divider-dark rounded shadow-lg focus:outline-none">
+            <MenuItems anchor="bottom end" className="z-50 w-44 dark:bg-[#1a1a1a] bg-white border dark:border-[#2a2a2a] border-gray-200 rounded-lg shadow-lg focus:outline-none overflow-hidden">
               <div className="py-1">
                 <MenuItem>
                   {({ active }) => (
                     <button
                       onClick={() => onEdit(envVar)}
                       className={merge(
-                        'flex items-center gap-2 w-full px-3 py-1.5 text-xs transition-colors',
+                        'flex items-center gap-2 w-full px-3 py-1.5 text-xs transition-colors cursor-pointer',
                         active
-                          ? 'dark:bg-main-dark bg-gray-100 dark:text-white text-main-dark'
-                          : 'dark:text-gray-300 text-gray-600'
+                          ? 'dark:bg-[#2a2a2a] bg-gray-100 dark:text-gray-100 text-gray-900'
+                          : 'dark:text-gray-400 text-gray-500'
                       )}
                     >
-                      <BsPencil className="h-3.5 w-3.5" />
+                      <Pencil className="h-3.5 w-3.5" />
                       {t('EDIT')}
                     </button>
                   )}
@@ -101,13 +104,13 @@ export const EnvVarCard = ({ envVar, onDelete, onEdit, onToggleActive }: EnvVarC
                     <button
                       onClick={() => onDelete(envVar.id)}
                       className={merge(
-                        'flex items-center gap-2 w-full px-3 py-1.5 text-xs transition-colors',
+                        'flex items-center gap-2 w-full px-3 py-1.5 text-xs transition-colors cursor-pointer',
                         active
-                          ? 'bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400'
-                          : 'text-red-500 dark:text-red-400'
+                          ? 'bg-red-500/10 text-red-400'
+                          : 'text-red-500'
                       )}
                     >
-                      <BsTrash className="h-3.5 w-3.5" />
+                      <Trash2 className="h-3.5 w-3.5" />
                       {t('DELETE')}
                     </button>
                   )}

@@ -1,17 +1,33 @@
 import { t } from "i18next";
-import { globalSettings } from "../hooks/useSettings";
-import { globalCode } from "../hooks/useCompiler";
-import { callOpenAI } from "./callOpenAI";
-import type { CallAIStreamCallbacks } from "./callOpenAI";
+import { useSettingsStore } from "../stores/settingsStore";
+import { useCompilerStore } from "../stores/compilerStore";
+import { useAuthStore } from "../stores/authStore";
+import { useEntitlementStore } from "../stores/entitlementStore";
+import { callAIProvider } from "./ai/baseProvider";
+import { openaiConfig } from "./ai/openaiProvider";
+import { anthropicConfig } from "./ai/anthropicProvider";
+import { geminiConfig } from "./ai/geminiProvider";
+import { callAIProxy } from "./ai/proxyProvider";
+import type { CallAIStreamCallbacks, AIProviderConfig } from "./ai/types";
+
+export type { CallAIStreamCallbacks };
+
+const PROVIDER_CONFIGS: Record<string, AIProviderConfig> = {
+  openai: openaiConfig,
+  anthropic: anthropicConfig,
+  google: geminiConfig,
+};
 
 function buildSystemContent(): string {
+  const settings = useSettingsStore.getState();
+  const code = useCompilerStore.getState().code;
   return (
     t("SYSTEM_CONTEXT") +
     " " +
     t("SYSTEM_MESSAGE_CONTEXT", {
-      code: globalCode,
-      name: globalSettings.name,
-      email: globalSettings.email,
+      code,
+      name: settings.name,
+      email: settings.email,
     })
   );
 }
@@ -21,23 +37,42 @@ export async function callAI(
   callbacks: CallAIStreamCallbacks
 ) {
   const systemContent = buildSystemContent();
-  const { apiKey, aiModelId } = globalSettings;
-  console.log("[callAI] entry", {
-    hasApiKey: !!apiKey,
-    apiKeyLength: apiKey?.length ?? 0,
-    aiModelId,
-    messagesCount: messages.length,
-    lastMessageRole: messages[messages.length - 1]?.role,
+  const { apiKey, aiModelId, aiProvider } = useSettingsStore.getState();
+
+  const hasOwnKey = !!apiKey?.trim();
+  const userId = useAuthStore.getState().userId;
+  const hasAiProxy = useEntitlementStore.getState().hasFeature('ai_proxy');
+  const canUseProxy = !!userId && hasAiProxy;
+
+  console.log("[callAI]", {
+    hasOwnKey,
+    canUseProxy,
+    provider: aiProvider,
+    model: aiModelId,
   });
-  if (!apiKey?.trim()) {
-    console.warn("[callAI] no apiKey, skipping");
-    callbacks.onFinally({
-      response: "",
-      code: "",
-      error: true,
-      id: null,
-    });
-    return;
+
+  // Priority 1: User has their own API key — use it directly
+  if (hasOwnKey) {
+    const config = PROVIDER_CONFIGS[aiProvider] ?? PROVIDER_CONFIGS.openai;
+    const format = aiProvider === "google" ? "json" : "sse";
+    return callAIProvider(
+      config,
+      { modelId: aiModelId, apiKey, messages, systemContent },
+      callbacks,
+      { format }
+    );
   }
-  await callOpenAI(aiModelId, apiKey, messages, systemContent, callbacks);
+
+  // Priority 2: Pro user without key — use server proxy
+  if (canUseProxy) {
+    return callAIProxy(aiProvider || "openai", aiModelId, messages, systemContent, callbacks);
+  }
+
+  // No key and no proxy access
+  console.warn("[callAI] No API key and no proxy access");
+  callbacks.onFinally({
+    response: "",
+    error: true,
+    id: null,
+  });
 }

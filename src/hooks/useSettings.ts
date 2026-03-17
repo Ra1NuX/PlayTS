@@ -1,11 +1,5 @@
-import { useState, useEffect } from "react";
-import type { AiProviderId } from "../constants/aiModels";
-import {
-  DEFAULT_AI_MODEL_ID,
-  DEFAULT_AI_PROVIDER,
-  parseLegacyAiModel,
-} from "../constants/aiModels";
-import { isOpenAIChatCompletionsModel } from "../utils/fetchAiModels";
+import { useSettingsStore } from '../stores/settingsStore';
+import type { AiProviderId } from '../constants/aiModels';
 
 export interface GlobalSettings {
   apiKey: string;
@@ -18,92 +12,51 @@ export interface GlobalSettings {
   email?: string | null;
 }
 
-function loadAiFromStorage(): { aiProvider: AiProviderId; aiModelId: string } {
-  const stored = localStorage.getItem("aiModel");
-  const legacy = parseLegacyAiModel(stored);
-  if (legacy && legacy.provider === "openai" && isOpenAIChatCompletionsModel(legacy.modelId))
-    return { aiProvider: DEFAULT_AI_PROVIDER, aiModelId: legacy.modelId };
-  if (legacy) return { aiProvider: DEFAULT_AI_PROVIDER, aiModelId: DEFAULT_AI_MODEL_ID };
-  const modelId = localStorage.getItem("aiModelId") || DEFAULT_AI_MODEL_ID;
-  const safeModelId = isOpenAIChatCompletionsModel(modelId) ? modelId : DEFAULT_AI_MODEL_ID;
-  return { aiProvider: DEFAULT_AI_PROVIDER, aiModelId: safeModelId };
-}
-
-const initialAi = loadAiFromStorage();
-
-const defaultSettings: GlobalSettings = {
-  apiKey: "",
-  theme: "dark",
-  font: "FiraCode",
-  size: 14,
-  aiProvider: DEFAULT_AI_PROVIDER,
-  aiModelId: DEFAULT_AI_MODEL_ID,
+// For backward compat with callAI.ts - now reads from store
+export const getGlobalSettings = (): GlobalSettings => {
+  const state = useSettingsStore.getState();
+  return {
+    apiKey: state.apiKey,
+    aiProvider: state.aiProvider,
+    aiModelId: state.aiModelId,
+    theme: state.theme,
+    font: state.font,
+    size: state.size,
+    name: state.name,
+    email: state.email,
+  };
 };
 
-export let globalSettings: GlobalSettings = {
-  apiKey: localStorage.getItem("apiKey") || defaultSettings.apiKey,
-  theme: localStorage.getItem("theme") || defaultSettings.theme,
-  font: localStorage.getItem("globalFont") || defaultSettings.font,
-  size: parseInt(
-    localStorage.getItem("globalSize") || defaultSettings.size.toString(),
-    10
-  ),
-  name: localStorage.getItem("name"),
-  email: localStorage.getItem("email"),
-  aiProvider: initialAi.aiProvider,
-  aiModelId: initialAi.aiModelId,
-};
-
-const listeners = new Set<(newSettings: GlobalSettings) => void>();
-const notifyAll = () => {
-  listeners.forEach((listener) => listener(globalSettings));
-};
-
-const changeApiKey = (newApiKey: string) => {
-  globalSettings = { ...globalSettings, apiKey: newApiKey };
-  localStorage.setItem("apiKey", newApiKey);
-  notifyAll();
-};
-
-const changeFont = (newFont: string) => {
-  globalSettings = { ...globalSettings, font: newFont };
-  localStorage.setItem("globalFont", newFont);
-  notifyAll();
-};
-
-const changeSize = (newSize: number) => {
-  globalSettings = { ...globalSettings, size: newSize };
-  localStorage.setItem("globalSize", newSize.toString());
-  notifyAll();
-};
-
-const changeSettings = (newSettings: Partial<GlobalSettings>) => {
-  globalSettings = { ...globalSettings, ...newSettings };
-  localStorage.setItem("apiKey", globalSettings.apiKey);
-  localStorage.setItem("globalFont", globalSettings.font);
-  localStorage.setItem("globalSize", globalSettings.size.toString());
-  localStorage.setItem("name", globalSettings.name || "");
-  localStorage.setItem("email", globalSettings.email || "");
-  localStorage.setItem("aiProvider", globalSettings.aiProvider);
-  localStorage.setItem("aiModelId", globalSettings.aiModelId);
-  notifyAll();
-};
+// Legacy mutable export - now a getter proxy for backward compat
+export const globalSettings: GlobalSettings = new Proxy({} as GlobalSettings, {
+  get(_target, prop: string) {
+    const state = useSettingsStore.getState();
+    return (state as any)[prop];
+  },
+});
 
 export const useSettings = () => {
-  const [settings, setSettings] = useState<GlobalSettings>(globalSettings);
+  const store = useSettingsStore();
 
-  useEffect(() => {
-    const listener = (newSettings: GlobalSettings) => {
-      setSettings(newSettings);
-    };
+  const settings: GlobalSettings = {
+    apiKey: store.apiKey,
+    aiProvider: store.aiProvider,
+    aiModelId: store.aiModelId,
+    theme: store.theme,
+    font: store.font,
+    size: store.size,
+    name: store.name,
+    email: store.email,
+  };
 
-    listeners.add(listener);
-
-    return () => {
-      listeners.delete(listener);
-    };
-  }, []);
+  const changeApiKey = (key: string) => store.setApiKey(key);
+  const changeFont = (font: string) => store.setFont(font);
+  const changeSize = (size: number) => store.setSize(size);
+  const changeSettings = (updates: Partial<GlobalSettings>) => {
+    store.changeSettings(updates as any);
+  };
 
   return { settings, changeApiKey, changeFont, changeSize, changeSettings };
 };
+
 export default useSettings;

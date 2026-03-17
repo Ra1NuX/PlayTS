@@ -19,7 +19,9 @@ export const MiniCodeEditor = ({ value, onChange, language = 'typescript' }: Min
     try {
       monaco.editor.defineTheme("custom-dark", monacoDarkTheme as any);
       monaco.editor.defineTheme("custom-light", monacoLightTheme as any);
-    } catch {}
+    } catch {
+      console.warn('Failed to define Monaco editor themes');
+    }
   }, [monaco]);
 
   const handleEditorDidMount = (editor: any, monacoInstance: any) => {

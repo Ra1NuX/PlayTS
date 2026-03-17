@@ -90,8 +90,8 @@ export const useBookmarks = ({ initialBookmarks, onBookmarkChange, onSaveBookmar
   const handleUse = useCallback((name: string) => {
     const bookmark = bookmarks.find(bm => bm.name === name);
     if (bookmark) {
-      console.log(`Usando bookmark: ${name}`);
-      // Aquí se implementará la lógica de inyección de código
+      console.log(`Using bookmark: ${name}`);
+      // Code injection logic will be implemented here
     }
   }, [bookmarks]);
 

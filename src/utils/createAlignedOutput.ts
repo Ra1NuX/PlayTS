@@ -1,7 +1,8 @@
-interface LineItem {
+export interface LineItem {
   line: number;
   text: string;
   time: number;
+  isError?: boolean;
 }
 
 /**
@@ -58,7 +59,8 @@ function createAlignedOutput(results: LineItem[], originalCode?: string): LineIt
       errors.forEach(error => {
         aligned.push({
           ...error,
-          line: maxLines + 1
+          line: maxLines + 1,
+          isError: true
         });
       });
     }

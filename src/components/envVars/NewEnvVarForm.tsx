@@ -1,28 +1,15 @@
 import { useState, DragEvent } from 'react';
-import { BsCloudUpload } from 'react-icons/bs';
+import { CloudUpload } from 'lucide-react';
 import { NewEnvVar } from '../../model/envVar';
 import { useTranslation } from 'react-i18next';
 import merge from '../../tools/merge';
+import { parseEnvFileContent } from '../../utils/parseEnvFile';
 
 interface NewEnvVarFormProps {
   onSave: (envVar: NewEnvVar) => void;
   onSaveMultiple: (envVars: NewEnvVar[]) => void;
   onCancel: () => void;
 }
-
-const parseEnvFileContent = (content: string): NewEnvVar[] => {
-  return content
-    .split('\n')
-    .map((line) => line.trim())
-    .filter((line) => line && !line.startsWith('#') && line.includes('='))
-    .map((line) => {
-      const eqIndex = line.indexOf('=');
-      const key = line.slice(0, eqIndex).trim();
-      const value = line.slice(eqIndex + 1).trim().replace(/^["']|["']$/g, '');
-      return { key, value, isActive: true };
-    })
-    .filter((ev) => ev.key.length > 0);
-};
 
 export const NewEnvVarForm = ({ onSave, onSaveMultiple, onCancel }: NewEnvVarFormProps) => {
   const { t } = useTranslation();
@@ -65,53 +52,53 @@ export const NewEnvVarForm = ({ onSave, onSaveMultiple, onCancel }: NewEnvVarFor
   };
 
   return (
-    <div className="dark:bg-main-light bg-white rounded border border-gray-200 dark:border-divider-dark flex flex-col">
-      <div className="p-3 border-b dark:border-divider-dark border-gray-200">
-        <h3 className="text-base font-semibold dark:text-white text-main-dark">
+    <div className="dark:bg-[#1a1a1a] bg-white rounded-lg border dark:border-[#2a2a2a] border-gray-200 flex flex-col">
+      <div className="p-4 border-b dark:border-[#2a2a2a] border-gray-200">
+        <h3 className="text-[11px] font-semibold uppercase tracking-wider dark:text-gray-400 text-gray-500">
           {t('ENV_VAR_NEW')}
         </h3>
       </div>
 
-      <div className="p-3 space-y-3">
+      <div className="p-4 space-y-3">
         <div
           onDragOver={handleDragOver}
           onDragLeave={handleDragLeave}
           onDrop={handleDrop}
           className={merge(
-            'border-2 border-dashed rounded p-4 flex flex-col items-center justify-center gap-2 transition-colors cursor-pointer',
+            'border-2 border-dashed rounded-lg p-4 flex flex-col items-center justify-center gap-2 transition-colors cursor-pointer',
             isDragging
               ? 'border-accent-dark bg-accent-dark/10'
-              : 'border-gray-300 dark:border-divider-dark hover:border-accent-dark dark:hover:border-accent-dark'
+              : 'dark:border-[#2a2a2a] border-gray-200 hover:border-accent-dark dark:hover:border-accent-dark'
           )}
         >
-          <BsCloudUpload className="h-5 w-5 dark:text-gray-400 text-gray-400" />
-          <p className="text-xs dark:text-gray-400 text-gray-500 text-center">
+          <CloudUpload className="h-5 w-5 dark:text-gray-500 text-gray-400" />
+          <p className="text-xs dark:text-gray-500 text-gray-400 text-center">
             {t('ENV_VAR_DROP_ENV_FILE')}
           </p>
         </div>
 
         <div>
-          <label className="block text-xs font-medium mb-1 dark:text-gray-300 text-main-dark">
+          <label className="block text-[11px] font-semibold uppercase tracking-wider mb-1.5 dark:text-gray-400 text-gray-500">
             {t('ENV_VAR_KEY')}
           </label>
           <input
             type="text"
             value={key}
             onChange={(e) => setKey(e.target.value)}
-            className="w-full px-2 py-1.5 border border-gray-300 dark:border-divider-dark rounded dark:bg-main-dark dark:text-white bg-white font-mono font-normal text-sm"
+            className="w-full h-9 px-3 text-sm rounded-lg border dark:bg-[#111] bg-gray-50 dark:border-[#2a2a2a] border-gray-200 dark:text-gray-100 text-gray-900 focus:ring-2 focus:ring-accent-dark/30 focus:border-accent-dark outline-none transition-colors font-mono"
             placeholder="MY_API_KEY"
           />
         </div>
 
         <div>
-          <label className="block text-xs font-medium mb-1 dark:text-gray-300 text-main-dark">
+          <label className="block text-[11px] font-semibold uppercase tracking-wider mb-1.5 dark:text-gray-400 text-gray-500">
             {t('ENV_VAR_VALUE')}
           </label>
           <input
             type="text"
             value={value}
             onChange={(e) => setValue(e.target.value)}
-            className="w-full px-2 py-1.5 border border-gray-300 dark:border-divider-dark rounded dark:bg-main-dark dark:text-white bg-white font-mono font-normal text-sm"
+            className="w-full h-9 px-3 text-sm rounded-lg border dark:bg-[#111] bg-gray-50 dark:border-[#2a2a2a] border-gray-200 dark:text-gray-100 text-gray-900 focus:ring-2 focus:ring-accent-dark/30 focus:border-accent-dark outline-none transition-colors font-mono"
             placeholder="my-secret-value"
           />
         </div>
@@ -121,9 +108,9 @@ export const NewEnvVarForm = ({ onSave, onSaveMultiple, onCancel }: NewEnvVarFor
             type="checkbox"
             checked={isActive}
             onChange={(e) => setIsActive(e.target.checked)}
-            className="rounded text-xs"
+            className="rounded text-accent-dark focus:ring-accent-dark/30 cursor-pointer"
           />
-          <span className="text-xs dark:text-gray-300 text-main-dark">
+          <span className="text-xs dark:text-gray-400 text-gray-500">
             {t('ENV_VAR_ACTIVE_ON_CREATE')}
           </span>
         </label>
@@ -132,13 +119,13 @@ export const NewEnvVarForm = ({ onSave, onSaveMultiple, onCancel }: NewEnvVarFor
           <button
             onClick={handleSave}
             disabled={!key.trim() || !value.trim()}
-            className="bg-accent-dark hover:bg-hover-ancient-dark disabled:opacity-50 disabled:cursor-not-allowed text-main-dark px-3 py-1.5 rounded transition-colors font-semibold text-sm flex-1"
+            className="h-9 px-4 rounded-lg bg-accent-dark hover:bg-accent-dark/90 disabled:opacity-50 disabled:cursor-not-allowed text-white text-sm font-medium transition-colors cursor-pointer flex-1"
           >
             {t('SAVE')}
           </button>
           <button
             onClick={onCancel}
-            className="bg-gray-500 hover:bg-gray-600 text-white px-3 py-1.5 rounded transition-colors font-semibold text-sm flex-1"
+            className="h-9 px-4 rounded-lg hover:bg-gray-100 dark:hover:bg-[#2a2a2a] dark:text-gray-400 text-gray-500 border dark:border-[#2a2a2a] border-gray-200 text-sm font-medium transition-colors cursor-pointer flex-1"
           >
             {t('CANCEL')}
           </button>

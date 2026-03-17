@@ -15,19 +15,21 @@ const LanguageSelector = () => {
   );
 
   return (
-    <div className="flex flex-row gap-5 justify-between items-center">
+    <div className="flex flex-row gap-5 justify-between items-center dark:text-gray-100 text-gray-900 text-sm">
       {t('LANGUAGE')}
       <Listbox value={selectedLocale} onChange={(value) => {
         setSelectedLocale(value);
         changeLanguage(value.key);
       }}>
-      <ListboxButton className='font-[roboto] font-normal dark:bg-main-dark/50 bg-[#fafafa] dark:hover:bg-main-dark hover:bg-[#f0f0f0] border shadow-md dark:border-main-dark/20 p-1 pr-2 rounded-xl flex justify-between min-w-[110px]'>
-      <img className="w-6 aspect-square rounded-md object-cover" src={`/flags/${selectedLocale.flag}`} alt={`${selectedLocale.name} flag`} /> {selectedLocale.name} 
+      <ListboxButton className="h-9 px-3 text-sm rounded-lg border dark:border-[#2a2a2a] border-gray-200 dark:bg-[#111] bg-gray-50 dark:text-gray-100 text-gray-900 flex items-center gap-2 min-w-[130px] cursor-pointer hover:border-gray-300 dark:hover:border-[#333] transition-colors focus:ring-2 focus:ring-accent-dark/30 focus:border-accent-dark outline-none">
+        <img className="w-5 h-5 rounded object-cover" src={`/flags/${selectedLocale.flag}`} alt={`${selectedLocale.name} flag`} />
+        {selectedLocale.name}
       </ListboxButton>
-      <ListboxOptions anchor="bottom" className='z-20 dark:bg-main-light bg-[#f7f7f7] shadow-2xl border border-main-dark/20 rounded mt-2 font-[roboto] font-normal'>
+      <ListboxOptions anchor="bottom" className="z-20 dark:bg-[#1a1a1a] bg-white border dark:border-[#2a2a2a] border-gray-200 rounded-lg mt-1 shadow-lg">
         {LOCALES.map((locale) => (
-          <ListboxOption key={locale.key} value={locale} className="dark:data-[focus]:bg-main-dark/80 p-2 flex gap-2 dark:text-white cursor-pointer hover:bg-main-light/20 justify-between min-w-[110px]">
-            <img className="w-6 aspect-square rounded-md object-cover" src={`/flags/${locale.flag}`} alt={`${locale.name} flag`} />{locale.name}
+          <ListboxOption key={locale.key} value={locale} className="data-[focus]:bg-accent-dark/10 dark:data-[focus]:bg-accent-dark/20 px-3 py-2 flex gap-2 dark:text-gray-100 text-gray-900 cursor-pointer transition-colors items-center min-w-[130px] text-sm">
+            <img className="w-5 h-5 rounded object-cover" src={`/flags/${locale.flag}`} alt={`${locale.name} flag`} />
+            {locale.name}
           </ListboxOption>
         ))}
       </ListboxOptions>

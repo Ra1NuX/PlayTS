@@ -1,7 +1,7 @@
 import { HTMLAttributes } from "react";
 
-const merge = (...classname: HTMLAttributes<HTMLElement>['className'][]) => {
+export function classNames(...classname: HTMLAttributes<HTMLElement>['className'][]): string {
     return `${classname.join(' ')}`;
 }
 
-export default merge;
+export default classNames;

@@ -1,7 +1,5 @@
 import { useTranslation } from "react-i18next";
-import { BiSolidHelpCircle } from "react-icons/bi";
-import { FaPalette, FaUserEdit } from "react-icons/fa";
-import { BsStars } from "react-icons/bs";
+import { HelpCircle, Palette, UserPen, Sparkles } from "lucide-react";
 
 import useSettings from "./hooks/useSettings";
 import { SidebarSection } from "./components/SidebarSection";
@@ -15,33 +13,43 @@ import ApiKey from "./components/settings/ApiKey";
 import AIModelSelector from "./components/settings/AIModelSelector";
 import UsernameInput from "./components/settings/UsernameInput";
 import EmailInput from "./components/settings/EmailInput";
+import AccountSection from "./components/auth/AccountSection";
+import { useAuthStore } from "./stores/authStore";
 
 const Settings = () => {
   const { t } = useTranslation();
   const { settings } = useSettings();
+  const { isAuthenticated } = useAuthStore();
 
   return (
     <SidebarSection title={t("SETTINGS")}>
-      <div className="flex flex-col gap-6 pb-4">
+      <div className="w-full flex-1 flex flex-col gap-4">
+        <AccountSection />
+
+        <div className="h-px dark:bg-[#2a2a2a] bg-gray-100" />
+
+        {!isAuthenticated && (
+          <>
+            <div className="flex flex-col gap-3">
+              <div className="flex items-center gap-2 px-1">
+                <UserPen className="w-3.5 h-3.5 dark:text-gray-400 text-gray-500" />
+                <h2 className="text-[11px] font-semibold uppercase tracking-wider dark:text-gray-400 text-gray-500">
+                  {t("GENERAL")}
+                </h2>
+              </div>
+              <div className="flex flex-col gap-2">
+                <UsernameInput />
+                <EmailInput />
+              </div>
+            </div>
+            <div className="h-px dark:bg-[#2a2a2a] bg-gray-100" />
+          </>
+        )}
+
         <div className="flex flex-col gap-3">
           <div className="flex items-center gap-2 px-1">
-            <FaUserEdit className="w-3.5 h-3.5 dark:text-gray-400 text-gray-500" />
-            <h2 className="text-xs font-semibold dark:text-gray-400 text-main-light/60 uppercase tracking-wide">
-              {t("GENERAL")}
-            </h2>
-          </div>
-          <div className="flex flex-col gap-2">
-            <UsernameInput />
-            <EmailInput />
-          </div>
-        </div>
-
-        <div className="w-full h-px dark:bg-divider-dark bg-gray-200" />
-
-        <div className="flex flex-col gap-3">
-          <div className="flex items-center gap-2 px-1">
-            <FaPalette className="w-3.5 h-3.5 dark:text-gray-400 text-gray-500" />
-            <h2 className="text-xs font-semibold dark:text-gray-400 text-main-light/60 uppercase tracking-wide">
+            <Palette className="w-3.5 h-3.5 dark:text-gray-400 text-gray-500" />
+            <h2 className="text-[11px] font-semibold uppercase tracking-wider dark:text-gray-400 text-gray-500">
               {t("APPARENCE")}
             </h2>
           </div>
@@ -53,12 +61,12 @@ const Settings = () => {
           </div>
         </div>
 
-        <div className="w-full h-px dark:bg-divider-dark bg-gray-200" />
+        <div className="h-px dark:bg-[#2a2a2a] bg-gray-100" />
 
         <div className="flex flex-col gap-3">
           <div className="flex items-center gap-2 px-1">
-            <BsStars className="w-3.5 h-3.5 dark:text-gray-400 text-gray-500" />
-            <h2 className="text-xs font-semibold dark:text-gray-400 text-main-light/60 uppercase tracking-wide">
+            <Sparkles className="w-3.5 h-3.5 dark:text-gray-400 text-gray-500" />
+            <h2 className="text-[11px] font-semibold uppercase tracking-wider dark:text-gray-400 text-gray-500">
               {t("AI_OPENAI")}
             </h2>
           </div>
@@ -68,12 +76,12 @@ const Settings = () => {
           </div>
         </div>
 
-        <div className="w-full h-px dark:bg-divider-dark bg-gray-200" />
+        <div className="h-px dark:bg-[#2a2a2a] bg-gray-100" />
 
         <div className="flex flex-col gap-3">
           <div className="flex items-center gap-2 px-1">
-            <BiSolidHelpCircle className="w-3.5 h-3.5 dark:text-gray-400 text-gray-500" />
-            <h2 className="text-xs font-semibold dark:text-gray-400 text-main-light/60 uppercase tracking-wide">
+            <HelpCircle className="w-3.5 h-3.5 dark:text-gray-400 text-gray-500" />
+            <h2 className="text-[11px] font-semibold uppercase tracking-wider dark:text-gray-400 text-gray-500">
               {t("ABOUT")}
             </h2>
           </div>

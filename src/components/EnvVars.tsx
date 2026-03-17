@@ -52,13 +52,13 @@ const EnvVars = () => {
       headerAction={
         <button
           onClick={() => setShowAddForm(!showAddForm)}
-          className="flex items-center gap-1 bg-accent-dark hover:bg-hover-ancient-dark text-white px-4 py-1 rounded transition-colors font-semibold text-sm flex-shrink-0"
+          className="h-9 px-4 rounded-lg bg-accent-dark hover:bg-accent-dark/90 text-white text-sm font-medium transition-colors cursor-pointer flex-shrink-0"
         >
           <span className="hidden sm:inline">{t('NEW')}</span>
         </button>
       }
     >
-      <div className="flex flex-col gap-2">
+      <div className="flex flex-col gap-3">
         {showAddForm && (
           <NewEnvVarForm
             onSave={handleSaveNew}
@@ -67,11 +67,11 @@ const EnvVars = () => {
           />
         )}
 
-        <div className="space-y-2">
+        <div className="flex flex-col gap-3">
           {filtered.map((envVar) => (
             <div
               key={envVar.id}
-              className="dark:bg-main-light bg-white rounded border border-gray-200 dark:border-divider-dark overflow-hidden shadow-sm hover:shadow-md transition-all duration-200"
+              className="dark:bg-[#1a1a1a] bg-white rounded-lg border dark:border-[#2a2a2a] border-gray-200 overflow-hidden hover:border-gray-300 dark:hover:border-[#333] transition-colors"
             >
               {editingId === envVar.id ? (
                 <EditEnvVarForm

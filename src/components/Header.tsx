@@ -2,9 +2,10 @@ import { useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import CloseButtons from "./CloseButtons";
 import { getEnvironmentDisplayInfo } from "../utils/environment";
-import { BsSearch } from "react-icons/bs";
+import { Search } from "lucide-react";
 import { useKBar } from "kbar";
 import Kbd from "./chat/Kbd";
+import UserButton from "./auth/UserButton";
 
 const Header = () => {
   const { t } = useTranslation();
@@ -29,9 +30,9 @@ const Header = () => {
     <>
       <nav
         ref={header}
-        className="h-10 dark:bg-main-contrast bg-[#f7f7f7] drag z-10 px-2 grid grid-cols-[1fr_auto_1fr] items-center gap-2 box-content border-b border-gray-300 dark:border-divider-dark"
+        className="h-10 dark:bg-main-contrast bg-[#f7f7f7] drag z-[100] relative px-1 pl-2 grid grid-cols-[1fr_1fr_auto] items-center gap-12 box-content border-b border-gray-300 dark:border-divider-dark"
       >
-        <div className="min-w-0 flex items-center gap-2">
+        <div className="flex items-center gap-2 min-w-[120px]">
           <img src="/icon.png" className="h-6 shrink-0" alt="" />
           <p className="text-sm font-medium truncate dark:text-[#f7f7f7]">
             PlayTS{" "}
@@ -40,17 +41,18 @@ const Header = () => {
             </span>
           </p>
         </div>
-        <div className="flex justify-center">
+        <div className="flex justify-end w-full flex-1 flex-shrink-0">
           <button
             onClick={() => query.toggle()}
-            className="no-drag flex items-center min-w-[350px] text-xs font-normal text-[#737373] h-8 gap-2 dark:bg-main-light bg-gray-100 dark:hover:bg-main-light/20 dark:hover:border-main-light/80 px-2 py-1 rounded box-border border border-gray-300 dark:border-divider-dark whitespace-nowrap"
+            className="no-drag flex items-center text-xs w-full font-normal text-[#737373] h-8 gap-2 dark:bg-main-light bg-gray-100 dark:hover:bg-[#2f2f2fca] dark:hover:border-main px-2 rounded-lg box-border border border-gray-300 dark:border-divider-dark whitespace-nowrap"
           >
-            <BsSearch className="h-3 w-3 shrink-0" />
+            <Search className="h-3 w-3 shrink-0" />
             <div className="flex-1 text-left">{t("HEADER_SEARCH_COMMAND")}</div>
             <Kbd keys={['Control', 'K']} />
           </button>
         </div>
         <div className="flex items-center justify-end gap-2 min-w-0">
+          <UserButton />
           {envInfo.shouldShow && (
             <div
               className="flex items-center gap-1 text-xs px-2 py-1 rounded-md shrink-0"

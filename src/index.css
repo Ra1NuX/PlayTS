@@ -2,6 +2,13 @@
 @tailwind components;
 @tailwind utilities;
 
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
 @layer utilities {
   .drag {
     -webkit-app-region: drag;
@@ -67,4 +74,10 @@
 
 .decorationsOverviewRuler {
   visibility: hidden;
+}
+
+/* Header must always be on top of everything (Clerk modals, overlays, etc.) */
+nav[class*="drag"] {
+  z-index: 2147483647 !important;
+  position: relative;
 }

@@ -1,13 +1,13 @@
 import * as acorn from "acorn";
 
 /**
- * Genera un mapa de líneas del código original a las líneas del código instrumentado
+ * Generates a line map from original code to instrumented code lines
  */
 export function createLineMapping(originalCode: string, instrumentedCode: string): Map<number, number> {
   const lineMap = new Map<number, number>();
   
   try {
-    // Parsear el código original para encontrar las líneas de console.log
+    // Parse the original code to find console.log lines
     const ast = acorn.parse(originalCode, {
       ecmaVersion: 2025,
       sourceType: "module",

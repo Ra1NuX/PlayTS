@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import { Bookmark, NewBookmark, createBookmark, updateBookmark, toggleBookmarkGlobal } from '../utils/bookmarkUtils';
+import { STORAGE_KEYS } from '../constants/localStorage';
 
 interface BookmarksStore {
   bookmarks: Bookmark[];
@@ -56,7 +57,7 @@ export const useBookmarksStore = create<BookmarksStore>()(
       },
     }),
     {
-      name: 'bookmarks-storage',
+      name: STORAGE_KEYS.BOOKMARKS_STORAGE,
       storage: createJSONStorage(() => localStorage),
       partialize: (state) => ({ bookmarks: state.bookmarks }),
       onRehydrateStorage: () => (state) => {

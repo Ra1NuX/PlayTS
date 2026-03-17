@@ -4,6 +4,9 @@
 
 const config = {
   appId: "com.arco.playts",
+  protocols: [
+    { name: "PlayTS Auth", schemes: ["playts"] },
+  ],
   generateUpdatesFilesForAllChannels: true,
   productName: `PlayTS ${process.env.CHANNEL === "beta" ? "Beta" : ""}`,
   asar: true,

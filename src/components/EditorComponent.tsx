@@ -8,7 +8,9 @@ import { useFont } from "../hooks/useFonts";
 import debounce from "../tools/debounce";
 import { useBookmarks } from "../stores/bookmarksStore";
 import { useMonacoTypes } from "../hooks/useMonacoTypes";
+import { useAutoTypings } from "../hooks/useAutoTypings";
 import useDependencies from "../hooks/useDependencies";
+import { STORAGE_KEYS } from "../constants/localStorage";
 
 const EditorComponent = () => {
   const { updateCode, code } = useCompiler();
@@ -18,8 +20,14 @@ const EditorComponent = () => {
   const monaco = useMonaco();
   const bookmarks = useBookmarks();
   const { packages } = useDependencies();
+  const { acquireTypes, setInstalledPackages } = useAutoTypings();
 
-  useMonacoTypes({ bookmarks, installedPackages: packages });
+  useMonacoTypes({ bookmarks });
+
+  // When installed packages change, preload their types for auto-import
+  useEffect(() => {
+    setInstalledPackages(Object.keys(packages));
+  }, [packages, setInstalledPackages]);
 
   const [defaultCode, setDefaultCode] = useState(code);
 
@@ -84,12 +92,20 @@ const EditorComponent = () => {
 
   const debouncedUpdateCode = useMemo(() => {
     return debounce((value?: string) => {
-      
-      updateCode(value??'');
+      updateCode(value ?? '');
     }, 500);
   }, [updateCode]);
 
-  const handleChange = useCallback(debouncedUpdateCode, []);
+  const debouncedAcquireTypes = useMemo(() => {
+    return debounce((value?: string) => {
+      if (value) acquireTypes(value);
+    }, 1000);
+  }, [acquireTypes]);
+
+  const handleChange = useCallback((value?: string) => {
+    debouncedUpdateCode(value);
+    debouncedAcquireTypes(value);
+  }, [debouncedUpdateCode, debouncedAcquireTypes]);
 
   useEffect(() => {
     if (!monaco) return;
@@ -106,6 +122,21 @@ const EditorComponent = () => {
       strict: true,
       allowNonTsExtensions: true,
       skipLibCheck: true,
+      esModuleInterop: true,
+      allowJs: true,
+      jsx: monaco.languages.typescript.JsxEmit.React,
+      noEmit: true,
+      typeRoots: ['node_modules/@types'],
+    });
+
+    monaco.languages.typescript.javascriptDefaults.setCompilerOptions({
+      target: monaco.languages.typescript.ScriptTarget.Latest,
+      module: monaco.languages.typescript.ModuleKind.ESNext,
+      moduleResolution: monaco.languages.typescript.ModuleResolutionKind.NodeJs,
+      allowNonTsExtensions: true,
+      esModuleInterop: true,
+      allowJs: true,
+      noEmit: true,
     });
 
     monaco.languages.typescript.typescriptDefaults.setDiagnosticsOptions({
@@ -116,9 +147,11 @@ const EditorComponent = () => {
   }, [monaco, theme]);
 
   useEffect(() => {
-    const code = atob(localStorage.getItem("code") || "");
-    setDefaultCode(code || t("DEFAULT_CODE"));
-    updateCode(code || t("DEFAULT_CODE"));
+    const code = atob(localStorage.getItem(STORAGE_KEYS.CODE) || "");
+    const initialCode = code || t("DEFAULT_CODE");
+    setDefaultCode(initialCode);
+    updateCode(initialCode);
+    acquireTypes(initialCode);
   }, []);
 
   const handleEditorMount = useCallback((editor: any) => {
@@ -133,6 +166,7 @@ const EditorComponent = () => {
       language="typescript"
       defaultValue={defaultCode}
       value={code}
+      path="file:///main.tsx"
       onChange={handleChange}
       options={{ ...editorOptions }}
       className="font-mono leading-none w-full flex flex-1 focus-visible:outline-none resize-none"

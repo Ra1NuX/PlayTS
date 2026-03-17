@@ -1,8 +1,7 @@
 import { Action, useKBar, useRegisterActions } from "kbar";
 import { useTranslation } from "react-i18next";
 import { useEffect, useState, useRef } from "react";
-import { BiSolidMoon, BiPackage } from "react-icons/bi";
-import { BsType, BsGlobe2, BsArrowUp, BsArrowDown, BsTrash } from "react-icons/bs";
+import { Moon, Package, Type, Globe, ArrowUp, ArrowDown, Trash2 } from "lucide-react";
 import { useTheme } from "../hooks/useTheme";
 import { useFont } from "../hooks/useFonts";
 import useDependencies from "../hooks/useDependencies";
@@ -84,7 +83,7 @@ const RegisterCommandPaletteActions = () => {
       id: INSTALL_NPM_PARENT_ID,
       name: t("CMD_INSTALL_NPM_PACKAGE"),
       section: t("SECTION_DEPENDENCIES"),
-      icon: <BiPackage className="size-4 shrink-0" />,
+      icon: <Package className="size-4 shrink-0" />,
       shortcut: ["$mod+Shift+P"],
       keywords: "install,add,package,npm,dependency,add package,library",
     },
@@ -95,7 +94,7 @@ const RegisterCommandPaletteActions = () => {
         name: pkg.name,
         parent: INSTALL_NPM_PARENT_ID,
         subtitle: pkg.description ?? undefined,
-        icon: <BiPackage className="size-4 shrink-0" />,
+        icon: <Package className="size-4 shrink-0" />,
         keywords: [pkg.name, pkg.description ?? ""].filter(Boolean).join(","),
         perform: () => download.addPackage(pkg.name, pkg.version),
       };
@@ -104,7 +103,7 @@ const RegisterCommandPaletteActions = () => {
       id: UNINSTALL_NPM_PARENT_ID,
       name: t("CMD_UNINSTALL_NPM_PACKAGE"),
       section: t("SECTION_DEPENDENCIES"),
-      icon: <BsTrash className="size-4 shrink-0" />,
+      icon: <Trash2 className="size-4 shrink-0" />,
       keywords: "uninstall,remove,delete,package,npm,remove package",
     },
     ...Object.entries(packages).map(([pkgName, version]) => ({
@@ -112,7 +111,7 @@ const RegisterCommandPaletteActions = () => {
       name: pkgName,
       parent: UNINSTALL_NPM_PARENT_ID,
       subtitle: version,
-      icon: <BsTrash className="size-4 shrink-0" />,
+      icon: <Trash2 className="size-4 shrink-0" />,
       keywords: pkgName,
       perform: () => download.removePackage(pkgName),
     })),
@@ -120,7 +119,7 @@ const RegisterCommandPaletteActions = () => {
       id: "settings-theme",
       name: t("CMD_TOGGLE_THEME"),
       section: t("SECTION_APPEARANCE"),
-      icon: <BiSolidMoon className="size-4 shrink-0" />,
+      icon: <Moon className="size-4 shrink-0" />,
       keywords: "theme,dark,light,mode,appearance,toggle,night,day",
       perform: () => toggleTheme(),
     },
@@ -129,7 +128,7 @@ const RegisterCommandPaletteActions = () => {
       name: t("CMD_FONT_SIZE_INCREASE"),
       section: t("SECTION_APPEARANCE"),
       shortcut: ["$mod+ArrowUp"],
-      icon: <BsArrowUp className="size-4 shrink-0" />,
+      icon: <ArrowUp className="size-4 shrink-0" />,
       keywords: "font,size,increase,bigger,zoom,scale,text,editor",
       perform: () =>
         changeSize(Math.min(MAX_FONT_SIZE, currentSize + FONT_SIZE_STEP)),
@@ -139,7 +138,7 @@ const RegisterCommandPaletteActions = () => {
       name: t("CMD_FONT_SIZE_DECREASE"),
       section: t("SECTION_APPEARANCE"),
       shortcut: ["$mod+ArrowDown"],
-      icon: <BsArrowDown className="size-4 shrink-0" />,
+      icon: <ArrowDown className="size-4 shrink-0" />,
       keywords: "font,size,decrease,smaller,zoom,scale,text,editor",
       perform: () =>
         changeSize(Math.max(MIN_FONT_SIZE, currentSize - FONT_SIZE_STEP)),
@@ -148,7 +147,7 @@ const RegisterCommandPaletteActions = () => {
       id: CHANGE_FONT_PARENT_ID,
       name: t("CMD_CHANGE_FONT"),
       section: t("SECTION_APPEARANCE"),
-      icon: <BsType className="size-4 shrink-0" />,
+      icon: <Type className="size-4 shrink-0" />,
       shortcut: ["$mod+Shift+F"],
       keywords: "font,typeface,typography,change font,editor,letter",
     },
@@ -156,7 +155,7 @@ const RegisterCommandPaletteActions = () => {
       id: `${CHANGE_FONT_PARENT_ID}-${f.key.replace(/\s+/g, "-").toLowerCase()}`,
       name: f.name,
       parent: CHANGE_FONT_PARENT_ID,
-      icon: <BsType className="size-4 shrink-0" />,
+      icon: <Type className="size-4 shrink-0" />,
       keywords: `${f.name},${f.key},font,typeface`,
       perform: () => changeFont(f.key),
     })),
@@ -164,7 +163,7 @@ const RegisterCommandPaletteActions = () => {
       id: CHANGE_LANGUAGE_PARENT_ID,
       name: t("CMD_CHANGE_LANGUAGE"),
       section: t("SECTION_APPEARANCE"),
-      icon: <BsGlobe2 className="size-4 shrink-0" />,
+      icon: <Globe className="size-4 shrink-0" />,
       shortcut: ["$mod+Shift+L"],
       keywords: "language,locale,idiom,translate,change language,es,en,idioma",
     },

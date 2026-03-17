@@ -1,6 +1,6 @@
 /**
- * Utilidades para detectar el entorno de ejecución
- * y manejar diferencias entre Electron y Web
+ * Utilities for detecting the execution environment
+ * and handling differences between Electron and Web
  */
 
 export interface EnvironmentInfo {
@@ -18,46 +18,41 @@ export interface EnvironmentInfo {
 }
 
 /**
- * Detecta si la aplicación está ejecutándose en Electron
+ * Detects if the application is running in Electron
  */
 export const isElectron = (): boolean => {
-  // Verificar si existe la API de Electron expuesta por el preload script
-  if (typeof window !== 'undefined' && (window as any).electron) {
-    console.log('✅ Detectado entorno Electron via window.electron');
+  // Check if Electron API exposed by preload script exists
+  if (typeof window !== 'undefined' && window.electron) {
     return true;
   }
 
-  // Verificar si existe process.versions.electron (más confiable)
+  // Check if process.versions.electron exists (more reliable)
   if (typeof window !== 'undefined' && (window as any).process?.versions?.electron) {
-    console.log('✅ Detectado entorno Electron via process.versions.electron');
     return true;
   }
 
-  // Verificar userAgent específico de Electron
+  // Check Electron-specific userAgent
   if (typeof navigator !== 'undefined' && navigator.userAgent.includes('Electron')) {
-    console.log('✅ Detectado entorno Electron via userAgent');
     return true;
   }
 
-  // Verificar si estamos en Electron mediante otras señales
+  // Check for Electron via other signals
   if (typeof window !== 'undefined' && window.process && window.process.type) {
-    console.log('✅ Detectado entorno Electron via window.process.type');
     return true;
   }
 
-  console.log('❌ No se detectó entorno Electron, usando Web');
   return false;
 };
 
 /**
- * Detecta si la aplicación está ejecutándose en el navegador web
+ * Detects if the application is running in the web browser
  */
 export const isWeb = (): boolean => {
   return !isElectron();
 };
 
 /**
- * Obtiene información completa del entorno
+ * Gets complete environment information
  */
 export const getEnvironmentInfo = (): EnvironmentInfo => {
   const electron = isElectron();
@@ -69,18 +64,18 @@ export const getEnvironmentInfo = (): EnvironmentInfo => {
     platform: electron ? 'electron' : 'web',
     executionMethod: electron ? 'icp' : 'webcontainer',
     capabilities: {
-      canExecuteNodeCode: true, // Ambos entornos pueden ejecutar código Node.js
-      canInstallPackages: true, // Ambos entornos pueden instalar paquetes
-      canAccessFileSystem: electron, // Solo Electron tiene acceso real al sistema de archivos
-      canUseWebContainers: web, // Solo en web usamos WebContainers
-      canUseICP: electron, // Solo en Electron usamos ICP
+      canExecuteNodeCode: true, // Both environments can execute Node.js code
+      canInstallPackages: true, // Both environments can install packages
+      canAccessFileSystem: electron, // Only Electron has real file system access
+      canUseWebContainers: web, // Only in web we use WebContainers
+      canUseICP: electron, // Only in Electron we use ICP
     }
   };
 };
 
 
 /**
- * Verifica si una funcionalidad está disponible en el entorno actual
+ * Checks if a feature is available in the current environment
  */
 export const isFeatureAvailable = (feature: keyof EnvironmentInfo['capabilities']): boolean => {
   const env = getEnvironmentInfo();
@@ -89,7 +84,7 @@ export const isFeatureAvailable = (feature: keyof EnvironmentInfo['capabilities'
 
 
 /**
- * Obtiene información detallada del entorno actual
+ * Gets detailed information about the current environment
  */
 export const getEnvironmentDisplayInfo = () => {
   const env = getEnvironmentInfo();
@@ -97,15 +92,14 @@ export const getEnvironmentDisplayInfo = () => {
     (typeof window !== 'undefined' && (window as any).isDev) ||
     !process.env.NODE_ENV;
 
-  // Detectar el protocolo/URL actual
+  // Detect the current protocol/URL
   const getProtocol = (): string => {
     if (typeof window === 'undefined') return 'SSR';
 
     if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-      return 'localhost'; 
-    } else { return 'app://-'; }
-
-    return window.location.hostname || 'unknown';
+      return 'localhost';
+    }
+    return 'playts://-';
   };
 
   return {
@@ -115,19 +109,7 @@ export const getEnvironmentDisplayInfo = () => {
     protocol: getProtocol(),
     platform: env.platform,
     executionMethod: env.executionMethod,
-    shouldShow: isDevMode // Solo mostrar en desarrollo
+    shouldShow: isDevMode // Only show in development
   };
 };
 
-/**
- * Hook para usar información del entorno en componentes React
- */
-export const useEnvironment = () => {
-  const envInfo = getEnvironmentInfo();
-
-  return {
-    ...envInfo,
-    isFeatureAvailable: (feature: keyof EnvironmentInfo['capabilities']) =>
-      isFeatureAvailable(feature),
-  };
-};

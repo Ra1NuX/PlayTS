@@ -36,7 +36,7 @@ export interface NpmSearchResponse {
     author?: NpmPerson;
     publisher?: NpmUser;
     maintainers?: NpmUser[];
-    // Agregar más campos según necesidad
+    // Add more fields as needed
   }
   
   /**

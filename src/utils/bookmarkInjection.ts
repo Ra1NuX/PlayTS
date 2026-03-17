@@ -20,7 +20,9 @@ export const generateGlobalBookmarkCode = (activeBookmarks: Bookmark[]): string 
     let jsCode = code;
     try {
       jsCode = transpileTypeScript(code);
-    } catch {}
+    } catch {
+      console.warn(`Failed to transpile bookmark: ${name}`);
+    }
     
     return `// Bookmark: ${name}${description ? ` - ${description}` : ''}\n${jsCode}`;
   }).join('\n\n');

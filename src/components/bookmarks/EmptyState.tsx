@@ -1,4 +1,4 @@
-import { BsBookmarkFill } from "react-icons/bs";
+import { Bookmark } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
 interface EmptyStateProps {
@@ -14,7 +14,7 @@ export const EmptyState = ({ searchTerm, onAddClick }: EmptyStateProps) => {
       {" "}
       <div className="flex justify-center mb-4">
         <div className="w-16 h-16 rounded-full bg-gray-100 dark:bg-main-dark flex items-center justify-center">
-          <BsBookmarkFill className="h-8 w-8 text-gray-400 dark:text-gray-500" />
+          <Bookmark className="h-8 w-8 text-gray-400 dark:text-gray-500" />
         </div>
       </div>
       <h3 className="text-base font-medium dark:text-white text-main-dark mb-2">

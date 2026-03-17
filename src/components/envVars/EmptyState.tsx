@@ -1,4 +1,4 @@
-import { BsKey } from 'react-icons/bs';
+import { KeyRound } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 interface EmptyStateProps {
@@ -11,9 +11,9 @@ export const EmptyState = ({ searchTerm, onAddClick }: EmptyStateProps) => {
 
   if (searchTerm) {
     return (
-      <div className="flex flex-col items-center justify-center py-8 text-center">
-        <BsKey className="h-8 w-8 dark:text-gray-500 text-gray-400 mb-3" />
-        <p className="text-sm font-semibold dark:text-gray-300 text-main-dark mb-1">
+      <div className="border-2 border-dashed rounded-lg p-8 dark:border-[#2a2a2a] border-gray-200 flex flex-col items-center justify-center text-center">
+        <KeyRound className="h-8 w-8 dark:text-gray-500 text-gray-400 mb-3" />
+        <p className="text-sm font-semibold dark:text-gray-100 text-gray-900 mb-1">
           {t('ENV_VAR_NOT_FOUND')}
         </p>
         <p className="text-xs dark:text-gray-500 text-gray-400">
@@ -24,9 +24,9 @@ export const EmptyState = ({ searchTerm, onAddClick }: EmptyStateProps) => {
   }
 
   return (
-    <div className="flex flex-col items-center justify-center py-8 text-center">
-      <BsKey className="h-8 w-8 dark:text-gray-500 text-gray-400 mb-3" />
-      <p className="text-sm font-semibold dark:text-gray-300 text-main-dark mb-1">
+    <div className="border-2 border-dashed rounded-lg p-8 dark:border-[#2a2a2a] border-gray-200 flex flex-col items-center justify-center text-center">
+      <KeyRound className="h-8 w-8 dark:text-gray-500 text-gray-400 mb-3" />
+      <p className="text-sm font-semibold dark:text-gray-100 text-gray-900 mb-1">
         {t('ENV_VAR_EMPTY_TITLE')}
       </p>
       <p className="text-xs dark:text-gray-500 text-gray-400 mb-3">
@@ -34,7 +34,7 @@ export const EmptyState = ({ searchTerm, onAddClick }: EmptyStateProps) => {
       </p>
       <button
         onClick={onAddClick}
-        className="text-xs bg-accent-dark hover:bg-hover-ancient-dark text-main-dark px-3 py-1.5 rounded transition-colors font-semibold"
+        className="h-9 px-4 rounded-lg bg-accent-dark hover:bg-accent-dark/90 text-white text-sm font-medium transition-colors cursor-pointer"
       >
         {t('ENV_VAR_CREATE_FIRST')}
       </button>

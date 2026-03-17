@@ -19,7 +19,7 @@ export default {
           }
         },
         divider: {
-          dark: '#1f1f1f',
+          dark: '#2f2f2fca',
         },
         accent: {
           dark: '#2b73da',

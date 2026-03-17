@@ -1,47 +1,43 @@
-import { useEffect, useState } from "react";
-import { InstalledPackages, NpmSearchResponse } from "../model/npm";
-import { installPackage, uninstallPackage } from "../utils/codeExecution";
+import { useEffect, useState } from 'react';
+import { NpmSearchResponse } from '../model/npm';
+import { useDependenciesStore } from '../stores/dependenciesStore';
 
 const querySize = 20;
 
-const listeners = new Set<(result: InstalledPackages) => void>();
+// Backward compat export - now reads from store
+export const getGlobalDependencies = () => useDependenciesStore.getState().packages;
 
-const defaultDependencies = {
-  ...JSON.parse(localStorage.getItem("dependencies") || "{}"),
-};
-
-export let globalDependencies = defaultDependencies;
-
-const notifyAll = () => {
-  listeners.forEach((listener) => listener(globalDependencies));
-};
-
-const setGlobalDependencies = (dependencies: InstalledPackages) => {
-  globalDependencies = dependencies;
-  localStorage.setItem("dependencies", JSON.stringify(dependencies));
-  notifyAll();
-};
+// Legacy mutable-like export using a getter proxy
+export const globalDependencies: Record<string, string> = new Proxy({} as Record<string, string>, {
+  get(_target, prop: string) {
+    return useDependenciesStore.getState().packages[prop];
+  },
+  ownKeys() {
+    return Object.keys(useDependenciesStore.getState().packages);
+  },
+  getOwnPropertyDescriptor(_target, prop: string) {
+    const packages = useDependenciesStore.getState().packages;
+    if (prop in packages) {
+      return { configurable: true, enumerable: true, value: packages[prop] };
+    }
+    return undefined;
+  },
+  has(_target, prop: string) {
+    return prop in useDependenciesStore.getState().packages;
+  },
+});
 
 const useDependencies = () => {
+  const packages = useDependenciesStore((s) => s.packages);
+  const loadingPackages = useDependenciesStore((s) => s.loadingPackages);
+  const addPackage = useDependenciesStore((s) => s.addPackage);
+  const removePackage = useDependenciesStore((s) => s.removePackage);
+
   const [info, setInfo] = useState<NpmSearchResponse | null>(null);
-  const [text, setText] = useState<string>("");
+  const [text, setText] = useState<string>('');
   const [page, setPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
-  const [loadingPackages, setLoadingPackages] = useState<Set<string>>(new Set());
-  const [packages, setPackages] =
-    useState<InstalledPackages>(globalDependencies);
-
-  useEffect(() => {
-    const listener = (newPackages: InstalledPackages) =>
-      setPackages(newPackages);
-
-    listeners.add(listener);
-
-    return () => {
-      listeners.delete(listener);
-    };
-  }, []);
 
   useEffect(() => {
     search(text, page);
@@ -65,48 +61,6 @@ const useDependencies = () => {
     setTotalPages(Math.ceil(data.total / querySize));
     setInfo(data);
     setIsLoading(false);
-  };
-
-  const addPackage = async (pckg: string, version: string) => {
-    setLoadingPackages(prev => new Set(prev).add(pckg));
-    
-    const dependencies = { ...globalDependencies, [pckg]: version };
-    setGlobalDependencies(dependencies);
-    
-    const result = await installPackage(pckg, version);
-    if (!result.success) {
-      const revertedDeps = { ...dependencies };
-      delete revertedDeps[pckg];
-      setGlobalDependencies(revertedDeps);
-      console.error(`Error instalando ${pckg}:`, result.error);
-    }
-    
-    setLoadingPackages(prev => {
-      const next = new Set(prev);
-      next.delete(pckg);
-      return next;
-    });
-  };
-
-  const removePackage = async (pckg: string) => {
-    setLoadingPackages(prev => new Set(prev).add(pckg));
-    
-    const dependencies = { ...globalDependencies };
-    delete dependencies[pckg];
-    setGlobalDependencies(dependencies);
-    
-    const result = await uninstallPackage(pckg);
-    if (!result.success) {
-      const revertedDeps = { ...dependencies, [pckg]: globalDependencies[pckg] };
-      setGlobalDependencies(revertedDeps);
-      console.error(`Error desinstalando ${pckg}:`, result.error);
-    }
-    
-    setLoadingPackages(prev => {
-      const next = new Set(prev);
-      next.delete(pckg);
-      return next;
-    });
   };
 
   return {

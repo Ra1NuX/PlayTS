@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import { EnvVar, NewEnvVar } from '../model/envVar';
+import { STORAGE_KEYS } from '../constants/localStorage';
 
 interface EnvVarsStore {
   envVars: EnvVar[];
@@ -59,7 +60,7 @@ export const useEnvVarsStore = create<EnvVarsStore>()(
       },
     }),
     {
-      name: 'env-vars-storage',
+      name: STORAGE_KEYS.ENV_VARS_STORAGE,
       storage: createJSONStorage(() => localStorage),
       partialize: (state) => ({ envVars: state.envVars }),
       onRehydrateStorage: () => (state) => {

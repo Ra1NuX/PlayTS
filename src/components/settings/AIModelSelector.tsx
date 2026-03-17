@@ -48,30 +48,30 @@ const AIModelSelector = () => {
   };
 
   return (
-    <div className="flex flex-row gap-5 justify-between items-center">
+    <div className="flex flex-row gap-5 justify-between items-center dark:text-gray-100 text-gray-900 text-sm">
       {t("MODEL")}
       <Listbox value={selectedOption} onChange={handleChange}>
-        <ListboxButton className="font-[roboto] font-normal dark:bg-main-dark/50 bg-[#fafafa] dark:hover:bg-main-dark hover:bg-[#f0f0f0] border shadow-md dark:border-main-dark/20 p-1 pr-2 rounded-xl flex justify-center min-w-[140px] text-center">
+        <ListboxButton className="h-9 px-3 text-sm rounded-lg border dark:border-[#2a2a2a] border-gray-200 dark:bg-[#111] bg-gray-50 dark:text-gray-100 text-gray-900 flex items-center justify-center min-w-[160px] cursor-pointer hover:border-gray-300 dark:hover:border-[#333] transition-colors focus:ring-2 focus:ring-accent-dark/30 focus:border-accent-dark outline-none">
           {loading ? (
-            <span className="opacity-70">...</span>
+            <span className="dark:text-gray-500 text-gray-400">...</span>
           ) : (
             selectedOption.name
           )}
         </ListboxButton>
         <ListboxOptions
           anchor="bottom"
-          className="z-20 dark:bg-main-light bg-[#f7f7f7] shadow-2xl border border-main-dark/20 rounded mt-2 font-[roboto] font-normal max-h-60 overflow-y-auto"
+          className="z-20 dark:bg-[#1a1a1a] bg-white border dark:border-[#2a2a2a] border-gray-200 rounded-lg mt-1 shadow-lg max-h-60 overflow-y-auto"
         >
           {providers.map((provider) => (
             <div key={provider.id}>
-              <div className="px-2 py-1 text-xs font-semibold text-main-dark/70 dark:text-white/70 border-b border-main-dark/10 dark:border-white/10">
+              <div className="px-3 py-1.5 text-[11px] font-semibold uppercase tracking-wider dark:text-gray-500 text-gray-400 border-b dark:border-[#2a2a2a] border-gray-100">
                 {provider.name}
               </div>
               {provider.models.map((model) => (
                 <ListboxOption
                   key={`${model.provider}-${model.id}`}
                   value={model}
-                  className="dark:data-[focus]:bg-main-dark/80 p-2 flex gap-2 dark:text-white cursor-pointer hover:bg-main-light/20 justify-between min-w-[140px]"
+                  className="data-[focus]:bg-accent-dark/10 dark:data-[focus]:bg-accent-dark/20 px-3 py-2 flex gap-2 dark:text-gray-100 text-gray-900 cursor-pointer transition-colors justify-between min-w-[160px] text-sm"
                 >
                   {model.name}
                 </ListboxOption>

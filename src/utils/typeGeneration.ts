@@ -100,7 +100,8 @@ export const generateBookmarkTypes = (bookmarks: Bookmark[]): string => {
           });
         }
       }
-    } catch {
+    } catch (err) {
+      console.warn('[typeGeneration] Failed to parse bookmark:', err);
       const varName = bookmark.name.replace(/[^a-zA-Z0-9_]/g, '_');
       types.push(`declare const ${varName}: any;`);
     }
@@ -122,7 +123,8 @@ export const generateNpmPackageTypes = async (packageName: string): Promise<stri
     if (packageResponse.ok) return await packageResponse.text();
     
     return null;
-  } catch {
+  } catch (err) {
+    console.warn('[typeGeneration] Failed to fetch types for package:', packageName, err);
     return null;
   }
 };

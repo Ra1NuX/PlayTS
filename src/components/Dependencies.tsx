@@ -11,14 +11,14 @@ import { LoadingSpinner } from "./dependencies/LoadingSpinner";
 
 const Dependencies = () => {
   const { t } = useTranslation();
-  const { 
-    search, 
-    totalPages, 
-    setPage, 
-    info, 
-    isLoading, 
+  const {
+    search,
+    totalPages,
+    setPage,
+    info,
+    isLoading,
     packages,
-    download 
+    download
   } = useDependencies();
 
   const debouncedSearch = useMemo(
@@ -46,25 +46,25 @@ const Dependencies = () => {
         {info ? (
           <>
             {isLoading && <LoadingSpinner />}
-            
+
             {!isLoading && (
               <>
                 {hasSearchResults ? (
                   <>
-                    <div className="space-y-2">
-                      <div className="flex items-center justify-between px-2">
-                        <h2 className="text-xs font-semibold dark:text-gray-400 text-main-light/60 uppercase tracking-wide">
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between px-1">
+                        <h2 className="text-[11px] font-semibold uppercase tracking-wider dark:text-gray-400 text-gray-500">
                           {t("DEPS_SEARCH_RESULTS")}
                         </h2>
-                        <span className="text-xs dark:text-gray-500 text-main-light/60">
+                        <span className="text-[11px] dark:text-gray-500 text-gray-400">
                           {t("DEPS_PACKAGES_COUNT", { count: info.objects.length })}
                         </span>
                       </div>
-                      <div className="space-y-2">
+                      <div className="flex flex-col gap-3">
                         {info.objects.map((element) => (
-                          <div 
+                          <div
                             key={element.package.name}
-                            className="dark:bg-main-light bg-white rounded border border-gray-200 dark:border-divider-dark overflow-hidden transition-all duration-200"
+                            className="dark:bg-[#1a1a1a] bg-white rounded-lg border dark:border-[#2a2a2a] border-gray-200 overflow-hidden hover:border-gray-300 dark:hover:border-[#333] transition-colors"
                           >
                             <PackageCard
                               name={element.package.name}
@@ -81,7 +81,7 @@ const Dependencies = () => {
                     </div>
 
                     {totalPages > 1 && (
-                      <div className="pt-2 border-t border-gray-200 dark:border-divider-dark">
+                      <div className="pt-3 border-t dark:border-[#2a2a2a] border-gray-200">
                         <Pagination
                           totalPages={totalPages}
                           onPageChange={(page) => setPage(page - 1)}
@@ -98,20 +98,20 @@ const Dependencies = () => {
         ) : (
           <>
             {hasInstalledPackages ? (
-              <div className="space-y-2">
-                <div className="flex items-center justify-between px-2">
-                  <h2 className="text-xs font-semibold dark:text-gray-400 text-main-light/60 uppercase tracking-wide">
+              <div className="space-y-3">
+                <div className="flex items-center justify-between px-1">
+                  <h2 className="text-[11px] font-semibold uppercase tracking-wider dark:text-gray-400 text-gray-500">
                     {t("DEPS_INSTALLED")}
                   </h2>
-                  <span className="text-xs dark:text-gray-500 text-main-light/60">
+                  <span className="text-[11px] dark:text-gray-500 text-gray-400">
                     {t("DEPS_PACKAGES_COUNT", { count: installedPackages.length })}
                   </span>
                 </div>
-                <div className="space-y-2">
+                <div className="flex flex-col gap-3">
                   {installedPackages.map(([name, version]) => (
-                    <div 
+                    <div
                       key={name}
-                      className="dark:bg-main-light bg-white rounded border border-gray-200 dark:border-divider-dark overflow-hidden transition-all duration-200"
+                      className="dark:bg-[#1a1a1a] bg-white rounded-lg border dark:border-[#2a2a2a] border-gray-200 overflow-hidden hover:border-gray-300 dark:hover:border-[#333] transition-colors"
                     >
                       <InstalledPackageCard
                         name={name}
@@ -133,4 +133,3 @@ const Dependencies = () => {
 };
 
 export default Dependencies;
-

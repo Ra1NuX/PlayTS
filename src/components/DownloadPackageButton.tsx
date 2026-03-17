@@ -1,6 +1,5 @@
 import { useTranslation } from "react-i18next";
-import { BiDownload, BiTrash } from "react-icons/bi";
-import { FiLoader } from "react-icons/fi";
+import { Download, Trash2, Loader2 } from "lucide-react";
 import useDependencies from "../hooks/useDependencies";
 
 const DownloadPackageButton = ({
@@ -13,13 +12,13 @@ const DownloadPackageButton = ({
   const { download, packages } = useDependencies();
   const { t } = useTranslation();
 
-  // Verificar si este paquete específico se está instalando
+  // Check if this specific package is being installed
   const isInstalling = download.loadingPackages.has(pckg);
 
   if (isInstalling)
     return (
       <div className="bg-gray-300 shadow-md px-2 rounded text-main-dark flex items-center justify-center gap-2 p-1 font-normal text-sm leading-none">
-        <FiLoader className="animate-spin duration-100" size={16} />{" "}
+        <Loader2 className="animate-spin duration-100 w-4 h-4" />{" "}
         <span className="leading-[0px] mt-0.5">Loading</span>
       </div>
     );
@@ -30,7 +29,7 @@ const DownloadPackageButton = ({
         className="bg-red-500 hover:bg-red-600 shadow-md px-2 rounded text-white flex items-center justify-center gap-2 p-1 font-normal text-sm leading-none"
         onClick={() => download.removePackage(pckg)}
       >
-        <BiTrash size={16} />{" "}
+        <Trash2 className="w-4 h-4" />{" "}
         <span className="leading-[0px] mt-0.5">{t("UNINSTALL")}</span>
       </button>
     );
@@ -40,7 +39,7 @@ const DownloadPackageButton = ({
       className="bg-blue-500 hover:bg-blue-600 px-2 rounded text-white shadow-md flex items-center gap-2 p-1 font-normal text-sm leading-none"
       onClick={() => download.addPackage(pckg, version)}
     >
-      <BiDownload size={16} />
+      <Download className="w-4 h-4" />
       <span className="leading-[0px] mt-0.5">{t("INSTALL")}</span>
     </button>
   );

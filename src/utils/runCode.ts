@@ -2,6 +2,8 @@ import { WebContainer, WebContainerProcess } from "@webcontainer/api";
 import { addInstructionsToCode } from "./addInstructionsToCode";
 import { isElectron } from "./environment";
 import z from 'zod';
+import { STORAGE_KEYS } from "../constants/localStorage";
+import { WEB_PACKAGE_JSON_TEMPLATE } from "../constants/execution";
 
 let webContainer: WebContainer | null = null;
 let webContainerPromise: Promise<WebContainer> | null = null;
@@ -25,18 +27,12 @@ const getWebContainer = (): Promise<WebContainer> => {
 
   if (!webContainerPromise) {
     webContainerPromise = WebContainer.boot().then(async (container) => {
-      const userDeps = JSON.parse(localStorage.getItem("dependencies") || "{}");
+      const userDeps = JSON.parse(localStorage.getItem(STORAGE_KEYS.DEPENDENCIES) || "{}");
       await container.mount({
         "package.json": {
           file: {
             contents: JSON.stringify({
-              name: "example",
-              version: "1.0.0",
-              type: "module",
-              main: "index.js",
-              scripts: {
-                start: "node index.js",
-              },
+              ...WEB_PACKAGE_JSON_TEMPLATE,
               dependencies: userDeps,
             }),
           },
@@ -151,19 +147,13 @@ export const installPackage = async (name: string, version: string): Promise<boo
     console.log(`📥 Instalando ${name}@${version}...`);
     const container = await getWebContainer();
     
-    const currentDeps = JSON.parse(localStorage.getItem("dependencies") || "{}");
+    const currentDeps = JSON.parse(localStorage.getItem(STORAGE_KEYS.DEPENDENCIES) || "{}");
     console.log("📦 Dependencias antes:", currentDeps);
     currentDeps[name] = version;
     console.log("📦 Dependencias después:", currentDeps);
-    
+
     const newPackageJson = JSON.stringify({
-      name: "example",
-      version: "1.0.0",
-      type: "module",
-      main: "index.js",
-      scripts: {
-        start: "node index.js",
-      },
+      ...WEB_PACKAGE_JSON_TEMPLATE,
       dependencies: currentDeps,
     }, null, 2);
     
@@ -199,19 +189,13 @@ export const uninstallPackage = async (name: string): Promise<boolean> => {
   try {
     const container = await getWebContainer();
     
-    const currentDeps = JSON.parse(localStorage.getItem("dependencies") || "{}");
+    const currentDeps = JSON.parse(localStorage.getItem(STORAGE_KEYS.DEPENDENCIES) || "{}");
     delete currentDeps[name];
-    
+
     await container.fs.writeFile(
       "package.json",
       JSON.stringify({
-        name: "example",
-        version: "1.0.0",
-        type: "module",
-        main: "index.js",
-        scripts: {
-          start: "node index.js",
-        },
+        ...WEB_PACKAGE_JSON_TEMPLATE,
         dependencies: currentDeps,
       }, null, 2)
     );
