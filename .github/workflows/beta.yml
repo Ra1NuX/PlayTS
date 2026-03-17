@@ -41,10 +41,10 @@ jobs:
           git push --follow-tags origin HEAD:develop
   build-beta-windows:
     needs: version-bump
-
+    environment: preview
     runs-on: windows-latest
     permissions:
-      contents: write 
+      contents: write
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -72,6 +72,7 @@ jobs:
           VITE_LANDING_URL: ${{ secrets.VITE_LANDING_URL }}
   build-beta-linux:
       needs: version-bump
+      environment: preview
       runs-on: ubuntu-latest
       permissions:
         contents: write
@@ -105,6 +106,7 @@ jobs:
             VITE_LANDING_URL: ${{ secrets.VITE_LANDING_URL }}
   build-beta-mac:
       needs: version-bump
+      environment: preview
       runs-on: macos-latest
       permissions:
         contents: write

@@ -6,9 +6,10 @@ on:
       - main
 jobs:
   build-prod-windows:
+    environment: production
     runs-on: windows-latest
     permissions:
-      contents: write 
+      contents: write
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -34,6 +35,7 @@ jobs:
           VITE_API_URL: ${{ secrets.VITE_API_URL }}
           VITE_LANDING_URL: ${{ secrets.VITE_LANDING_URL }}
   build-prod-linux:
+    environment: production
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -62,6 +64,7 @@ jobs:
           VITE_API_URL: ${{ secrets.VITE_API_URL }}
           VITE_LANDING_URL: ${{ secrets.VITE_LANDING_URL }}
   build-prod-mac:
+    environment: production
     runs-on: macos-latest
     permissions:
       contents: write
