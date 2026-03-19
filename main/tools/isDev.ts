@@ -5,7 +5,9 @@ if (typeof electron === 'string') {
 }
 
 const { env } = process;
+console.log({env})
 const isEnvSet = 'ELECTRON_IS_DEV' in env;
+console.log({isEnvSet})
 const getFromEnv = Number.parseInt(env.ELECTRON_IS_DEV||'0', 10) === 1;
 
 const isDev = isEnvSet ? getFromEnv : !electron.app.isPackaged;

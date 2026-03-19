@@ -5,12 +5,15 @@ import react from '@vitejs/plugin-react'
 export default defineConfig({
   server: {
     headers: {
-      'Cross-Origin-Embedder-Policy': 'require-corp',
+      'Cross-Origin-Embedder-Policy': 'credentialless',
       'Cross-Origin-Opener-Policy': 'same-origin',
       'Cross-Origin-Resource-Policy': 'cross-origin',
     },
   },
   plugins: [react()],
+  optimizeDeps: {
+    include: ['typescript'],
+  },
   build: {
     outDir: './app/renderer',
     rollupOptions: {

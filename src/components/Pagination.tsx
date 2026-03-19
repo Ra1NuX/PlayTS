@@ -1,5 +1,7 @@
 import { useState } from "react"
-import { BiChevronLeft, BiChevronRight } from "react-icons/bi"
+import { ChevronLeft, ChevronRight } from "lucide-react"
+import { getVisiblePages } from "../utils/paginationHelper"
+import PageButton from "./pagination/PageButton"
 
 interface PaginationProps {
   totalPages: number
@@ -16,67 +18,7 @@ const Pagination = ({totalPages, initialPage=1, onPageChange}: PaginationProps) 
     onPageChange?.(page)
   }
 
-  const renderPageNumbers = () => {
-    const pages = []
-    const maxVisiblePages = 5
-
-    let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2))
-    const endPage = Math.min(totalPages, startPage + maxVisiblePages - 1)
-
-    if (endPage - startPage + 1 < maxVisiblePages) {
-      startPage = Math.max(1, endPage - maxVisiblePages + 1)
-    }
-
-    if (startPage > 1) {
-      pages.push(
-        <button key="1" onClick={() => handlePageChange(1)} className="px-3 py-1 dark:text-white dark:hover:bg-[#2a2e33] hover:bg-[#eaeaea] rounded">
-          1
-        </button>,
-      )
-      if (startPage > 2) {
-        pages.push(
-          <span key="ellipsis1" className="px-2 text-gray-400">
-            ...
-          </span>,
-        )
-      }
-    }
-
-    for (let i = startPage; i <= endPage; i++) {
-      pages.push(
-        <button
-          key={i}
-          onClick={() => handlePageChange(i)}
-          className={`px-3 py-1 rounded ${
-            i === currentPage ? "bg-[#3a86ff] text-white" : "dark:text-white dark:hover:bg-[#2a2e33] text-main-light hover:bg-[#eaeaea]"
-          }`}
-        >
-          {i}
-        </button>,
-      )
-    }
-
-    if (endPage < totalPages) {
-      if (endPage < totalPages - 1) {
-        pages.push(
-          <span key="ellipsis2" className="px-2 text-gray-400">
-            ...
-          </span>,
-        )
-      }
-      pages.push(
-        <button
-          key={totalPages}
-          onClick={() => handlePageChange(totalPages)}
-          className="px-3 py-1 dark:text-white dark:hover:bg-[#2a2e33] text-main-light hover:bg-[#eaeaea] rounded"
-        >
-          {totalPages}
-        </button>,
-      )
-    }
-
-    return pages
-  }
+  const visiblePages = getVisiblePages(currentPage, totalPages)
 
   return (
     <div className="flex items-center justify-center p-4  rounded-md">
@@ -89,10 +31,25 @@ const Pagination = ({totalPages, initialPage=1, onPageChange}: PaginationProps) 
           }`}
           aria-label="Página anterior"
         >
-          <BiChevronLeft size={20} />
+          <ChevronLeft className="w-5 h-5" />
         </button>
 
-        <div className="flex items-center">{renderPageNumbers()}</div>
+        <div className="flex items-center">
+          {visiblePages.map((page, index) =>
+            page === '...' ? (
+              <span key={`ellipsis-${index}`} className="px-2 text-gray-400">
+                ...
+              </span>
+            ) : (
+              <PageButton
+                key={page}
+                page={page}
+                isActive={page === currentPage}
+                onClick={handlePageChange}
+              />
+            )
+          )}
+        </div>
 
         <button
           onClick={() => handlePageChange(currentPage + 1)}
@@ -102,7 +59,7 @@ const Pagination = ({totalPages, initialPage=1, onPageChange}: PaginationProps) 
           }`}
           aria-label="Página siguiente"
         >
-          <BiChevronRight size={20} />
+          <ChevronRight className="w-5 h-5" />
         </button>
       </div>
     </div>

@@ -6,11 +6,13 @@ import { ensureKeyCode } from "../../utils/ensureKeyCode";
 interface KbdProps {
   keys: Key[];
   onKeyPress?: (keys: Key[]) => void;
+  forceVisible?: boolean;
 }
 
-const Kbd = ({ keys, onKeyPress }: KbdProps) => {
+const Kbd = ({ keys, onKeyPress, forceVisible = false }: KbdProps) => {
   const ref = useRef<HTMLDivElement>(null);
   const [active, setActive] = useState(false);
+  const showKeys = active || forceVisible;
   const pressedKeys = useRef<Set<string>>(new Set());
   const scrollParent = useRef<HTMLElement | Window>();
 
@@ -30,7 +32,6 @@ const Kbd = ({ keys, onKeyPress }: KbdProps) => {
   };
 
   const checkIfCentered = () => {
-    console.log("checkIfCentered");
     if (!ref.current) return;
     const rect = ref.current.getBoundingClientRect();
     const containerHeight =
@@ -46,7 +47,6 @@ const Kbd = ({ keys, onKeyPress }: KbdProps) => {
     const centerY = containerTop + containerHeight / 2;
     const elementCenter = rect.top + rect.height / 2;
     const isNearCenter = Math.abs(elementCenter - centerY) < 100;
-    console.log({ isNearCenter });
     setActive(isNearCenter);
   };
 
@@ -71,7 +71,7 @@ const Kbd = ({ keys, onKeyPress }: KbdProps) => {
   }, []);
 
   useEffect(() => {
-    if (!active || !onKeyPress) return;
+    if (!showKeys || !onKeyPress) return;
 
     const handleKeyDown = (e: KeyboardEvent) => {
       pressedKeys.current.add(normalizeKey(e.key));
@@ -94,38 +94,7 @@ const Kbd = ({ keys, onKeyPress }: KbdProps) => {
       window.removeEventListener("keydown", handleKeyDown);
       window.removeEventListener("keyup", handleKeyUp);
     };
-  }, [active, keys, onKeyPress]);
-
-  useEffect(() => {
-    if (!active || !onKeyPress) return;
-
-    const handleKeyDown = (e: KeyboardEvent) => {
-      console.log({ key: e.key });
-      pressedKeys.current.add(e.key);
-      console.log({ pressedKeys: Array.from(pressedKeys.current) });
-
-      const allKeysPressed = keys.every((k) =>
-        pressedKeys.current.has(normalizeKey(k))
-      );
-
-      console.log({ allKeysPressed });
-
-      if (allKeysPressed) {
-        onKeyPress(keys);
-      }
-    };
-
-    const handleKeyUp = (e: KeyboardEvent) => {
-      pressedKeys.current.delete(e.key);
-    };
-
-    window.addEventListener("keydown", handleKeyDown);
-    window.addEventListener("keyup", handleKeyUp);
-    return () => {
-      window.removeEventListener("keydown", handleKeyDown);
-      window.removeEventListener("keyup", handleKeyUp);
-    };
-  }, [active, keys, onKeyPress]);
+  }, [showKeys, keys, onKeyPress]);
 
   const normalizeKey = (key: string): string =>
     key === " " ? " " : key.length === 1 ? key.toLowerCase() : key;
@@ -134,9 +103,9 @@ const Kbd = ({ keys, onKeyPress }: KbdProps) => {
     <div ref={ref}>
       {onKeyPress ? (
         <AnimatePresence>
-          {active && (
+          {showKeys && (
             <motion.div
-              className="flex gap-1 items-center"
+              className="flex gap-0.5 items-center"
               exit={{ scale: 0, transition: { duration: 0.2 } }}
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
@@ -151,7 +120,7 @@ const Kbd = ({ keys, onKeyPress }: KbdProps) => {
               {keys.map((key) => (
                 <kbd
                   key={key}
-                  className="dark:bg-gray-100/20 bg-white px-1.5 py-0.5 text-xs rounded shadow aria-checked:bg-[#ff79c597]/20 dark:aria-checked:bg-[#ff79c597]/20 "
+                  className="dark:bg-main-dark/50 bg-gray-100 px-1.5 py-0.5 text-[10px] rounded border dark:border-main-dark/30 border-gray-300 shadow-sm font-mono"
                 >
                   {ensureKeyCode(key)}
                 </kbd>
@@ -160,11 +129,11 @@ const Kbd = ({ keys, onKeyPress }: KbdProps) => {
           )}
         </AnimatePresence>
       ) : (
-        <div className="flex gap-1 items-center">
+        <div className="flex gap-0.5 items-center">
           {keys.map((key) => (
             <kbd
               key={key}
-              className="dark:bg-gray-100/20 bg-white px-1.5 py-0.5 text-xs rounded shadow aria-checked:bg-[#ff79c597]/20 dark:aria-checked:bg-[#ff79c597]/20 "
+              className="dark:bg-main-dark/50 bg-gray-100 px-1.5 py-0.5 text-[10px] rounded border dark:border-main-dark/30 border-gray-300 shadow-sm font-mono"
             >
               {ensureKeyCode(key)}
             </kbd>

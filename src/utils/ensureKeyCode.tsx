@@ -1,16 +1,15 @@
-import { TiArrowUp, TiArrowLeft, TiArrowRight, TiArrowDown } from 'react-icons/ti';
-import { TbCornerDownLeft } from 'react-icons/tb';
+import { ArrowUp, ArrowDown, ArrowLeft, ArrowRight, CornerDownLeft } from 'lucide-react';
 
 const arrowKeys = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Control', 'Enter'] as const;
 
 type ArrowKey = typeof arrowKeys[number];
 
 const fixedKeys = new Map<ArrowKey, React.ReactNode>([
-  ['ArrowUp', <TiArrowUp size={16} />],
-  ['ArrowDown', <TiArrowDown size={16} />],
-  ['ArrowLeft', <TiArrowLeft size={16} />],
-  ['ArrowRight', <TiArrowRight size={16} />],
-  ['Enter', <TbCornerDownLeft size={16} />],
+  ['ArrowUp', <ArrowUp className="w-4 h-4" />],
+  ['ArrowDown', <ArrowDown className="w-4 h-4" />],
+  ['ArrowLeft', <ArrowLeft className="w-4 h-4" />],
+  ['ArrowRight', <ArrowRight className="w-4 h-4" />],
+  ['Enter', <CornerDownLeft className="w-4 h-4" />],
   ['Control', 'Ctrl'],
 ]);
 

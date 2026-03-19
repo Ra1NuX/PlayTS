@@ -1,0 +1,16 @@
+export const STORAGE_KEYS = {
+  THEME: 'theme',
+  GLOBAL_FONT: 'globalFont',
+  GLOBAL_SIZE: 'globalSize',
+  CODE: 'code',
+  DEPENDENCIES: 'dependencies',
+  API_KEY: 'apiKey',
+  AI_PROVIDER: 'aiProvider',
+  AI_MODEL_ID: 'aiModelId',
+  BOOKMARKS_STORAGE: 'bookmarks-storage',
+  ENV_VARS_STORAGE: 'env-vars-storage',
+  AUTH_UID: 'playts-auth-uid',
+  SW_RELOAD: '__coep_sw_reload',
+  SETTINGS_NAME: 'name',
+  SETTINGS_EMAIL: 'email',
+} as const;

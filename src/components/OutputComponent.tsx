@@ -47,7 +47,7 @@ const OutputComponent = () => {
           onClick={() => {
             setOpenIaMenu((o) => !o);
           }}
-          className="absolute right-3.5 font-bold p-1.5 rounded-lg opacity-10 group-hover:opacity-100 transition-all duration-300 ease-in-out text-[#eaeaea]"
+          className="absolute right-3.5 font-bold p-1.5 rounded opacity-10 group-hover:opacity-100 transition-all duration-300 ease-in-out text-[#eaeaea]"
         >
           <BsStars className="text-xl" />
         </button>

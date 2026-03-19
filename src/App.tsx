@@ -4,32 +4,48 @@ import {
   PanelResizeHandle,
   ImperativePanelHandle,
 } from "react-resizable-panels";
-import SyntaxHighlighter from "react-syntax-highlighter";
 import { useEffect, useRef } from "react";
 import useCompiler from "./hooks/useCompiler";
 import { useTheme } from "./hooks/useTheme";
 import { useFont } from "./hooks/useFonts";
-
-import { darkTheme, lightTheme } from "./utils/customTheme";
-import fillSpaces from "./utils/fillSpaces";
+import createAlignedOutput from "./utils/createAlignedOutput";
 
 import EditorComponent from "./components/EditorComponent";
 import Sidebar from "./components/Sidebar";
 import Header from "./components/Header";
+import OutputPanel from "./components/OutputPanel";
+import CommandPalette from "./components/CommandPalette";
+import RegisterCommandPaletteActions from "./components/CommandPaletteActions";
 import useResizePanelSizes from "./hooks/useResizePanelSizes";
+import { useBookmarksStore, useBookmarks } from "./stores/bookmarksStore";
+import { useGlobalBookmarks } from "./hooks/useGlobalBookmarks";
+import { useEnvVarsStore, useEnvVars } from "./stores/envVarsStore";
+import { useGlobalEnvVars } from "./hooks/useGlobalEnvVars";
+import { useCloudSync } from "./hooks/useCloudSync";
+import { useUpdateListener } from "./hooks/useUpdateListener";
+import UpdateToast from "./components/UpdateToast";
 
 function App() {
   const { theme } = useTheme();
-  const { result } = useCompiler();
+  const { result, code } = useCompiler();
   const { font, size } = useFont();
 
-  const editorComponent = useRef<ImperativePanelHandle>(null);
-  const outputComponent = useRef<ImperativePanelHandle>(null);
-  const footerSection = useRef<ImperativePanelHandle>(null);
+  useBookmarksStore();
+  useEnvVarsStore();
+
+  const bookmarks = useBookmarks();
+  useGlobalBookmarks({ bookmarks });
+
+  const envVars = useEnvVars();
+  useGlobalEnvVars({ envVars });
+
+  useCloudSync();
+  useUpdateListener();
+
   const sidebarSection = useRef<ImperativePanelHandle>(null);
 
   const { width: minSize } = useResizePanelSizes("sidebar-main", {
-    width: 52,
+    width: 48,
     height: 32,
   });
   const { width: maxSize } = useResizePanelSizes("sidebar-main", {
@@ -47,15 +63,17 @@ function App() {
     }
   }, []);
 
-  const filledArray = fillSpaces(result || []);
+  const filledArray = createAlignedOutput(result || [], code || "");
 
   return (
     <main className="h-screen flex flex-col font-[roboto] font-bold text-main-dark">
+      <CommandPalette />
+      <RegisterCommandPaletteActions />
       <Header />
       <section className="flex flex-row flex-1 w-full overflow-hidden dark:bg-main-dark bg-[#f7f7f7]">
         <PanelGroup direction="horizontal" id="sidebar-main">
           <Panel
-            minSize={minSize ? minSize + 15 : 0}
+            minSize={minSize ? minSize : 0}
             maxSize={maxSize}
             collapsedSize={minSize}
             defaultSize={maxSize}
@@ -76,64 +94,22 @@ function App() {
                 >
                   <Panel
                     minSize={20}
-                    className="rounded-md overflow-hidden dark:bg-main-light bg-[#eaeaea] p-2 rounded-r-none border-r-2 dark:border-r-main-dark border-r-[#f7f7f7]"
+                    className="overflow-hidden dark:bg-main-light bg-[#eaeaea] p-2 rounded-r-none border-r-2 dark:border-r-divider-dark border-r-[#f7f7f7]"
                   >
                     <EditorComponent />
                   </Panel>
                   <PanelResizeHandle />
                   <Panel
                     minSize={20}
-                    className="break-words group overflow-y-auto pr-1.5 font-semibold font-mono leading-none dark:bg-main-light bg-[#eaeaea] rounded-md rounded-l-none border-l-2 dark:border-l-main-dark border-l-[#f7f7f7] w-full flex flex-col p-2 px-4"
+                    className="break-words group overflow-y-auto pr-1.5 font-semibold font-mono leading-none dark:bg-main-light bg-[#eaeaea] rounded-l-none border-l-2 dark:border-l-divider-dark border-l-[#f7f7f7] w-full flex flex-col p-2 px-4"
                   >
-                    <div className="overflow-auto">
-                      {Array.isArray(filledArray)
-                        ? filledArray?.map((element, i) => {
-                            if (element) {
-                              const { text } = element;
-                              return (
-                                <div
-                                  className="flex w-full rounded"
-                                  key={
-                                    element.text + "-" + element.line + "-" + i
-                                  }
-                                >
-                                  <div className="flex w-full justify-between font-mono">
-                                    <SyntaxHighlighter
-                                      language="javascript"
-                                      codeTagProps={{
-                                        style: {
-                                          whiteSpace: "pre-wrap",
-                                          fontFamily: `"${font}"`,
-                                          fontSize: size,
-                                        },
-                                      }}
-                                      PreTag={"pre"}
-                                      style={
-                                        theme === "dark"
-                                          ? darkTheme
-                                          : lightTheme
-                                      }
-                                      customStyle={{
-                                        padding: 0,
-                                        paddingLeft: "1.25rem",
-                                        paddingRight: "1.25rem",
-                                        backgroundColor: "transparent",
-                                        color:
-                                          theme === "dark"
-                                            ? "#fafafa"
-                                            : "#0008",
-                                        lineHeight: "27px",
-                                      }}
-                                    >
-                                      {text}
-                                    </SyntaxHighlighter>
-                                  </div>
-                                </div>
-                              );
-                            }
-                          })
-                        : JSON.stringify(filledArray)}
-                    </div>
+                    <OutputPanel
+                      filledArray={filledArray}
+                      font={font}
+                      size={size}
+                      theme={theme}
+                      hasResults={result?.length > 0}
+                    />
                   </Panel>
                 </PanelGroup>
               </Panel>
@@ -141,6 +117,7 @@ function App() {
           </Panel>
         </PanelGroup>
       </section>
+      <UpdateToast />
     </main>
   );
 }

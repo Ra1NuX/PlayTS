@@ -1,26 +1,40 @@
-import { FaMinus, FaPlus } from "react-icons/fa6";
+import { Minus, Plus } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useFont } from "../../hooks/useFonts";
+import {
+  MIN_FONT_SIZE,
+  MAX_FONT_SIZE,
+  FONT_SIZE_STEP,
+} from "../../constants/editorFontSizes";
 
 const FontSizeSelector = () => {
-
   const { t } = useTranslation();
   const { size, changeSize } = useFont();
 
+  const current = Number(size);
+  const nextSize = Math.min(MAX_FONT_SIZE, current + FONT_SIZE_STEP);
+  const prevSize = Math.max(MIN_FONT_SIZE, current - FONT_SIZE_STEP);
+
   return (
-    <div className="flex flex-row gap-5 justify-between">
+    <div className="flex flex-row gap-5 justify-between items-center dark:text-gray-100 text-gray-900 text-sm">
       {t("EDITOR_FONT_SIZE")}
-      <div className="group flex h-8 items-center rounded-xl transition-transform data-[checked]:bg-main-dark dark:bg-main-dark/50 bg-[#fafafa] shadow-md">
-        <button className="w-7 hover:scale-125 transition-transform duration-200" onClick={() => changeSize(Number(size) - 2)}>
-          <FaMinus className="inline" size={14} />
+      <div className="flex h-9 items-center rounded-lg border dark:border-[#2a2a2a] border-gray-200 dark:bg-[#111] bg-gray-50 overflow-hidden">
+        <button
+          className="w-8 h-full flex items-center justify-center hover:bg-gray-100 dark:hover:bg-[#2a2a2a] transition-colors cursor-pointer dark:text-gray-400 text-gray-500"
+          onClick={() => changeSize(prevSize)}
+        >
+          <Minus className="inline w-3 h-3" />
         </button>
         <input
           disabled
-          className="w-7 h-7 text-center shadow-lg aspect-square rounded-full bg-white dark:bg-main-dark transition-transform group-data-[checked]:translate-x-6"
+          className="w-9 h-full text-center text-sm dark:bg-[#1a1a1a] bg-white border-x dark:border-[#2a2a2a] border-gray-200 dark:text-gray-100 text-gray-900"
           value={size}
         />
-        <button className="w-7 hover:scale-125 transition-transform duration-200" onClick={() => changeSize(!isNaN(Number(size) + 2) ? Number(size) + 2 : 16)}>
-          <FaPlus className="inline" size={14} />
+        <button
+          className="w-8 h-full flex items-center justify-center hover:bg-gray-100 dark:hover:bg-[#2a2a2a] transition-colors cursor-pointer dark:text-gray-400 text-gray-500"
+          onClick={() => changeSize(nextSize)}
+        >
+          <Plus className="inline w-3 h-3" />
         </button>
       </div>
     </div>

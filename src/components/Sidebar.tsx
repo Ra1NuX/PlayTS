@@ -1,127 +1,189 @@
-import { forwardRef, MutableRefObject, useState } from "react";
-import { ImperativePanelHandle } from "react-resizable-panels";
-import { FaPause, FaPlay } from "react-icons/fa6";
+import { forwardRef, MutableRefObject, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { VscSettingsGear } from "react-icons/vsc";
+import { ImperativePanelHandle } from "react-resizable-panels";
+import { Play, Pause, Package, Sparkles, Bookmark, KeyRound, Settings as SettingsIcon } from "lucide-react";
 
-import { DependenciesPanel } from "./SidebarPannel";
 import Settings from "../Settings";
-import MyModal from "./Modal";
+import Dependencies from "./Dependencies";
+import Tooltip from "./Tooltip";
 
 import merge from "../tools/merge";
-
 import useCompiler from "../hooks/useCompiler";
-import { BsStars } from "react-icons/bs";
-import IAChat from "./IAChat";
-import { BiSolidPackage } from "react-icons/bi";
 import useSettings from "../hooks/useSettings";
+import Bookmarks from "./Bookmarks";
+import IAChat from "./IAChat";
+import EnvVars from "./EnvVars";
+import { useSidebarStore } from "../stores/sidebarStore";
+import { useEntitlementStore } from "../stores/entitlementStore";
 
-const Sidebar = forwardRef<ImperativePanelHandle>((_, ref) => {
+type Selected = number | "settings" | null;
+
+const Sidebar = forwardRef<ImperativePanelHandle | null>((_, ref) => {
+  const [selected, setSelected] = useState<Selected>(null);
+  const { paused, setPaused } = useCompiler();
+  const { settings } = useSettings();
+  const { requestedPanel, clearRequest } = useSidebarStore();
+  const hasAiProxy = useEntitlementStore((s) => s.features.ai_proxy);
+  const [isCollapsed, setIsCollapsed] = useState(false);
+  
+  const { t } = useTranslation();
+
+  useEffect(() => {
+    if (requestedPanel === undefined) return;
+    if (!ref || !("current" in ref) || !ref.current) return;
+
+    const panelRef = ref;
+    if (panelRef.current) {
+      panelRef.current.expand(100);
+    }
+    setSelected(requestedPanel);
+    clearRequest();
+  }, [requestedPanel, ref, clearRequest]);
+
   if (!ref || !("current" in ref) || !ref.current) return null;
 
-  const [selected, setSelected] = useState<number | null>(null);
-  const { paused, setPaused } = useCompiler();
-  const { settings } = useSettings()
-
-  const open = (
-    ref: MutableRefObject<ImperativePanelHandle | null>,
-    index: number
+  const openPanel = (
+    panelRef: MutableRefObject<ImperativePanelHandle | null>,
+    key: Selected
   ) => {
-    if (!ref.current) return;
+    if (!panelRef.current) return;
 
-    if (index === selected && !ref.current.isCollapsed()) {
-      ref.current.collapse();
+    if (key === selected && !panelRef.current.isCollapsed()) {
+      panelRef.current.collapse();
+      setIsCollapsed(true);
       return;
     }
-    ref.current.expand(100);
+    panelRef.current.expand(100);
+    setIsCollapsed(false);
   };
 
   const buttons = [
     {
-      icon: paused ? (
-        <FaPlay
-          size={14}
-          className="ml-[3px] dark:fill-[#ffffffaf] fill-main-dark/80 group-hover:fill-green-600 transition-colors duration-200"
-        />
-      ) : (
-        <FaPause
-          size={16}
-          className="ml-[1px] dark:fill-[#ffffffaf] fill-main-dark/80 group-hover:fill-red-500 transition-colors duration-200"
-        />
-      ),
+      icon: paused ? <Play size={18} /> : <Pause size={18} />,
       title: paused ? "PLAY" : "PAUSE",
-      className:
-        "rounded-xl dark:hover:bg-white/10 hover:shadow-md border dark:border-white/5 group",
       onClick: () => {
         setPaused(!paused);
       },
     },
     {
-      icon: <BiSolidPackage size={22} />,
+      icon: <Package size={18} />,
       title: "DEPENDENCIES",
       onClick: (
-        ref: MutableRefObject<ImperativePanelHandle | null>,
+        panelRef: MutableRefObject<ImperativePanelHandle | null>,
         index: number
       ) => {
-        open(ref,index);
+        openPanel(panelRef, index);
         setSelected(index);
       },
-      panelItem: <DependenciesPanel />,
+      panelItem: <Dependencies />,
     },
     {
-      icon: <BsStars size={22} />,
-      title: "IA",
-      hidden: !settings.apiKey,
+      icon: <Sparkles size={18} />,
+      title: "AI",
+      hidden: !settings.apiKey && !hasAiProxy,
       onClick: (
-        ref: MutableRefObject<ImperativePanelHandle | null>,
+        panelRef: MutableRefObject<ImperativePanelHandle | null>,
         index: number
       ) => {
-        open(ref, index);
+        openPanel(panelRef, index);
         setSelected(index);
       },
       panelItem: <IAChat />,
     },
+    {
+      icon: <Bookmark size={18} />,
+      title: "BOOKMARKS",
+      onClick: (
+        panelRef: MutableRefObject<ImperativePanelHandle | null>,
+        index: number
+      ) => {
+        openPanel(panelRef, index);
+        setSelected(index);
+      },
+      panelItem: <Bookmarks />,
+    },
+    {
+      icon: <KeyRound size={18} />,
+      title: "ENV_VARS",
+      onClick: (
+        panelRef: MutableRefObject<ImperativePanelHandle | null>,
+        index: number
+      ) => {
+        openPanel(panelRef, index);
+        setSelected(index);
+      },
+      panelItem: <EnvVars />,
+    },
   ];
 
-  const { t } = useTranslation();
+  const handleSettingsClick = () => {
+    openPanel(ref, "settings");
+    setSelected("settings");
+  };
+
+  const panelContent = selected === "settings"
+    ? <Settings />
+    : buttons[selected as number]?.panelItem;
+
   return (
-    <>
-      <aside className="dark:bg-main-dark bg-[#f7f7f7] p-2 pt-4 md:flex flex-col hidden">
-        <section className="flex-1 flex flex-col gap-2">
+    <div className="flex flex-row h-full overflow-hidden flex-1">
+      <aside className="dark:bg-main-dark bg-[#f3f3f3] w-12 min-w-12 max-w-12 shrink-0 md:flex flex-col hidden border-r dark:border-divider-dark border-gray-300">
+        <section className="flex-1 flex flex-col items-center">
           {buttons.map((button, index) => {
             if (button.hidden) return null;
-            return <button
-              key={index}
-              title={t(button.title)}
-              onClick={() => {
-                if (button.onClick) {
-                  button.onClick(ref, index);
-                }
-              }}
-              className={merge(
-                "flex w-9 h-9 aspect-square disabled:cursor-pointer dark:hover:bg-white/5 hover:bg-main-dark/5 items-center gap-2 p-2 dark:text-white font-bold rounded-xl transition-colors",
-                button.className
-              )}
-            >
-              {button.icon}
-            </button>
+            const isSelected = selected === index;
+            return (
+              <div key={index} className="relative w-full flex justify-center">
+                {isSelected && !isCollapsed && (
+                  <div className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-10 bg-accent-dark/80 rounded-r-full z-10" />
+                )}
+                <Tooltip content={t(button.title)} placement="right">
+                  <button
+                    onClick={() => {
+                      if (button.onClick) {
+                        button.onClick(ref, index);
+                      }
+                    }}
+                    className={merge(
+                      "relative flex items-center justify-center w-12 h-12 my-1 transition-all duration-200",
+                      isSelected && !isCollapsed
+                        ? "dark:text-white text-accent-dark"
+                        : "dark:text-gray-400 text-gray-600 dark:hover:text-gray-200 hover:text-gray-800"
+                    )}
+                  >
+                    <div className={
+                      (isSelected && !isCollapsed)
+                        ? "flex items-center justify-center w-full h-full transition-colors dark:bg-divider-dark bg-gray-200/50"
+                        : "flex items-center justify-center w-full h-full transition-colors"
+                    }>
+                      {button.icon}
+                    </div>
+                  </button>
+                </Tooltip>
+              </div>
+            );
           })}
         </section>
-        <section className="flex flex-col gap-2 ">
-          <MyModal
-            Button={
-              <button className="flex w-9 h-9 aspect-square dark:hover:bg-white/5 hover:bg-main-dark/10 items-center gap-2 p-2 dark:text-white font-bold rounded-xl">
-                <VscSettingsGear size={22} />
-              </button>
-            }
-            children={<Settings />}
-          />
+        <section className="flex flex-col aspect-square items-center justify-center border-t dark:border-divider-dark border-gray-300">
+          <Tooltip content={t("SETTINGS")} placement="right">
+            <button
+              onClick={handleSettingsClick}
+              className={merge(
+                "flex items-center justify-center w-10 h-10 transition-colors",
+                selected === "settings"
+                  ? "dark:text-white text-accent-dark"
+                  : "dark:text-gray-400 text-gray-600 dark:hover:text-gray-200 hover:text-gray-800"
+              )}
+            >
+              <SettingsIcon size={18} />
+            </button>
+          </Tooltip>
         </section>
       </aside>
-      <aside className="w-full transition-[width,padding] duration-100 dark:bg-main-dark bg-[#f7f7f7] aria-current:pr-0 py-2 pr-2 flex flex-col overflow-hidden">
-        {buttons[selected!]?.panelItem}
+      <aside className="w-full h-full min-h-0 transition-[width,padding] duration-100 dark:bg-main-dark bg-[#f7f7f7] aria-current:px-0 py-2 px-2 flex flex-col overflow-hidden border-r dark:border-r-divider-dark border-r-gray-300">
+        {panelContent}
       </aside>
-    </>
+    </div>
   );
 });
 

@@ -1,53 +1,18 @@
-import { useState, useEffect } from "react";
-
-let globalTheme = "dark";
-if (typeof window !== "undefined") {
-  const storedTheme = localStorage.getItem("theme");
-  if (storedTheme) {
-    globalTheme = storedTheme;
-  }
-}
-
-const listeners = new Set<(newTheme: string) => void>();
-
-const setGlobalTheme = (newTheme: string) => {
-  globalTheme = newTheme;
-  if (typeof window !== "undefined") {
-    localStorage.setItem("theme", newTheme);
-    if (newTheme === "light") {
-      window.document.documentElement.classList.remove("dark");
-    } else {
-      window.document.documentElement.classList.add("dark");
-    }
-  }
-  listeners.forEach((listener) => listener(newTheme));
-};
+import { useEffect } from 'react';
+import { useSettingsStore } from '../stores/settingsStore';
 
 export const useTheme = () => {
-  const [theme, setTheme] = useState(globalTheme);
+  const theme = useSettingsStore((s) => s.theme);
+  const toggleTheme = useSettingsStore((s) => s.toggleTheme);
 
+  // Apply theme class on mount
   useEffect(() => {
-    const listener = (newTheme: string) => {
-      setTheme(newTheme);
-    };
-
-    listeners.add(listener);
-
-    if (globalTheme === "light") {
-      window.document.documentElement.classList.remove("dark");
+    if (theme === 'light') {
+      window.document.documentElement.classList.remove('dark');
     } else {
-      window.document.documentElement.classList.add("dark");
+      window.document.documentElement.classList.add('dark');
     }
-
-    return () => {
-      listeners.delete(listener);
-    };
-  }, []);
-
-  const toggleTheme = () => {
-    const newTheme = theme === "light" ? "dark" : "light";
-    setGlobalTheme(newTheme);
-  };
+  }, [theme]);
 
   return { theme, toggleTheme };
 };

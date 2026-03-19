@@ -9,8 +9,20 @@ export default {
       },
       colors: {
         main: {
-          dark: '#222831',
-          light: '#31363F'
+          dark: '#181818',
+          contrast: '#171717',
+          light: '#1c1c1e'
+        },
+        hover: {
+          ancient: {
+            dark: '#1f5cb3',
+          }
+        },
+        divider: {
+          dark: '#2f2f2fca',
+        },
+        accent: {
+          dark: '#2b73da',
         }
       }
     },
